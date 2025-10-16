@@ -62,6 +62,52 @@ gmn:P1_2_has_name_from_source
     ] ;
     gmn:hasImplicitType <http://vocab.getty.edu/page/aat/300456607> .
 
+# Property: P3.1 has editorial note
+gmn:P3_1_has_editorial_note 
+    a owl:DatatypeProperty ;
+    a rdf:Property ;
+    rdfs:label "P3.1 has editorial note"@en ;
+    rdfs:comment "Simplified property for expressing editorial notes, comments, and internal documentation about an entity. Represents the full CIDOC-CRM path: P67i_is_referred_to_by > E33_Linguistic_Object > P2_has_type <http://vocab.getty.edu/page/aat/300456627> > P190_has_symbolic_content. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The linguistic object type is automatically set to AAT 300456627. This property is intended for internal project use and may be excluded from public data exports."@en ;
+    rdfs:subPropertyOf cidoc:P3_has_note ;
+    rdfs:domain cidoc:E1_CRM_Entity ;
+    rdfs:range cidoc:E62_String ;
+    dcterms:created "2025-10-16"^^xsd:date ;
+    rdfs:seeAlso cidoc:P3_has_note, cidoc:P67i_is_referred_to_by, cidoc:P190_has_symbolic_content, <http://vocab.getty.edu/page/aat/300456627> ;
+    gmn:hasImplicitType <http://vocab.getty.edu/page/aat/300456627> ;
+    gmn:isInternalOnly true .
+
+# Property: P2.1 has sex/gender
+gmn:P2_1_gender
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P2.1 has sex/gender"@en ;
+    rdfs:comment "Simplified property for expressing biological characteristics and physiological traits that distinguish the males and females of a species. This is an extension of the CIDOC-CRM path: E21_Person > P2_has_type > E55_Type. The range is restricted to a controlled vocabulary of three Getty AAT terms: male (300189559), female (300189557), and intersex (300417544)."@en ;
+    rdfs:subPropertyOf cidoc:P2_has_type ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range [
+        a owl:Class ;
+        owl:oneOf (
+            <http://vocab.getty.edu/page/aat/300189559>
+            <http://vocab.getty.edu/page/aat/300189557>
+            <http://vocab.getty.edu/page/aat/300417544>
+        )
+    ] ;
+    dcterms:created "2025-10-16"^^xsd:date ;
+    rdfs:seeAlso cidoc:P2_has_type, <http://vocab.getty.edu/page/aat/300189559>, <http://vocab.getty.edu/page/aat/300189557>, <http://vocab.getty.edu/page/aat/300417544> .
+
+# Property: P1.4 has loconym
+gmn:P1_4_has_loconym
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P1.4 has loconym"@en ;
+    rdfs:comment "Simplified property for expressing a place referenced in a person's name (loconym), indicating that the person or their ancestors originated from that place. Represents the full CIDOC-CRM path: P1_is_identified_by > E41_Appellation > P2_has_type <https://www.wikidata.org/wiki/Q17143070> > P67_refers_to > E53_Place. This captures toponymic naming patterns common in medieval Italian contexts (e.g., 'Giovanni da Genova', 'Bartolomeo de Vignolo'). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The appellation type is automatically set to Wikidata Q17143070 (loconym)."@en ;
+    rdfs:subPropertyOf cidoc:P1_is_identified_by ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range cidoc:E53_Place ;
+    dcterms:created "2025-10-16"^^xsd:date ;
+    rdfs:seeAlso cidoc:P1_is_identified_by, cidoc:P67_refers_to, <https://www.wikidata.org/wiki/Q17143070> ;
+    gmn:hasImplicitType <https://www.wikidata.org/wiki/Q17143070> .
+
 # Custom property for implicit typing
 gmn:hasImplicitType
     a owl:AnnotationProperty ;
@@ -105,4 +151,47 @@ gmn:TransformationNote
     
     Note: The P2_has_type value (AAT 300456607 - names found in sources) is automatically 
     applied during transformation as specified by gmn:hasImplicitType.
+    
+    Example transformation for gmn:P3_1_has_editorial_note:
+    
+    INPUT (shortcut):
+    <entity> gmn:P3_1_has_editorial_note "Need to verify this date against archival sources." .
+    
+    OUTPUT (CIDOC-CRM compliant):
+    <entity> cidoc:P67i_is_referred_to_by <linguistic_object1> .
+    <linguistic_object1> a cidoc:E33_Linguistic_Object ;
+                         cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300456627> ;
+                         cidoc:P190_has_symbolic_content "Need to verify this date against archival sources." .
+    
+    Note: The P2_has_type value (AAT 300456627) is automatically applied during transformation 
+    as specified by gmn:hasImplicitType. This property is marked as internal-only and may be 
+    excluded from public exports.
+    
+    Example usage for gmn:P2_1_gender:
+    
+    INPUT (simplified):
+    <person> gmn:P2_1_gender <http://vocab.getty.edu/page/aat/300189557> .
+    
+    OUTPUT (CIDOC-CRM compliant - same structure, as this is already a proper relationship):
+    <person> cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300189557> .
+    
+    Note: gmn:P2_1_gender is a subproperty of cidoc:P2_has_type with a restricted range 
+    (male, female, intersex from Getty AAT). No transformation is needed as this property 
+    directly represents the CIDOC-CRM structure, just with added semantic specificity.
+    
+    Example transformation for gmn:P1_4_has_loconym:
+    
+    INPUT (shortcut):
+    <person> gmn:P1_4_has_loconym <http://example.com/places/genoa> .
+    
+    OUTPUT (CIDOC-CRM compliant):
+    <person> cidoc:P1_is_identified_by <appellation1> .
+    <appellation1> a cidoc:E41_Appellation ;
+                   cidoc:P2_has_type <https://www.wikidata.org/wiki/Q17143070> ;
+                   cidoc:P67_refers_to <http://example.com/places/genoa> .
+    
+    Note: When transforming gmn:P1_4_has_loconym, an E41_Appellation is created that references 
+    the place via P67_refers_to. The appellation type is automatically set to Wikidata Q17143070 
+    (loconym) as specified by gmn:hasImplicitType. If a person already has name appellations, 
+    this should ideally be integrated with or linked to the existing name structure.
     """@en .
