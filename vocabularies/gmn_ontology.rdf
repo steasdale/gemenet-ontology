@@ -1,0 +1,108 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix gmn: <http://www.genoesemerchantnetworks.com/ontology#> .
+
+# Ontology Declaration
+<http://www.genoesemerchantnetworks.com/ontology> 
+    a owl:Ontology ;
+    rdfs:label "Genoese Merchant Networks CIDOC-CRM Extension"@en ;
+    rdfs:comment "Custom vocabulary extending CIDOC-CRM for the Genoese Merchant Networks project. Provides simplified shortcut properties that represent more complex CIDOC-CRM paths."@en ;
+    dcterms:title "GMN CIDOC-CRM Extension Ontology"@en ;
+    dcterms:creator "Genoese Merchant Networks Project" ;
+    dcterms:created "2025-10-16"^^xsd:date ;
+    dcterms:modified "2025-10-16"^^xsd:date ;
+    owl:versionInfo "1.0" ;
+    owl:imports <http://www.cidoc-crm.org/cidoc-crm/> .
+
+# Property: P1.1 has name
+gmn:P1_1_has_name 
+    a owl:DatatypeProperty ;
+    a rdf:Property ;
+    rdfs:label "P1.1 has name"@en ;
+    rdfs:comment "Simplified property for expressing the name of a person. Represents the full CIDOC-CRM path: P1_is_identified_by > E41_Appellation > P2_has_type <http://vocab.getty.edu/page/aat/300458798> > P190_has_symbolic_content. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The appellation type is automatically set to AAT 300458798 (personal names)."@en ;
+    rdfs:subPropertyOf cidoc:P1_is_identified_by ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range cidoc:E62_String ;
+    dcterms:created "2025-10-16"^^xsd:date ;
+    rdfs:seeAlso cidoc:P1_is_identified_by, cidoc:P190_has_symbolic_content, <http://vocab.getty.edu/page/aat/300458798> ;
+    owl:equivalentProperty [
+        a owl:Restriction ;
+        owl:onProperty cidoc:P1_is_identified_by ;
+        owl:allValuesFrom [
+            a owl:Restriction ;
+            owl:onProperty cidoc:P190_has_symbolic_content ;
+            owl:hasValue cidoc:E62_String
+        ]
+    ] ;
+    gmn:hasImplicitType <http://vocab.getty.edu/page/aat/300458798> .
+
+# Property: P1.2 has name from source
+gmn:P1_2_has_name_from_source 
+    a owl:DatatypeProperty ;
+    a rdf:Property ;
+    rdfs:label "P1.2 has name from source"@en ;
+    rdfs:comment "Simplified property for expressing the name of a person as found in historical sources. Represents the full CIDOC-CRM path: P1_is_identified_by > E41_Appellation > P2_has_type <http://vocab.getty.edu/page/aat/300456607> > P190_has_symbolic_content. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The appellation type is automatically set to AAT 300456607 (names found in historical sources)."@en ;
+    rdfs:subPropertyOf cidoc:P1_is_identified_by ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range cidoc:E62_String ;
+    dcterms:created "2025-10-16"^^xsd:date ;
+    rdfs:seeAlso cidoc:P1_is_identified_by, cidoc:P190_has_symbolic_content, <http://vocab.getty.edu/page/aat/300456607> ;
+    owl:equivalentProperty [
+        a owl:Restriction ;
+        owl:onProperty cidoc:P1_is_identified_by ;
+        owl:allValuesFrom [
+            a owl:Restriction ;
+            owl:onProperty cidoc:P190_has_symbolic_content ;
+            owl:hasValue cidoc:E62_String
+        ]
+    ] ;
+    gmn:hasImplicitType <http://vocab.getty.edu/page/aat/300456607> .
+
+# Custom property for implicit typing
+gmn:hasImplicitType
+    a owl:AnnotationProperty ;
+    rdfs:label "has implicit type"@en ;
+    rdfs:comment "Indicates a type that should be automatically assigned when transforming shortcut properties to full CIDOC-CRM structure."@en .
+
+# Documentation note
+gmn:TransformationNote
+    a rdfs:Resource ;
+    rdfs:label "Transformation Documentation"@en ;
+    rdfs:comment """
+    Shortcut properties in this ontology (such as gmn:P1_1_has_name) are designed 
+    for simplified data entry. When exporting data for interoperability or formal 
+    CIDOC-CRM compliance, these properties should be transformed to their full 
+    CIDOC-CRM equivalents.
+    
+    Example transformation for gmn:P1_1_has_name:
+    
+    INPUT (shortcut):
+    <person> gmn:P1_1_has_name "Giovanni Battista" .
+    
+    OUTPUT (CIDOC-CRM compliant):
+    <person> cidoc:P1_is_identified_by <appellation1> .
+    <appellation1> a cidoc:E41_Appellation ;
+                   cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300458798> ;
+                   cidoc:P190_has_symbolic_content "Giovanni Battista" .
+    
+    Note: The P2_has_type value (AAT 300458798 - personal names) is automatically 
+    applied during transformation as specified by gmn:hasImplicitType.
+    
+    Example transformation for gmn:P1_2_has_name_from_source:
+    
+    INPUT (shortcut):
+    <person> gmn:P1_2_has_name_from_source "Iohannes Baptista" .
+    
+    OUTPUT (CIDOC-CRM compliant):
+    <person> cidoc:P1_is_identified_by <appellation2> .
+    <appellation2> a cidoc:E41_Appellation ;
+                   cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300456607> ;
+                   cidoc:P190_has_symbolic_content "Iohannes Baptista" .
+    
+    Note: The P2_has_type value (AAT 300456607 - names found in sources) is automatically 
+    applied during transformation as specified by gmn:hasImplicitType.
+    """@en .
