@@ -42,6 +42,14 @@ gmn:E74_3_Occupational_Group
     rdfs:comment "Simplified class that describes professional or occupational groups. This is a specialized type of E74_Group used to represent professions, trades, or occupational categories. Instances of this class capture professional affiliations such as 'notaries', 'merchants', 'bankers', 'ship captains', etc. Membership in these groups indicates the person practiced or was associated with that profession."@en ;
     dcterms:created "2025-10-16"^^xsd:date .
 
+# Class: E22.1 Building
+gmn:E22_1_Building
+    a owl:Class ;
+    rdfs:subClassOf cidoc:E22_Human-Made_Object ;
+    rdfs:label "E22.1 Building"@en ;
+    rdfs:comment "Simplified class that describes buildings and built structures (real estate). This is a specialized type of E22_Human-Made_Object used to represent physical structures such as houses, palazzi, towers, shops, warehouses, and other constructed buildings. Buildings can have different names over time, different owners, and different occupants. Instances of this class represent the physical structure itself, while ownership and occupation are modeled through events and relationships."@en ;
+    dcterms:created "2025-10-16"^^xsd:date .
+
 # Property: P1.1 has name
 gmn:P1_1_has_name 
     a owl:DatatypeProperty ;
@@ -205,6 +213,43 @@ gmn:P107i_3_has_occupation
     rdfs:range gmn:E74_3_Occupational_Group ;
     dcterms:created "2025-10-16"^^xsd:date ;
     rdfs:seeAlso cidoc:P107i_is_current_or_former_member_of .
+
+# Property: P22.1 has owner
+gmn:P22_1_has_owner
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P22.1 has owner"@en ;
+    rdfs:comment "Simplified property for expressing ownership of a building by a person. Represents the full CIDOC-CRM path: E22_Human-Made_Object > P24i_changed_ownership_through > E8_Acquisition > P22_transferred_title_to > E21_Person. This property captures ownership relationships through acquisition events. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance."@en ;
+    rdfs:subPropertyOf cidoc:P24i_changed_ownership_through ;
+    rdfs:domain gmn:E22_1_Building ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-16"^^xsd:date ;
+    rdfs:seeAlso cidoc:P24i_changed_ownership_through, cidoc:P22_transferred_title_to .
+
+# Property: P53.1 has occupant
+gmn:P53_1_has_occupant
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P53.1 has occupant"@en ;
+    rdfs:comment "Simplified property for expressing occupation/residence in a building by a person who is not the owner. Represents the full CIDOC-CRM path: E22_Human-Made_Object > P53i_is_former_or_current_location_of > E9_Move > P25_moved > E21_Person. This property captures residence/occupation relationships through move events. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. This is distinct from ownership."@en ;
+    rdfs:subPropertyOf cidoc:P53i_is_former_or_current_location_of ;
+    rdfs:domain gmn:E22_1_Building ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-16"^^xsd:date ;
+    rdfs:seeAlso cidoc:P53i_is_former_or_current_location_of, cidoc:P25_moved .
+
+# Property: P122.1 borders with
+gmn:P122_1_borders_with
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P122.1 borders with"@en ;
+    rdfs:comment "Simplified property for expressing spatial adjacency between buildings. Represents that one building is physically adjacent to or borders another building. This is a symmetric relationship - if Building A borders Building B, then Building B borders Building A. This property extends the CIDOC-CRM path for spatial relationships between human-made objects."@en ;
+    rdfs:subPropertyOf cidoc:P122_borders_with ;
+    rdfs:domain gmn:E22_1_Building ;
+    rdfs:range gmn:E22_1_Building ;
+    dcterms:created "2025-10-16"^^xsd:date ;
+    rdfs:seeAlso cidoc:P122_borders_with ;
+    a owl:SymmetricProperty .
 
 # Custom property for implicit typing
 gmn:hasImplicitType
@@ -436,4 +481,58 @@ gmn:TransformationNote
     marriage (AAT 300055475). Both spouses are added as participants via P11_had_participant. 
     The marriage event can later be enriched with dates, places, and other information. 
     If modeling multiple marriages, separate events should be created for each.
+    
+    Example usage for gmn:E22_1_Building:
+    
+    <http://example.com/buildings/palazzo_doria> a gmn:E22_1_Building ;
+        gmn:P1_1_has_name "Palazzo Doria" ;
+        cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300005452> ; # palazzo
+        cidoc:P53_has_former_or_current_location <http://example.com/places/genoa> .
+    
+    Note: gmn:E22_1_Building is a subclass of cidoc:E22_Human-Made_Object and inherits all 
+    properties applicable to human-made objects. This class provides semantic clarity that 
+    the object represents a building or built structure.
+    
+    Example transformation for gmn:P22_1_has_owner:
+    
+    INPUT (shortcut):
+    <building1> gmn:P22_1_has_owner <person1> .
+    
+    OUTPUT (CIDOC-CRM compliant):
+    <building1> cidoc:P24i_changed_ownership_through <acquisition1> .
+    <acquisition1> a cidoc:E8_Acquisition ;
+                   cidoc:P22_transferred_title_to <person1> ;
+                   cidoc:P24_transferred_title_of <building1> .
+    
+    Note: When transforming gmn:P22_1_has_owner, an E8_Acquisition event is created. 
+    For time-specific ownership, date information should be added to the acquisition event 
+    via P4_has_time-span.
+    
+    Example transformation for gmn:P53_1_has_occupant:
+    
+    INPUT (shortcut):
+    <building1> gmn:P53_1_has_occupant <person2> .
+    
+    OUTPUT (CIDOC-CRM compliant):
+    <building1> cidoc:P53i_is_former_or_current_location_of <move1> .
+    <move1> a cidoc:E9_Move ;
+            cidoc:P25_moved <person2> ;
+            cidoc:P26_moved_to <building1> .
+    
+    Note: When transforming gmn:P53_1_has_occupant, an E9_Move event is created to model 
+    the person taking up residence. For time-specific occupation, date information should 
+    be added to the move event via P4_has_time-span.
+    
+    Example usage for gmn:P122_1_borders_with:
+    
+    INPUT:
+    <building1> gmn:P122_1_borders_with <building2> .
+    
+    OUTPUT (same as input, as this is a direct relationship):
+    <building1> cidoc:P122_borders_with <building2> .
+    
+    Note: gmn:P122_1_borders_with is a symmetric property and a subproperty of 
+    cidoc:P122_borders_with. No transformation is needed as it represents a direct 
+    spatial relationship. The symmetry means if Building A borders Building B, 
+    the inverse is automatically implied.
     """@en .
