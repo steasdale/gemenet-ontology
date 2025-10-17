@@ -14,8 +14,8 @@
     dcterms:title "GMN CIDOC-CRM Extension Ontology"@en ;
     dcterms:creator "Genoese Merchant Networks Project" ;
     dcterms:created "2025-10-16"^^xsd:date ;
-    dcterms:modified "2025-10-16"^^xsd:date ;
-    owl:versionInfo "1.0" ;
+    dcterms:modified "2025-10-17"^^xsd:date ;
+    owl:versionInfo "1.1" ;
     owl:imports <http://www.cidoc-crm.org/cidoc-crm/> .
 
 # Class: E74.1 Regional Provenance
@@ -50,17 +50,35 @@ gmn:E22_1_Building
     rdfs:comment "Simplified class that describes buildings and built structures (real estate). This is a specialized type of E22_Human-Made_Object used to represent physical structures such as houses, palazzi, towers, shops, warehouses, and other constructed buildings. Buildings can have different names over time, different owners, and different occupants. Instances of this class represent the physical structure itself, while ownership and occupation are modeled through events and relationships."@en ;
     dcterms:created "2025-10-16"^^xsd:date .
 
+# Class: E22.2 Moveable Property
+gmn:E22_2_Moveable_Property
+    a owl:Class ;
+    rdfs:subClassOf cidoc:E22_Human-Made_Object ;
+    rdfs:label "E22.2 Moveable Property"@en ;
+    rdfs:comment "Simplified class that describes moveable property and goods (non-real estate). This is a specialized type of E22_Human-Made_Object used to represent transportable objects such as boats, ships, merchandise, cargo, furniture, tools, and other moveable goods. Moveable property can have different names over time, different owners, and can change location. Instances of this class represent the physical object itself, while ownership and movement are modeled through events and relationships."@en ;
+    dcterms:created "2025-10-16"^^xsd:date .
+
+# Class: E31.1 Sales Contract
+gmn:E31_1_Sales_Contract
+    a owl:Class ;
+    rdfs:subClassOf cidoc:E31_Document ;
+    rdfs:label "E31.1 Sales Contract"@en ;
+    rdfs:comment "Specialized class that describes sales contract documents. This is a specialized type of E31_Document used to represent legal documents that record the sale and transfer of property (both real estate and moveable property) between parties. Sales contracts typically include information about the buyer, seller, property being transferred, price, date of transaction, and witnessing notaries. Instances of this class represent the physical or conceptual document itself, while the actual transfer of ownership is modeled through E8_Acquisition events that the document documents (via P70_documents)."@en ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:E8_Acquisition, cidoc:P70_documents .
+
 # Property: P1.1 has name
 gmn:P1_1_has_name 
     a owl:DatatypeProperty ;
     a rdf:Property ;
     rdfs:label "P1.1 has name"@en ;
-    rdfs:comment "Simplified property for expressing the name of a person. Represents the full CIDOC-CRM path: P1_is_identified_by > E41_Appellation > P2_has_type <http://vocab.getty.edu/page/aat/300458798> > P190_has_symbolic_content. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The appellation type is automatically set to AAT 300458798 (personal names)."@en ;
+    rdfs:comment "Simplified property for expressing the name of any entity in the database (persons, places, things, contracts, etc.). Represents the full CIDOC-CRM path: E1_CRM_Entity > P1_is_identified_by > E41_Appellation > P2_has_type <http://vocab.getty.edu/page/aat/300404650> > P190_has_symbolic_content. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The appellation type is automatically set to AAT 300404650 (names)."@en ;
     rdfs:subPropertyOf cidoc:P1_is_identified_by ;
-    rdfs:domain cidoc:E21_Person ;
+    rdfs:domain cidoc:E1_CRM_Entity ;
     rdfs:range cidoc:E62_String ;
     dcterms:created "2025-10-16"^^xsd:date ;
-    rdfs:seeAlso cidoc:P1_is_identified_by, cidoc:P190_has_symbolic_content, <http://vocab.getty.edu/page/aat/300458798> ;
+    dcterms:modified "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P1_is_identified_by, cidoc:P190_has_symbolic_content, <http://vocab.getty.edu/page/aat/300404650> ;
     owl:equivalentProperty [
         a owl:Restriction ;
         owl:onProperty cidoc:P1_is_identified_by ;
@@ -70,7 +88,124 @@ gmn:P1_1_has_name
             owl:hasValue cidoc:E62_String
         ]
     ] ;
-    gmn:hasImplicitType <http://vocab.getty.edu/page/aat/300458798> .
+    gmn:hasImplicitType <http://vocab.getty.edu/page/aat/300404650> .
+
+# Property: P102.1 has title
+gmn:P102_1_has_title 
+    a owl:DatatypeProperty ;
+    a rdf:Property ;
+    rdfs:label "P102.1 has title"@en ;
+    rdfs:comment "Simplified property for expressing the formal title of a document or work. Represents the full CIDOC-CRM path: E71_Human-Made_Thing > P102_has_title > E35_Title > P190_has_symbolic_content. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. Use this for the authoritative, formal title given by the creator of the document (e.g., the notarial title at the top of a contract), as distinct from modern cataloging names (use gmn:P1_1_has_name for those)."@en ;
+    rdfs:subPropertyOf cidoc:P102_has_title ;
+    rdfs:domain cidoc:E71_Human-Made_Thing ;
+    rdfs:range cidoc:E62_String ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P102_has_title, cidoc:P190_has_symbolic_content ;
+    owl:equivalentProperty [
+        a owl:Restriction ;
+        owl:onProperty cidoc:P102_has_title ;
+        owl:allValuesFrom [
+            a owl:Restriction ;
+            owl:onProperty cidoc:P190_has_symbolic_content ;
+            owl:hasValue cidoc:E62_String
+        ]
+    ] .
+
+# Property: P94i.1 was created by
+gmn:P94i_1_was_created_by
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P94i.1 was created by"@en ;
+    rdfs:comment "Simplified property for expressing the person responsible for creating a document, particularly the notary who recorded a contract. Represents the full CIDOC-CRM path: E31_Document > P94i_was_created_by > E65_Creation > P14_carried_out_by > E21_Person. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. This captures the authorship or recording responsibility for the document."@en ;
+    rdfs:subPropertyOf cidoc:P94i_was_created_by ;
+    rdfs:domain cidoc:E31_Document ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P94i_was_created_by, cidoc:P14_carried_out_by .
+
+# Property: P94i.2 has enactment date
+gmn:P94i_2_has_enactment_date
+    a owl:DatatypeProperty ;
+    a rdf:Property ;
+    rdfs:label "P94i.2 has enactment date"@en ;
+    rdfs:comment "Simplified property for expressing the date(s) when a document was enacted or created. Represents the full CIDOC-CRM path: E31_Document > P94i_was_created_by > E65_Creation > P4_has_time-span > E52_Time-Span > P82_at_some_time_within. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. This property can be used multiple times to capture the original enactment date as well as dates of subsequent addenda or modifications to the document."@en ;
+    rdfs:subPropertyOf cidoc:P94i_was_created_by ;
+    rdfs:domain cidoc:E31_Document ;
+    rdfs:range xsd:date ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P94i_was_created_by, cidoc:P4_has_time-span, cidoc:P82_at_some_time_within .
+
+# Property: P46i.1 is contained in
+gmn:P46i_1_is_contained_in
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P46i.1 is contained in"@en ;
+    rdfs:comment "Simplified property for expressing that a document forms part of a larger archival unit or collection. Use this to link individual contracts to the registers, filze (bundles of contracts tied with string), folders, or other archival containers in which they are physically housed. This represents the direct CIDOC-CRM property P46i_forms_part_of. The range can be any archival unit or collection, including registers (E31_Document subtype), filze, folders, or institutional archives. This captures the archival context and provenance of individual documents."@en ;
+    rdfs:subPropertyOf cidoc:P46i_forms_part_of ;
+    rdfs:domain cidoc:E31_Document ;
+    rdfs:range cidoc:E78_Curated_Holding ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P46i_forms_part_of .
+
+# Property: P70.1 documents seller
+gmn:P70_1_documents_seller
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.1 documents seller"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with the person named as the seller. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P23_transferred_title_from > E21_Person. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The seller is the party transferring ownership of the property being sold."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_1_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P23_transferred_title_from .
+
+# Property: P70.2 documents buyer
+gmn:P70_2_documents_buyer
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.2 documents buyer"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with the person named as the buyer. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P22_transferred_title_to > E21_Person. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The buyer is the party receiving ownership of the property being sold."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_1_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P22_transferred_title_to .
+
+# Property: P70.3 documents transfer of
+gmn:P70_3_documents_transfer_of
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.3 documents transfer of"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with the physical thing (property, object, or person) being transferred. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P24_transferred_title_of > E18_Physical_Thing. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The range includes buildings (gmn:E22_1_Building), moveable property (gmn:E22_2_Moveable_Property), and persons (E21_Person, for the historical documentation of enslaved persons or other instances where people were treated as property)."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_1_Sales_Contract ;
+    rdfs:range cidoc:E18_Physical_Thing ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P24_transferred_title_of .
+
+# Property: P70.4 documents seller's procurator
+gmn:P70_4_documents_sellers_procurator
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.4 documents seller's procurator"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with the person named as the procurator (legal representative) for the seller. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P14_carried_out_by > E21_Person (with implied role as seller's representative). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The procurator acted on behalf of the seller in the transaction."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_1_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by .
+
+# Property: P70.5 documents buyer's procurator
+gmn:P70_5_documents_buyers_procurator
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.5 documents buyer's procurator"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with the person named as the procurator (legal representative) for the buyer. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P14_carried_out_by > E21_Person (with implied role as buyer's representative). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The procurator acted on behalf of the buyer in the transaction."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_1_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by .
 
 # Property: P1.2 has name from source
 gmn:P1_2_has_name_from_source 
@@ -219,9 +354,9 @@ gmn:P22_1_has_owner
     a owl:ObjectProperty ;
     a rdf:Property ;
     rdfs:label "P22.1 has owner"@en ;
-    rdfs:comment "Simplified property for expressing ownership of a building by a person. Represents the full CIDOC-CRM path: E22_Human-Made_Object > P24i_changed_ownership_through > E8_Acquisition > P22_transferred_title_to > E21_Person. This property captures ownership relationships through acquisition events. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance."@en ;
+    rdfs:comment "Simplified property for expressing ownership of a building or moveable property by a person. Represents the full CIDOC-CRM path: E22_Human-Made_Object > P24i_changed_ownership_through > E8_Acquisition > P22_transferred_title_to > E21_Person. This property captures ownership relationships through acquisition events. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. Applies to both buildings (E22.1) and moveable property (E22.2)."@en ;
     rdfs:subPropertyOf cidoc:P24i_changed_ownership_through ;
-    rdfs:domain gmn:E22_1_Building ;
+    rdfs:domain cidoc:E22_Human-Made_Object ;
     rdfs:range cidoc:E21_Person ;
     dcterms:created "2025-10-16"^^xsd:date ;
     rdfs:seeAlso cidoc:P24i_changed_ownership_through, cidoc:P22_transferred_title_to .
@@ -270,16 +405,73 @@ gmn:TransformationNote
     Example transformation for gmn:P1_1_has_name:
     
     INPUT (shortcut):
-    <person> gmn:P1_1_has_name "Giovanni Battista" .
+    <entity> gmn:P1_1_has_name "San Giorgio" .
     
     OUTPUT (CIDOC-CRM compliant):
-    <person> cidoc:P1_is_identified_by <appellation1> .
+    <entity> cidoc:P1_is_identified_by <appellation1> .
     <appellation1> a cidoc:E41_Appellation ;
-                   cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300458798> ;
-                   cidoc:P190_has_symbolic_content "Giovanni Battista" .
+                   cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300404650> ;
+                   cidoc:P190_has_symbolic_content "San Giorgio" .
     
-    Note: The P2_has_type value (AAT 300458798 - personal names) is automatically 
-    applied during transformation as specified by gmn:hasImplicitType.
+    Note: The P2_has_type value (AAT 300404650 - names) is automatically 
+    applied during transformation as specified by gmn:hasImplicitType. This property 
+    now applies to any E1_CRM_Entity, not just E21_Person.
+    
+    Example transformation for gmn:P102_1_has_title:
+    
+    INPUT (shortcut):
+    <document> gmn:P102_1_has_title "Vendicio domus posita in Ianua"@la .
+    
+    OUTPUT (CIDOC-CRM compliant):
+    <document> cidoc:P102_has_title <title1> .
+    <title1> a cidoc:E35_Title ;
+             cidoc:P190_has_symbolic_content "Vendicio domus posita in Ianua"@la .
+    
+    Note: The gmn:P102_1_has_title property provides a simplified way to associate a document 
+    or work with its formal title. When transforming, an E35_Title entity is created and linked 
+    via P102_has_title. The title text is stored in P190_has_symbolic_content, preserving any 
+    language tags. This shortcut is particularly useful for capturing notarial titles at the 
+    top of contracts or other formal document titles without needing to explicitly model the 
+    E35_Title entity during data entry.
+    
+    Example transformation for gmn:P94i_1_was_created_by:
+    
+    INPUT (shortcut):
+    <document> gmn:P94i_1_was_created_by <http://example.com/notaries/antonio_de_credentia> .
+    
+    OUTPUT (CIDOC-CRM compliant):
+    <document> cidoc:P94i_was_created_by <creation1> .
+    <creation1> a cidoc:E65_Creation ;
+                cidoc:P14_carried_out_by <http://example.com/notaries/antonio_de_credentia> .
+    
+    Note: The gmn:P94i_1_was_created_by property provides a simplified way to associate a 
+    document with the person who created or recorded it (typically a notary for contracts). 
+    When transforming, an E65_Creation event is created and linked via P94i_was_created_by, 
+    with the person linked to the creation event via P14_carried_out_by. This properly models 
+    the document creation as an event while maintaining a simple shortcut for data entry.
+    
+    Example transformation for gmn:P94i_2_has_enactment_date:
+    
+    INPUT (shortcut with multiple dates):
+    <document> gmn:P94i_2_has_enactment_date "1427-01-15"^^xsd:date .
+    <document> gmn:P94i_2_has_enactment_date "1428-03-20"^^xsd:date .
+    
+    OUTPUT (CIDOC-CRM compliant):
+    <document> cidoc:P94i_was_created_by <creation1> .
+    <creation1> a cidoc:E65_Creation ;
+                cidoc:P4_has_time-span <timespan1> , <timespan2> .
+    <timespan1> a cidoc:E52_Time-Span ;
+                cidoc:P82_at_some_time_within "1427-01-15"^^xsd:date .
+    <timespan2> a cidoc:E52_Time-Span ;
+                cidoc:P82_at_some_time_within "1428-03-20"^^xsd:date .
+    
+    Note: The gmn:P94i_2_has_enactment_date property provides a simplified way to associate a 
+    document with the date(s) it was enacted or created. When transforming, an E65_Creation 
+    event is created (or reused if it already exists from P94i_1_was_created_by), and E52_Time-Span 
+    entities are created for each date and linked via P4_has_time-span. Multiple dates can be 
+    provided to capture the original enactment date and subsequent addenda dates. If both 
+    gmn:P94i_1_was_created_by and gmn:P94i_2_has_enactment_date are used, they share the same 
+    E65_Creation event, properly linking the notary, date(s), and document together.
     
     Example transformation for gmn:P1_2_has_name_from_source:
     
@@ -403,6 +595,113 @@ gmn:TransformationNote
     properties that apply to groups. This class provides semantic clarity that the group 
     represents a professional or occupational affiliation.
     
+    Example usage for gmn:E31_1_Sales_Contract:
+    
+    Using shortcut properties (simplified data entry):
+    <http://example.com/documents/contract_1427_01_15> a gmn:E31_1_Sales_Contract ;
+        gmn:P1_1_has_name "Sale of Palazzo in Genoa, January 15, 1427" ;
+        gmn:P102_1_has_title "Vendicio domus posita in Ianua"@la ;
+        gmn:P94i_1_was_created_by <http://example.com/notaries/antonio_de_credentia> ;
+        gmn:P94i_2_has_enactment_date "1427-01-15"^^xsd:date ;
+        gmn:P46i_1_is_contained_in <http://example.com/archives/notary_register_1427> ;
+        gmn:P70_1_documents_seller <http://example.com/persons/giovanni_spinola> ;
+        gmn:P70_2_documents_buyer <http://example.com/persons/luchino_doria> ;
+        gmn:P70_3_documents_transfer_of <http://example.com/buildings/palazzo_doria> ;
+        gmn:P70_4_documents_sellers_procurator <http://example.com/persons/bernardo_grimaldi> ;
+        gmn:P70_5_documents_buyers_procurator <http://example.com/persons/raffaele_cattaneo> ;
+        cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300027621> . # contracts (documents)
+    
+    <http://example.com/archives/notary_register_1427> a cidoc:E78_Curated_Holding ;
+        gmn:P1_1_has_name "Notarial Register of Antonio de Credentia, 1427" ;
+        cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300027168> ; # registers (lists)
+        cidoc:P55_has_current_location <http://example.com/institutions/archivio_di_stato_genova> .
+    
+    Full CIDOC-CRM structure (after transformation):
+    <http://example.com/documents/contract_1427_01_15> a gmn:E31_1_Sales_Contract ;
+        cidoc:P1_is_identified_by <http://example.com/documents/contract_1427_01_15/appellation/12345678> ;
+        cidoc:P102_has_title <http://example.com/titles/contract_title_1427> ;
+        cidoc:P94i_was_created_by <http://example.com/documents/contract_1427_01_15/creation> ;
+        cidoc:P46i_forms_part_of <http://example.com/archives/notary_register_1427> ;
+        cidoc:P70_documents <http://example.com/documents/contract_1427_01_15/acquisition> ;
+        cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300027621> ;
+        cidoc:P128_carries <http://example.com/texts/contract_text_1427> .
+    
+    <http://example.com/documents/contract_1427_01_15/appellation/12345678> a cidoc:E41_Appellation ;
+        cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300404650> ;
+        cidoc:P190_has_symbolic_content "Sale of Palazzo in Genoa, January 15, 1427" .
+    
+    <http://example.com/titles/contract_title_1427> a cidoc:E35_Title ;
+        cidoc:P190_has_symbolic_content "Vendicio domus posita in Ianua"@la .
+    
+    <http://example.com/documents/contract_1427_01_15/creation> a cidoc:E65_Creation ;
+        cidoc:P14_carried_out_by <http://example.com/notaries/antonio_de_credentia> ;
+        cidoc:P4_has_time-span <http://example.com/documents/contract_1427_01_15/timespan/12345678> .
+    
+    <http://example.com/documents/contract_1427_01_15/timespan/12345678> a cidoc:E52_Time-Span ;
+        cidoc:P82_at_some_time_within "1427-01-15"^^xsd:date .
+    
+    <http://example.com/documents/contract_1427_01_15/acquisition> a cidoc:E8_Acquisition ;
+        cidoc:P23_transferred_title_from <http://example.com/persons/giovanni_spinola> ;
+        cidoc:P22_transferred_title_to <http://example.com/persons/luchino_doria> ;
+        cidoc:P24_transferred_title_of <http://example.com/buildings/palazzo_doria> ;
+        cidoc:P14_carried_out_by <http://example.com/persons/bernardo_grimaldi> ,
+                                  <http://example.com/persons/raffaele_cattaneo> .
+    
+    Note: gmn:E31_1_Sales_Contract is a subclass of cidoc:E31_Document and inherits all 
+    properties applicable to documents. The contract document (E31.1) is linked to the acquisition 
+    event (E8) it documents via P70_documents. The shortcut properties gmn:P70_1_documents_seller, 
+    gmn:P70_2_documents_buyer, gmn:P70_3_documents_transfer_of, gmn:P70_4_documents_sellers_procurator, 
+    and gmn:P70_5_documents_buyers_procurator all contribute to creating the same E8_Acquisition event, 
+    properly modeling the complete sale transaction with principals, legal representatives, and the 
+    object being transferred.
+    
+    Full CIDOC-CRM structure (after transformation):
+    <http://example.com/documents/contract_1427_01_15> a gmn:E31_1_Sales_Contract ;
+        cidoc:P1_is_identified_by <http://example.com/documents/contract_1427_01_15/appellation/12345678> ;
+        cidoc:P102_has_title <http://example.com/titles/contract_title_1427> ;
+        cidoc:P94i_was_created_by <http://example.com/documents/contract_1427_01_15/creation> ;
+        cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300027621> ; # contracts (documents)
+        cidoc:P70_documents <http://example.com/events/acquisition_palazzo_doria_1427> ;
+        cidoc:P128_carries <http://example.com/texts/contract_text_1427> .
+    
+    <http://example.com/documents/contract_1427_01_15/appellation/12345678> a cidoc:E41_Appellation ;
+        cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300404650> ;
+        cidoc:P190_has_symbolic_content "Sale of Palazzo in Genoa, January 15, 1427" .
+    
+    <http://example.com/titles/contract_title_1427> a cidoc:E35_Title ;
+        cidoc:P190_has_symbolic_content "Vendicio domus posita in Ianua"@la .
+    
+    <http://example.com/documents/contract_1427_01_15/creation> a cidoc:E65_Creation ;
+        cidoc:P14_carried_out_by <http://example.com/notaries/antonio_de_credentia> ;
+        cidoc:P4_has_time-span <http://example.com/documents/contract_1427_01_15/timespan/12345678> .
+    
+    <http://example.com/documents/contract_1427_01_15/timespan/12345678> a cidoc:E52_Time-Span ;
+        cidoc:P82_at_some_time_within "1427-01-15"^^xsd:date .
+    
+    <http://example.com/events/acquisition_palazzo_doria_1427> a cidoc:E8_Acquisition ;
+        cidoc:P24_transferred_title_of <http://example.com/buildings/palazzo_doria> ;
+        cidoc:P23_transferred_title_from <http://example.com/persons/giovanni_spinola> ;
+        cidoc:P22_transferred_title_to <http://example.com/persons/luchino_doria> ;
+        cidoc:P4_has_time-span [
+            a cidoc:E52_Time-Span ;
+            cidoc:P82_at_some_time_within "1427-01-15"^^xsd:date
+        ] .
+    
+    Note: gmn:E31_1_Sales_Contract is a subclass of cidoc:E31_Document and inherits all 
+    properties applicable to documents. This class provides semantic clarity that the document 
+    represents a sales contract. The contract document (E31.1) is linked to the acquisition 
+    event (E8) it documents via P70_documents. The contract can have a name via P1, can be 
+    typed with AAT terms via P2, can reference the notary who created it via P94, and can 
+    carry the textual content via P128. Parties to the transaction (buyer/seller) are modeled 
+    on the E8_Acquisition event, not directly on the contract document.
+    
+    Important distinction: Use cidoc:P102_has_title for the formal, authoritative title given 
+    by the notary (typically appearing at the top of the contract document), and gmn:P1_1_has_name 
+    for modern descriptive names used for cataloging purposes. P102_has_title links to an 
+    E35_Title entity which carries the exact title text via P190_has_symbolic_content. This 
+    captures the semantic difference between the historical document's formal title and modern 
+    cataloging identifiers.
+    
     Example transformation for gmn:P11i_1_earliest_attestation_date:
     
     INPUT (shortcut):
@@ -493,6 +792,18 @@ gmn:TransformationNote
     properties applicable to human-made objects. This class provides semantic clarity that 
     the object represents a building or built structure.
     
+    Example usage for gmn:E22_2_Moveable_Property:
+    
+    <http://example.com/objects/galley_san_marco> a gmn:E22_2_Moveable_Property ;
+        gmn:P1_1_has_name "Galley San Marco" ;
+        cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300024062> ; # galley
+        gmn:P22_1_has_owner <http://example.com/person/giovanni_doria> .
+    
+    Note: gmn:E22_2_Moveable_Property is a subclass of cidoc:E22_Human-Made_Object and 
+    inherits all properties applicable to human-made objects. This class provides semantic 
+    clarity that the object represents moveable property (boats, merchandise, furniture, etc.) 
+    rather than immoveable real estate.
+    
     Example transformation for gmn:P22_1_has_owner:
     
     INPUT (shortcut):
@@ -505,8 +816,9 @@ gmn:TransformationNote
                    cidoc:P24_transferred_title_of <building1> .
     
     Note: When transforming gmn:P22_1_has_owner, an E8_Acquisition event is created. 
-    For time-specific ownership, date information should be added to the acquisition event 
-    via P4_has_time-span.
+    This property works for both buildings (gmn:E22_1_Building) and moveable property 
+    (gmn:E22_2_Moveable_Property). For time-specific ownership, date information should 
+    be added to the acquisition event via P4_has_time-span.
     
     Example transformation for gmn:P53_1_has_occupant:
     
@@ -536,3 +848,4 @@ gmn:TransformationNote
     spatial relationship. The symmetry means if Building A borders Building B, 
     the inverse is automatically implied.
     """@en .
+    
