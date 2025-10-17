@@ -120,6 +120,7 @@ gmn:P94i_1_was_created_by
     rdfs:subPropertyOf cidoc:P94i_was_created_by ;
     rdfs:domain cidoc:E31_Document ;
     rdfs:range cidoc:E21_Person ;
+    rdfs:seeAlso: <http://purl.org/dc/terms/creator>
     dcterms:created "2025-10-17"^^xsd:date ;
     rdfs:seeAlso cidoc:P94i_was_created_by, cidoc:P14_carried_out_by .
 
@@ -273,7 +274,7 @@ gmn:P1_4_has_loconym
     rdfs:range cidoc:E53_Place ;
     dcterms:created "2025-10-16"^^xsd:date ;
     rdfs:seeAlso cidoc:P1_is_identified_by, cidoc:P67_refers_to, <https://www.wikidata.org/wiki/Q17143070> ;
-    gmn:hasImplicitType <https://www.wikidata.org/wiki/Q17143070> .
+    gmn:hasImplicitType <s://www.wikidata.org/wiki/Q17143070> .
 
 # Property: P11i.1 earliest attestation date
 gmn:P11i_1_earliest_attestation_date
@@ -304,26 +305,26 @@ gmn:P11i_3_has_spouse
     a owl:ObjectProperty ;
     a rdf:Property ;
     rdfs:label "P11i.3 has spouse"@en ;
-    rdfs:comment "Simplified property for expressing a spousal relationship between two persons. Represents the full CIDOC-CRM path: E21_Person > P11i_participated_in > E5_Event > P2_has_type <http://vocab.getty.edu/page/aat/300055475> > P11_had_participant > E21_Person. This property captures marriage relationships through a marriage event. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The event type is automatically set to AAT 300055475 (marriages)."@en ;
+    rdfs:comment "Simplified property for expressing a spousal relationship between two persons. Represents the full CIDOC-CRM path: E21_Person > P11i_participated_in > E5_Event > P2_has_type <://vocab.getty.edu/page/aat/300055475> > P11_had_participant > E21_Person. This property captures marriage relationships through a marriage event. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The event type is automatically set to AAT 300055475 (marriages)."@en ;
     rdfs:subPropertyOf cidoc:P11i_participated_in ;
     rdfs:domain cidoc:E21_Person ;
     rdfs:range cidoc:E21_Person ;
     dcterms:created "2025-10-16"^^xsd:date ;
-    rdfs:seeAlso cidoc:P11i_participated_in, cidoc:P11_had_participant, <http://vocab.getty.edu/page/aat/300055475> ;
-    gmn:hasImplicitType <http://vocab.getty.edu/page/aat/300055475> .
+    rdfs:seeAlso cidoc:P11i_participated_in, cidoc:P11_had_participant, <://vocab.getty.edu/page/aat/300055475> ;
+    gmn:hasImplicitType <://vocab.getty.edu/page/aat/300055475> .
 
 # Property: P107i.1 has regional provenance
 gmn:P107i_1_has_regional_provenance
     a owl:ObjectProperty ;
     a rdf:Property ;
     rdfs:label "P107i.1 has regional provenance"@en ;
-    rdfs:comment "Simplified property associating a person with a regional provenance attributed to that person. Represents the full CIDOC-CRM path: E21_Person > P107i_is_current_or_former_member_of > E74_Group > P2_has_type <http://vocab.getty.edu/page/aat/300055490>. This captures regional, geographic, or cultural group membership. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The group type is automatically set to AAT 300055490 (regions (geographic)). The range is restricted to gmn:E74_1_Regional_Provenance groups."@en ;
+    rdfs:comment "Simplified property associating a person with a regional provenance attributed to that person. Represents the full CIDOC-CRM path: E21_Person > P107i_is_current_or_former_member_of > E74_Group > P2_has_type <://vocab.getty.edu/page/aat/300055490>. This captures regional, geographic, or cultural group membership. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The group type is automatically set to AAT 300055490 (regions (geographic)). The range is restricted to gmn:E74_1_Regional_Provenance groups."@en ;
     rdfs:subPropertyOf cidoc:P107i_is_current_or_former_member_of ;
     rdfs:domain cidoc:E21_Person ;
     rdfs:range gmn:E74_1_Regional_Provenance ;
     dcterms:created "2025-10-16"^^xsd:date ;
-    rdfs:seeAlso cidoc:P107i_is_current_or_former_member_of, <http://vocab.getty.edu/page/aat/300055490> ;
-    gmn:hasImplicitType <http://vocab.getty.edu/page/aat/300055490> .
+    rdfs:seeAlso cidoc:P107i_is_current_or_former_member_of, <://vocab.getty.edu/page/aat/300055490> ;
+    gmn:hasImplicitType <://vocab.getty.edu/page/aat/300055490> .
 
 # Property: P107i.2 has social category
 gmn:P107i_2_has_social_category
@@ -410,7 +411,7 @@ gmn:TransformationNote
     OUTPUT (CIDOC-CRM compliant):
     <entity> cidoc:P1_is_identified_by <appellation1> .
     <appellation1> a cidoc:E41_Appellation ;
-                   cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300404650> ;
+                   cidoc:P2_has_type <://vocab.getty.edu/page/aat/300404650> ;
                    cidoc:P190_has_symbolic_content "San Giorgio" .
     
     Note: The P2_has_type value (AAT 300404650 - names) is automatically 
@@ -437,7 +438,7 @@ gmn:TransformationNote
     Example transformation for gmn:P94i_1_was_created_by:
     
     INPUT (shortcut):
-    <document> gmn:P94i_1_was_created_by <http://example.com/notaries/antonio_de_credentia> .
+    <document> gmn:P94i_1_was_created_by <://example.com/notaries/antonio_de_credentia> .
     
     OUTPUT (CIDOC-CRM compliant):
     <document> cidoc:P94i_was_created_by <creation1> .
