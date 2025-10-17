@@ -10,13 +10,37 @@
 <http://www.genoesemerchantnetworks.com/ontology> 
     a owl:Ontology ;
     rdfs:label "Genoese Merchant Networks CIDOC-CRM Extension"@en ;
-    rdfs:comment "Custom vocabulary extending CIDOC-CRM for the Genoese Merchant Networks project. Provides simplified shortcut properties that represent more complex CIDOC-CRM paths."@en ;
+    rdfs:comment "Custom vocabulary extending CIDOC-CRM for the Genoese Merchant Networks project. Provides simplified shortcut properties and classes that represent more complex CIDOC-CRM paths."@en ;
     dcterms:title "GMN CIDOC-CRM Extension Ontology"@en ;
     dcterms:creator "Genoese Merchant Networks Project" ;
     dcterms:created "2025-10-16"^^xsd:date ;
     dcterms:modified "2025-10-16"^^xsd:date ;
     owl:versionInfo "1.0" ;
     owl:imports <http://www.cidoc-crm.org/cidoc-crm/> .
+
+# Class: E74.1 Regional Provenance
+gmn:E74_1_Regional_Provenance
+    a owl:Class ;
+    rdfs:subClassOf cidoc:E74_Group ;
+    rdfs:label "E74.1 Regional Provenance"@en ;
+    rdfs:comment "Simplified class that describes the regional provenance of a person in terms of a type/place value pair. This is a specialized type of E74_Group used to represent regional or geographic origins, citizenship, or cultural affiliations. Instances of this class typically combine a group name (via P1 properties) with a place reference (via P74_has_current_or_former_residence) to capture statements like 'citizens of Genoa' or 'Genoese merchants'."@en ;
+    dcterms:created "2025-10-16"^^xsd:date .
+
+# Class: E74.2 Social Category
+gmn:E74_2_Social_Category
+    a owl:Class ;
+    rdfs:subClassOf cidoc:E74_Group ;
+    rdfs:label "E74.2 Social Category"@en ;
+    rdfs:comment "Simplified class that describes the social category of a person in terms of a type/place value pair. This is a specialized type of E74_Group used to represent social classes, occupational groups, professional associations, or other social categorizations. Instances of this class capture social affiliations such as 'merchants', 'nobility', 'guild members', etc."@en ;
+    dcterms:created "2025-10-16"^^xsd:date .
+
+# Class: E74.3 Occupational Group
+gmn:E74_3_Occupational_Group
+    a owl:Class ;
+    rdfs:subClassOf cidoc:E74_Group ;
+    rdfs:label "E74.3 Occupational Group"@en ;
+    rdfs:comment "Simplified class that describes professional or occupational groups. This is a specialized type of E74_Group used to represent professions, trades, or occupational categories. Instances of this class capture professional affiliations such as 'notaries', 'merchants', 'bankers', 'ship captains', etc. Membership in these groups indicates the person practiced or was associated with that profession."@en ;
+    dcterms:created "2025-10-16"^^xsd:date .
 
 # Property: P1.1 has name
 gmn:P1_1_has_name 
@@ -108,11 +132,85 @@ gmn:P1_4_has_loconym
     rdfs:seeAlso cidoc:P1_is_identified_by, cidoc:P67_refers_to, <https://www.wikidata.org/wiki/Q17143070> ;
     gmn:hasImplicitType <https://www.wikidata.org/wiki/Q17143070> .
 
+# Property: P11i.1 earliest attestation date
+gmn:P11i_1_earliest_attestation_date
+    a owl:DatatypeProperty ;
+    a rdf:Property ;
+    rdfs:label "P11i.1 earliest attestation date"@en ;
+    rdfs:comment "Simplified property for expressing the earliest date at which a person is documented or attested to have been alive in historical sources. Represents the full CIDOC-CRM path: E21_Person > P11i_participated_in > E5_Event > P4_has_time-span > E52_Time-Span > P82a_begin_of_the_begin. This property captures the earliest known documentary evidence of a person's existence. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance."@en ;
+    rdfs:subPropertyOf cidoc:P11i_participated_in ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range xsd:date ;
+    dcterms:created "2025-10-16"^^xsd:date ;
+    rdfs:seeAlso cidoc:P11i_participated_in, cidoc:P4_has_time-span, cidoc:P82a_begin_of_the_begin .
+
+# Property: P11i.2 latest attestation date
+gmn:P11i_2_latest_attestation_date
+    a owl:DatatypeProperty ;
+    a rdf:Property ;
+    rdfs:label "P11i.2 latest attestation date"@en ;
+    rdfs:comment "Simplified property for expressing the latest date at which a person is documented or attested to have been alive in historical sources. Represents the full CIDOC-CRM path: E21_Person > P11i_participated_in > E5_Event > P4_has_time-span > E52_Time-Span > P82b_end_of_the_end. This property captures the last known documentary evidence of a person's existence. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance."@en ;
+    rdfs:subPropertyOf cidoc:P11i_participated_in ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range xsd:date ;
+    dcterms:created "2025-10-16"^^xsd:date ;
+    rdfs:seeAlso cidoc:P11i_participated_in, cidoc:P4_has_time-span, cidoc:P82b_end_of_the_end .
+
+# Property: P11i.3 has spouse
+gmn:P11i_3_has_spouse
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P11i.3 has spouse"@en ;
+    rdfs:comment "Simplified property for expressing a spousal relationship between two persons. Represents the full CIDOC-CRM path: E21_Person > P11i_participated_in > E5_Event > P2_has_type <http://vocab.getty.edu/page/aat/300055475> > P11_had_participant > E21_Person. This property captures marriage relationships through a marriage event. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The event type is automatically set to AAT 300055475 (marriages)."@en ;
+    rdfs:subPropertyOf cidoc:P11i_participated_in ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-16"^^xsd:date ;
+    rdfs:seeAlso cidoc:P11i_participated_in, cidoc:P11_had_participant, <http://vocab.getty.edu/page/aat/300055475> ;
+    gmn:hasImplicitType <http://vocab.getty.edu/page/aat/300055475> .
+
+# Property: P107i.1 has regional provenance
+gmn:P107i_1_has_regional_provenance
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P107i.1 has regional provenance"@en ;
+    rdfs:comment "Simplified property associating a person with a regional provenance attributed to that person. Represents the full CIDOC-CRM path: E21_Person > P107i_is_current_or_former_member_of > E74_Group > P2_has_type <http://vocab.getty.edu/page/aat/300055490>. This captures regional, geographic, or cultural group membership. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The group type is automatically set to AAT 300055490 (regions (geographic)). The range is restricted to gmn:E74_1_Regional_Provenance groups."@en ;
+    rdfs:subPropertyOf cidoc:P107i_is_current_or_former_member_of ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range gmn:E74_1_Regional_Provenance ;
+    dcterms:created "2025-10-16"^^xsd:date ;
+    rdfs:seeAlso cidoc:P107i_is_current_or_former_member_of, <http://vocab.getty.edu/page/aat/300055490> ;
+    gmn:hasImplicitType <http://vocab.getty.edu/page/aat/300055490> .
+
+# Property: P107i.2 has social category
+gmn:P107i_2_has_social_category
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P107i.2 has social category"@en ;
+    rdfs:comment "Simplified property associating a person with a social category attributed to that person. Represents the CIDOC-CRM path: E21_Person > P107i_is_current_or_former_member_of > E74_Group. This captures social class, occupational groups, professional associations, or other social categorizations. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The range is restricted to gmn:E74_2_Social_Category groups."@en ;
+    rdfs:subPropertyOf cidoc:P107i_is_current_or_former_member_of ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range gmn:E74_2_Social_Category ;
+    dcterms:created "2025-10-16"^^xsd:date ;
+    rdfs:seeAlso cidoc:P107i_is_current_or_former_member_of .
+
+# Property: P107i.3 has occupation
+gmn:P107i_3_has_occupation
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P107i.3 has occupation"@en ;
+    rdfs:comment "Simplified property associating a person with an occupational or professional group. Represents the CIDOC-CRM path: E21_Person > P107i_is_current_or_former_member_of > E74_Group. This captures professional affiliations and occupations by indicating membership in professional groups (notaries, merchants, bankers, etc.). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The range is restricted to gmn:E74_3_Occupational_Group groups."@en ;
+    rdfs:subPropertyOf cidoc:P107i_is_current_or_former_member_of ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range gmn:E74_3_Occupational_Group ;
+    dcterms:created "2025-10-16"^^xsd:date ;
+    rdfs:seeAlso cidoc:P107i_is_current_or_former_member_of .
+
 # Custom property for implicit typing
 gmn:hasImplicitType
     a owl:AnnotationProperty ;
     rdfs:label "has implicit type"@en ;
-    rdfs:comment "Indicates a type that should be automatically assigned when transforming shortcut properties to full CIDOC-CRM structure."@en .
+    rdfs:comment "Indicates a type that should be automatically assigned to the target entity when transforming shortcut properties to full CIDOC-CRM structure. For example, when a property has gmn:hasImplicitType pointing to an AAT URI, that URI should be used as the P2_has_type value on the intermediate entity (E41_Appellation, E33_Linguistic_Object, etc.) created during transformation."@en .
 
 # Documentation note
 gmn:TransformationNote
@@ -194,4 +292,148 @@ gmn:TransformationNote
     the place via P67_refers_to. The appellation type is automatically set to Wikidata Q17143070 
     (loconym) as specified by gmn:hasImplicitType. If a person already has name appellations, 
     this should ideally be integrated with or linked to the existing name structure.
+    
+    Example transformation for gmn:P107i_1_has_regional_provenance:
+    
+    INPUT (shortcut):
+    <person> gmn:P107i_1_has_regional_provenance <http://example.com/groups/republic_of_genoa> .
+    
+    OUTPUT (CIDOC-CRM compliant):
+    <person> cidoc:P107i_is_current_or_former_member_of <http://example.com/groups/republic_of_genoa> .
+    <http://example.com/groups/republic_of_genoa> a cidoc:E74_Group ;
+                                                   cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300055490> .
+    
+    Note: When transforming gmn:P107i_1_has_regional_provenance, the group is typed with 
+    AAT 300055490 (regions (geographic)) as specified by gmn:hasImplicitType. If the target 
+    group already exists with a different type, the regional type should be added rather than 
+    replacing existing types.
+    
+    Example transformation for gmn:P107i_2_has_social_category:
+    
+    INPUT (shortcut):
+    <person> gmn:P107i_2_has_social_category <http://example.com/groups/merchants> .
+    
+    OUTPUT (CIDOC-CRM compliant):
+    <person> cidoc:P107i_is_current_or_former_member_of <http://example.com/groups/merchants> .
+    <http://example.com/groups/merchants> a cidoc:E74_Group .
+    
+    Note: gmn:P107i_2_has_social_category transforms directly to cidoc:P107i_is_current_or_former_member_of 
+    without adding an implicit type, allowing flexibility in how social categories are typed. 
+    Social groups can be typed with appropriate AAT terms (e.g., AAT 300025520 for merchants, 
+    AAT 300151202 for nobility) as separate assertions.
+    
+    Example usage for gmn:E74_1_Regional_Provenance:
+    
+    <http://example.com/groups/citizens_of_genoa> a gmn:E74_1_Regional_Provenance ;
+        gmn:P1_1_has_name "Citizens of Genoa" ;
+        cidoc:P74_has_current_or_former_residence <http://example.com/places/genoa> .
+    
+    <person1> cidoc:P107i_is_current_or_former_member_of <http://example.com/groups/citizens_of_genoa> .
+    
+    Note: gmn:E74_1_Regional_Provenance is a subclass of cidoc:E74_Group and inherits all 
+    properties that apply to groups, including P1, P3, and P74. This class provides semantic 
+    clarity that the group represents a regional or geographic affiliation.
+    
+    Example usage for gmn:E74_2_Social_Category:
+    
+    <http://example.com/groups/merchants> a gmn:E74_2_Social_Category ;
+        gmn:P1_1_has_name "Merchants" ;
+        cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300025520> . # merchants (people)
+    
+    <person1> gmn:P107i_2_has_social_category <http://example.com/groups/merchants> .
+    
+    Note: gmn:E74_2_Social_Category is a subclass of cidoc:E74_Group and inherits all 
+    properties that apply to groups. This class provides semantic clarity that the group 
+    represents a social or occupational categorization rather than geographic or kinship groups.
+    
+    Example usage for gmn:E74_3_Occupational_Group:
+    
+    <http://example.com/groups/notaries> a gmn:E74_3_Occupational_Group ;
+        gmn:P1_1_has_name "Notaries" ;
+        cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300025066> . # notaries (people)
+    
+    <person1> gmn:P107i_3_has_occupation <http://example.com/groups/notaries> .
+    
+    Note: gmn:E74_3_Occupational_Group is a subclass of cidoc:E74_Group and inherits all 
+    properties that apply to groups. This class provides semantic clarity that the group 
+    represents a professional or occupational affiliation.
+    
+    Example transformation for gmn:P11i_1_earliest_attestation_date:
+    
+    INPUT (shortcut):
+    <person> gmn:P11i_1_earliest_attestation_date "1427-01-01"^^xsd:date .
+    
+    OUTPUT (CIDOC-CRM compliant):
+    <person> cidoc:P11i_participated_in <event1> .
+    <event1> a cidoc:E5_Event ;
+             cidoc:P4_has_time-span <timespan1> .
+    <timespan1> a cidoc:E52_Time-Span ;
+                cidoc:P82a_begin_of_the_begin "1427-01-01"^^xsd:date .
+    
+    Note: When transforming gmn:P11i_1_earliest_attestation_date, an E5_Event and E52_Time-Span 
+    are created to properly model the attestation. The event represents the earliest documented 
+    occurrence of the person in historical sources. This captures both the date and the fact 
+    that it represents participation in a datable event.
+    
+    Example transformation for gmn:P11i_2_latest_attestation_date:
+    
+    INPUT (shortcut):
+    <person> gmn:P11i_2_latest_attestation_date "1450-12-31"^^xsd:date .
+    
+    OUTPUT (CIDOC-CRM compliant):
+    <person> cidoc:P11i_participated_in <event2> .
+    <event2> a cidoc:E5_Event ;
+             cidoc:P4_has_time-span <timespan2> .
+    <timespan2> a cidoc:E52_Time-Span ;
+                cidoc:P82b_end_of_the_end "1450-12-31"^^xsd:date .
+    
+    Note: When transforming gmn:P11i_2_latest_attestation_date, an E5_Event and E52_Time-Span 
+    are created to properly model the attestation. The event represents the latest documented 
+    occurrence of the person in historical sources, using P82b_end_of_the_end to indicate 
+    this is the end point of the documented timespan.
+    
+    Example transformation for gmn:P96_1_has_mother:
+    
+    INPUT (shortcut):
+    <person1> gmn:P96_1_has_mother <person2> .
+    
+    OUTPUT (CIDOC-CRM compliant):
+    <person1> cidoc:P98i_was_born <birth1> .
+    <birth1> a cidoc:E67_Birth ;
+             cidoc:P96_by_mother <person2> .
+    
+    Note: When transforming gmn:P96_1_has_mother, an E67_Birth event is created to properly 
+    model the biological parent relationship. If the person already has a birth event, 
+    the mother should be added to that existing event rather than creating a duplicate.
+    
+    Example transformation for gmn:P97_1_has_father:
+    
+    INPUT (shortcut):
+    <person1> gmn:P97_1_has_father <person3> .
+    
+    OUTPUT (CIDOC-CRM compliant):
+    <person1> cidoc:P98i_was_born <birth1> .
+    <birth1> a cidoc:E67_Birth ;
+             cidoc:P97_from_father <person3> .
+    
+    Note: When transforming gmn:P97_1_has_father, an E67_Birth event is created to properly 
+    model the biological parent relationship. If the person already has a birth event, 
+    the father should be added to that existing event rather than creating a duplicate.
+    Both mother and father can be added to the same birth event.
+    
+    Example transformation for gmn:P11i_3_has_spouse:
+    
+    INPUT (shortcut):
+    <person1> gmn:P11i_3_has_spouse <person2> .
+    
+    OUTPUT (CIDOC-CRM compliant):
+    <person1> cidoc:P11i_participated_in <marriage1> .
+    <marriage1> a cidoc:E5_Event ;
+                cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300055475> ;
+                cidoc:P11_had_participant <person1> , <person2> .
+    
+    Note: When transforming gmn:P11i_3_has_spouse, an E5_Event is created and typed as a 
+    marriage (AAT 300055475). Both spouses are added as participants via P11_had_participant. 
+    The marriage event can later be enriched with dates, places, and other information. 
+    If modeling multiple marriages, separate events should be created for each.
     """@en .
