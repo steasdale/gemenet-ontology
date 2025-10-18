@@ -15,8 +15,46 @@
     dcterms:creator "Genoese Merchant Networks Project" ;
     dcterms:created "2025-10-16"^^xsd:date ;
     dcterms:modified "2025-10-17"^^xsd:date ;
-    owl:versionInfo "1.1" ;
+    owl:versionInfo "1.3" ;
     owl:imports <http://www.cidoc-crm.org/cidoc-crm/> .
+
+#######################
+# Classes (Alphabetical)
+#######################
+
+# Class: E22.1 Building
+gmn:E22_1_Building
+    a owl:Class ;
+    rdfs:subClassOf cidoc:E22_Human-Made_Object ;
+    rdfs:label "E22.1 Building"@en ;
+    rdfs:comment "Simplified class that describes buildings and built structures (real estate). This is a specialized type of E22_Human-Made_Object used to represent physical structures such as houses, palazzi, towers, shops, warehouses, and other constructed buildings. Buildings can have different names over time, different owners, and different occupants. Instances of this class represent the physical structure itself, while ownership and occupation are modeled through events and relationships."@en ;
+    dcterms:created "2025-10-16"^^xsd:date .
+
+# Class: E22.2 Moveable Property
+gmn:E22_2_Moveable_Property
+    a owl:Class ;
+    rdfs:subClassOf cidoc:E22_Human-Made_Object ;
+    rdfs:label "E22.2 Moveable Property"@en ;
+    rdfs:comment "Simplified class that describes moveable property and goods (non-real estate). This is a specialized type of E22_Human-Made_Object used to represent transportable objects such as boats, ships, merchandise, cargo, furniture, tools, and other moveable goods. Moveable property can have different names over time, different owners, and can change location. Instances of this class represent the physical object itself, while ownership and movement are modeled through events and relationships."@en ;
+    dcterms:created "2025-10-16"^^xsd:date .
+
+# Class: E31.1 Contract
+gmn:E31_1_Contract
+    a owl:Class ;
+    rdfs:subClassOf cidoc:E31_Document ;
+    rdfs:label "E31.1 Contract"@en ;
+    rdfs:comment "General class that describes notarial contract documents. This is a specialized type of E31_Document used to represent legal documents recorded by notaries that formalize agreements, transactions, and legal acts between parties. Contracts are the primary documentary evidence for social, economic, and legal relationships in medieval and early modern societies. Instances of this class represent the physical or conceptual document itself, while the actual events documented (acquisitions, agreements, etc.) are modeled through appropriate event classes that the document documents (via P70_documents). This serves as a parent class for more specific contract types."@en ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:E31_Document, cidoc:P70_documents .
+
+# Class: E31.2 Sales Contract
+gmn:E31_2_Sales_Contract
+    a owl:Class ;
+    rdfs:subClassOf gmn:E31_1_Contract ;
+    rdfs:label "E31.2 Sales Contract"@en ;
+    rdfs:comment "Specialized class that describes sales contract documents. This is a specialized type of gmn:E31_1_Contract used to represent legal documents that record the sale and transfer of property (both real estate and moveable property) between parties. Sales contracts typically include information about the buyer, seller, property being transferred, price, date of transaction, and witnessing notaries. Instances of this class represent the physical or conceptual document itself, while the actual transfer of ownership is modeled through E8_Acquisition events that the document documents (via P70_documents)."@en ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso gmn:E31_1_Contract, cidoc:E8_Acquisition, cidoc:P70_documents .
 
 # Class: E74.1 Regional Provenance
 gmn:E74_1_Regional_Provenance
@@ -42,30 +80,49 @@ gmn:E74_3_Occupational_Group
     rdfs:comment "Simplified class that describes professional or occupational groups. This is a specialized type of E74_Group used to represent professions, trades, or occupational categories. Instances of this class capture professional affiliations such as 'notaries', 'merchants', 'bankers', 'ship captains', etc. Membership in these groups indicates the person practiced or was associated with that profession."@en ;
     dcterms:created "2025-10-16"^^xsd:date .
 
-# Class: E22.1 Building
-gmn:E22_1_Building
-    a owl:Class ;
-    rdfs:subClassOf cidoc:E22_Human-Made_Object ;
-    rdfs:label "E22.1 Building"@en ;
-    rdfs:comment "Simplified class that describes buildings and built structures (real estate). This is a specialized type of E22_Human-Made_Object used to represent physical structures such as houses, palazzi, towers, shops, warehouses, and other constructed buildings. Buildings can have different names over time, different owners, and different occupants. Instances of this class represent the physical structure itself, while ownership and occupation are modeled through events and relationships."@en ;
-    dcterms:created "2025-10-16"^^xsd:date .
+##########################
+# Properties (Alphabetical)
+##########################
 
-# Class: E22.2 Moveable Property
-gmn:E22_2_Moveable_Property
-    a owl:Class ;
-    rdfs:subClassOf cidoc:E22_Human-Made_Object ;
-    rdfs:label "E22.2 Moveable Property"@en ;
-    rdfs:comment "Simplified class that describes moveable property and goods (non-real estate). This is a specialized type of E22_Human-Made_Object used to represent transportable objects such as boats, ships, merchandise, cargo, furniture, tools, and other moveable goods. Moveable property can have different names over time, different owners, and can change location. Instances of this class represent the physical object itself, while ownership and movement are modeled through events and relationships."@en ;
-    dcterms:created "2025-10-16"^^xsd:date .
+# Property: has payment provided by
+gmn:has_payment_provided_by
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "has payment provided by"@en ;
+    rdfs:comment "Direct relationship linking a person (buyer) to another person (payment provider) who supplies the funds for their purchase. This property provides a simple semantic link between buyers and those who financially support their acquisitions. When used in the context of sales contracts, this relationship is documented within the contract and elaborated through E7_Activity nodes in the acquisition event structure. This property enables Omeka-S annotations to directly connect buyers with their payment providers."@en ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date .
 
-# Class: E31.1 Sales Contract
-gmn:E31_1_Sales_Contract
-    a owl:Class ;
-    rdfs:subClassOf cidoc:E31_Document ;
-    rdfs:label "E31.1 Sales Contract"@en ;
-    rdfs:comment "Specialized class that describes sales contract documents. This is a specialized type of E31_Document used to represent legal documents that record the sale and transfer of property (both real estate and moveable property) between parties. Sales contracts typically include information about the buyer, seller, property being transferred, price, date of transaction, and witnessing notaries. Instances of this class represent the physical or conceptual document itself, while the actual transfer of ownership is modeled through E8_Acquisition events that the document documents (via P70_documents)."@en ;
-    dcterms:created "2025-10-17"^^xsd:date ;
-    rdfs:seeAlso cidoc:E8_Acquisition, cidoc:P70_documents .
+# Property: has payment received by
+gmn:has_payment_received_by
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "has payment received by"@en ;
+    rdfs:comment "Direct relationship linking a person (seller) to another person (payment recipient) who receives the funds from their sale. This property provides a simple semantic link between sellers and those who collect payment on their behalf. When used in the context of sales contracts, this relationship is documented within the contract and elaborated through E7_Activity nodes in the acquisition event structure. This property enables Omeka-S annotations to directly connect sellers with their payment recipients."@en ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date .
+
+# Property: is guaranteed by
+gmn:is_guaranteed_by
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "is guaranteed by"@en ;
+    rdfs:comment "Direct relationship linking a person (principal) to another person (guarantor) who provides security for their obligations in a transaction. This property provides a simple semantic link between principals and their guarantors. When used in the context of sales contracts, this relationship is documented within the contract and elaborated through E7_Activity nodes in the acquisition event structure. This property enables Omeka-S annotations to directly connect principals with their guarantors."@en ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date .
+
+# Property: is represented by
+gmn:is_represented_by
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "is represented by"@en ;
+    rdfs:comment "Direct relationship linking a person (principal) to another person (procurator) who acts as their legal representative. This property provides a simple semantic link between principals and their agents. When used in the context of sales contracts, this relationship is documented within the contract and elaborated through E7_Activity nodes in the acquisition event structure. This property enables Omeka-S annotations (procurations) to directly connect principals with their representatives."@en ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date .
 
 # Property: P1.1 has name
 gmn:P1_1_has_name 
@@ -90,295 +147,6 @@ gmn:P1_1_has_name
     ] ;
     gmn:hasImplicitType <http://vocab.getty.edu/page/aat/300404650> .
 
-# Property: P102.1 has title
-gmn:P102_1_has_title 
-    a owl:DatatypeProperty ;
-    a rdf:Property ;
-    rdfs:label "P102.1 has title"@en ;
-    rdfs:comment "Simplified property for expressing the formal title of a document or work. Represents the full CIDOC-CRM path: E71_Human-Made_Thing > P102_has_title > E35_Title > P190_has_symbolic_content. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. Use this for the authoritative, formal title given by the creator of the document (e.g., the notarial title at the top of a contract), as distinct from modern cataloging names (use gmn:P1_1_has_name for those)."@en ;
-    rdfs:subPropertyOf cidoc:P102_has_title ;
-    rdfs:domain cidoc:E71_Human-Made_Thing ;
-    rdfs:range cidoc:E62_String ;
-    dcterms:created "2025-10-17"^^xsd:date ;
-    rdfs:seeAlso cidoc:P102_has_title, cidoc:P190_has_symbolic_content ;
-    owl:equivalentProperty [
-        a owl:Restriction ;
-        owl:onProperty cidoc:P102_has_title ;
-        owl:allValuesFrom [
-            a owl:Restriction ;
-            owl:onProperty cidoc:P190_has_symbolic_content ;
-            owl:hasValue cidoc:E62_String
-        ]
-    ] .
-
-# Property: P94i.1 was created by
-gmn:P94i_1_was_created_by
-    a owl:ObjectProperty ;
-    a rdf:Property ;
-    rdfs:label "P94i.1 was created by"@en ;
-    rdfs:comment "Simplified property for expressing the person responsible for creating a document, particularly the notary who recorded a contract. Represents the full CIDOC-CRM path: E31_Document > P94i_was_created_by > E65_Creation > P14_carried_out_by > E21_Person. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. This captures the authorship or recording responsibility for the document."@en ;
-    rdfs:subPropertyOf cidoc:P94i_was_created_by ;
-    rdfs:domain cidoc:E31_Document ;
-    rdfs:range cidoc:E21_Person ;
-    dcterms:created "2025-10-17"^^xsd:date ;
-    rdfs:seeAlso cidoc:P94i_was_created_by, cidoc:P14_carried_out_by .
-
-# Property: P94i.2 has enactment date
-gmn:P94i_2_has_enactment_date
-    a owl:DatatypeProperty ;
-    a rdf:Property ;
-    rdfs:label "P94i.2 has enactment date"@en ;
-    rdfs:comment "Simplified property for expressing the date(s) when a document was enacted or created. Represents the full CIDOC-CRM path: E31_Document > P94i_was_created_by > E65_Creation > P4_has_time-span > E52_Time-Span > P82_at_some_time_within. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. This property can be used multiple times to capture the original enactment date as well as dates of subsequent addenda or modifications to the document."@en ;
-    rdfs:subPropertyOf cidoc:P94i_was_created_by ;
-    rdfs:domain cidoc:E31_Document ;
-    rdfs:range xsd:date ;
-    dcterms:created "2025-10-17"^^xsd:date ;
-    rdfs:seeAlso cidoc:P94i_was_created_by, cidoc:P4_has_time-span, cidoc:P82_at_some_time_within .
-
-# Property: P46i.1 is contained in
-gmn:P46i_1_is_contained_in
-    a owl:ObjectProperty ;
-    a rdf:Property ;
-    rdfs:label "P46i.1 is contained in"@en ;
-    rdfs:comment "Simplified property for expressing that a document forms part of a larger archival unit or collection. Use this to link individual contracts to the registers, filze (bundles of contracts tied with string), folders, or other archival containers in which they are physically housed. This represents the direct CIDOC-CRM property P46i_forms_part_of. The range can be any archival unit or collection, including registers (E31_Document subtype), filze, folders, or institutional archives. This captures the archival context and provenance of individual documents."@en ;
-    rdfs:subPropertyOf cidoc:P46i_forms_part_of ;
-    rdfs:domain cidoc:E31_Document ;
-    rdfs:range cidoc:E78_Curated_Holding ;
-    dcterms:created "2025-10-17"^^xsd:date ;
-    rdfs:seeAlso cidoc:P46i_forms_part_of .
-
-# Property: P70.1 documents seller
-gmn:P70_1_documents_seller
-    a owl:ObjectProperty ;
-    a rdf:Property ;
-    rdfs:label "P70.1 documents seller"@en ;
-    rdfs:comment "Simplified property for associating a sales contract with the person named as the seller. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P23_transferred_title_from > E21_Person. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The seller is the party transferring ownership of the property being sold."@en ;
-    rdfs:subPropertyOf cidoc:P70_documents ;
-    rdfs:domain gmn:E31_1_Sales_Contract ;
-    rdfs:range cidoc:E21_Person ;
-    dcterms:created "2025-10-17"^^xsd:date ;
-    rdfs:seeAlso cidoc:P70_documents, cidoc:P23_transferred_title_from .
-
-# Property: P70.2 documents buyer
-gmn:P70_2_documents_buyer
-    a owl:ObjectProperty ;
-    a rdf:Property ;
-    rdfs:label "P70.2 documents buyer"@en ;
-    rdfs:comment "Simplified property for associating a sales contract with the person named as the buyer. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P22_transferred_title_to > E21_Person. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The buyer is the party receiving ownership of the property being sold."@en ;
-    rdfs:subPropertyOf cidoc:P70_documents ;
-    rdfs:domain gmn:E31_1_Sales_Contract ;
-    rdfs:range cidoc:E21_Person ;
-    dcterms:created "2025-10-17"^^xsd:date ;
-    rdfs:seeAlso cidoc:P70_documents, cidoc:P22_transferred_title_to .
-
-# Property: P70.3 documents transfer of
-gmn:P70_3_documents_transfer_of
-    a owl:ObjectProperty ;
-    a rdf:Property ;
-    rdfs:label "P70.3 documents transfer of"@en ;
-    rdfs:comment "Simplified property for associating a sales contract with the physical thing (property, object, or person) being transferred. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P24_transferred_title_of > E18_Physical_Thing. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The range includes buildings (gmn:E22_1_Building), moveable property (gmn:E22_2_Moveable_Property), and persons (E21_Person, for the historical documentation of enslaved persons or other instances where people were treated as property)."@en ;
-    rdfs:subPropertyOf cidoc:P70_documents ;
-    rdfs:domain gmn:E31_1_Sales_Contract ;
-    rdfs:range cidoc:E18_Physical_Thing ;
-    dcterms:created "2025-10-17"^^xsd:date ;
-    rdfs:seeAlso cidoc:P70_documents, cidoc:P24_transferred_title_of .
-
-# Property: P70.4 documents seller's procurator
-gmn:P70_4_documents_sellers_procurator
-    a owl:ObjectProperty ;
-    a rdf:Property ;
-    rdfs:label "P70.4 documents seller's procurator"@en ;
-    rdfs:comment "Simplified property for associating a sales contract with the person named as the procurator (legal representative) for the seller. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P9_consists_of > E7_Activity > P14_carried_out_by > E21_Person (procurator), with P17_was_motivated_by linking to the seller (E21_Person). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The transformation creates an E7_Activity node that explicitly links the procurator to the seller they represent via P17_was_motivated_by."@en ;
-    rdfs:subPropertyOf cidoc:P70_documents ;
-    rdfs:domain gmn:E31_1_Sales_Contract ;
-    rdfs:range cidoc:E21_Person ;
-    dcterms:created "2025-10-17"^^xsd:date ;
-    dcterms:modified "2025-10-17"^^xsd:date ;
-    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by, cidoc:P17_was_motivated_by .
-
-# Property: P70.5 documents buyer's procurator
-gmn:P70_5_documents_buyers_procurator
-    a owl:ObjectProperty ;
-    a rdf:Property ;
-    rdfs:label "P70.5 documents buyer's procurator"@en ;
-    rdfs:comment "Simplified property for associating a sales contract with the person named as the procurator (legal representative) for the buyer. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P9_consists_of > E7_Activity > P14_carried_out_by > E21_Person (procurator), with P17_was_motivated_by linking to the buyer (E21_Person). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The transformation creates an E7_Activity node that explicitly links the procurator to the buyer they represent via P17_was_motivated_by."@en ;
-    rdfs:subPropertyOf cidoc:P70_documents ;
-    rdfs:domain gmn:E31_1_Sales_Contract ;
-    rdfs:range cidoc:E21_Person ;
-    dcterms:created "2025-10-17"^^xsd:date ;
-    dcterms:modified "2025-10-17"^^xsd:date ;
-    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by, cidoc:P17_was_motivated_by .
-
-# Property: has seller's procurator (convenience property)
-gmn:has_sellers_procurator
-    a owl:ObjectProperty ;
-    a rdf:Property ;
-    rdfs:label "has seller's procurator"@en ;
-    rdfs:comment "Convenience property providing a direct link from a sales contract to the person acting as procurator for the seller. This property is automatically added during transformation when gmn:P70_4_documents_sellers_procurator is used, providing an easy query path without needing to traverse the full E8_Acquisition > E7_Activity structure. This is a non-CIDOC property for practical data access."@en ;
-    rdfs:domain gmn:E31_1_Sales_Contract ;
-    rdfs:range cidoc:E21_Person ;
-    dcterms:created "2025-10-17"^^xsd:date .
-
-# Property: has buyer's procurator (convenience property)
-gmn:has_buyers_procurator
-    a owl:ObjectProperty ;
-    a rdf:Property ;
-    rdfs:label "has buyer's procurator"@en ;
-    rdfs:comment "Convenience property providing a direct link from a sales contract to the person acting as procurator for the buyer. This property is automatically added during transformation when gmn:P70_5_documents_buyers_procurator is used, providing an easy query path without needing to traverse the full E8_Acquisition > E7_Activity structure. This is a non-CIDOC property for practical data access."@en ;
-    rdfs:domain gmn:E31_1_Sales_Contract ;
-    rdfs:range cidoc:E21_Person ;
-    dcterms:created "2025-10-17"^^xsd:date .
-
-# Property: is represented by
-gmn:is_represented_by
-    a owl:ObjectProperty ;
-    a rdf:Property ;
-    rdfs:label "is represented by"@en ;
-    rdfs:comment "Direct relationship linking a person (principal) to another person (procurator) who acts as their legal representative. This property provides a simple semantic link between principals and their agents. When used in the context of sales contracts, this relationship is documented within the contract and elaborated through E7_Activity nodes in the acquisition event structure. This property enables Omeka-S annotations (procurations) to directly connect principals with their representatives."@en ;
-    rdfs:domain cidoc:E21_Person ;
-    rdfs:range cidoc:E21_Person ;
-    dcterms:created "2025-10-17"^^xsd:date .
-
-# Property: P70.6 documents seller's guarantor
-gmn:P70_6_documents_sellers_guarantor
-    a owl:ObjectProperty ;
-    a rdf:Property ;
-    rdfs:label "P70.6 documents seller's guarantor"@en ;
-    rdfs:comment "Simplified property for associating a sales contract with the person named as the guarantor for the seller. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P9_consists_of > E7_Activity > P14_carried_out_by > E21_Person (guarantor), with P17_was_motivated_by linking to the seller (E21_Person). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The transformation creates an E7_Activity node that explicitly links the guarantor to the seller they guarantee via P17_was_motivated_by. Guarantors provide security for the transaction by promising to fulfill obligations if the principal defaults."@en ;
-    rdfs:subPropertyOf cidoc:P70_documents ;
-    rdfs:domain gmn:E31_1_Sales_Contract ;
-    rdfs:range cidoc:E21_Person ;
-    dcterms:created "2025-10-17"^^xsd:date ;
-    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by, cidoc:P17_was_motivated_by .
-
-# Property: P70.7 documents buyer's guarantor
-gmn:P70_7_documents_buyers_guarantor
-    a owl:ObjectProperty ;
-    a rdf:Property ;
-    rdfs:label "P70.7 documents buyer's guarantor"@en ;
-    rdfs:comment "Simplified property for associating a sales contract with the person named as the guarantor for the buyer. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P9_consists_of > E7_Activity > P14_carried_out_by > E21_Person (guarantor), with P17_was_motivated_by linking to the buyer (E21_Person). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The transformation creates an E7_Activity node that explicitly links the guarantor to the buyer they guarantee via P17_was_motivated_by. Guarantors provide security for the transaction by promising to fulfill obligations if the principal defaults."@en ;
-    rdfs:subPropertyOf cidoc:P70_documents ;
-    rdfs:domain gmn:E31_1_Sales_Contract ;
-    rdfs:range cidoc:E21_Person ;
-    dcterms:created "2025-10-17"^^xsd:date ;
-    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by, cidoc:P17_was_motivated_by .
-
-# Property: has seller's guarantor (convenience property)
-gmn:has_sellers_guarantor
-    a owl:ObjectProperty ;
-    a rdf:Property ;
-    rdfs:label "has seller's guarantor"@en ;
-    rdfs:comment "Convenience property providing a direct link from a sales contract to the person acting as guarantor for the seller. This property is automatically added during transformation when gmn:P70_6_documents_sellers_guarantor is used, providing an easy query path without needing to traverse the full E8_Acquisition > E7_Activity structure. This is a non-CIDOC property for practical data access."@en ;
-    rdfs:domain gmn:E31_1_Sales_Contract ;
-    rdfs:range cidoc:E21_Person ;
-    dcterms:created "2025-10-17"^^xsd:date .
-
-# Property: has buyer's guarantor (convenience property)
-gmn:has_buyers_guarantor
-    a owl:ObjectProperty ;
-    a rdf:Property ;
-    rdfs:label "has buyer's guarantor"@en ;
-    rdfs:comment "Convenience property providing a direct link from a sales contract to the person acting as guarantor for the buyer. This property is automatically added during transformation when gmn:P70_7_documents_buyers_guarantor is used, providing an easy query path without needing to traverse the full E8_Acquisition > E7_Activity structure. This is a non-CIDOC property for practical data access."@en ;
-    rdfs:domain gmn:E31_1_Sales_Contract ;
-    rdfs:range cidoc:E21_Person ;
-    dcterms:created "2025-10-17"^^xsd:date .
-
-# Property: is guaranteed by
-gmn:is_guaranteed_by
-    a owl:ObjectProperty ;
-    a rdf:Property ;
-    rdfs:label "is guaranteed by"@en ;
-    rdfs:comment "Direct relationship linking a person (principal) to another person (guarantor) who provides security for their obligations in a transaction. This property provides a simple semantic link between principals and their guarantors. When used in the context of sales contracts, this relationship is documented within the contract and elaborated through E7_Activity nodes in the acquisition event structure. This property enables Omeka-S annotations to directly connect principals with their guarantors."@en ;
-    rdfs:domain cidoc:E21_Person ;
-    rdfs:range cidoc:E21_Person ;
-    dcterms:created "2025-10-17"^^xsd:date .
-
-# Property: P70.8 documents broker
-gmn:P70_8_documents_broker
-    a owl:ObjectProperty ;
-    a rdf:Property ;
-    rdfs:label "P70.8 documents broker"@en ;
-    rdfs:comment "Simplified property for associating a sales contract with the person named as the broker who facilitated the transaction. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P14_carried_out_by > E21_Person. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. Unlike procurators and guarantors who act for one party, brokers facilitate the transaction between both parties, arranging the sale and often receiving a commission."@en ;
-    rdfs:subPropertyOf cidoc:P70_documents ;
-    rdfs:domain gmn:E31_1_Sales_Contract ;
-    rdfs:range cidoc:E21_Person ;
-    dcterms:created "2025-10-17"^^xsd:date ;
-    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by .
-
-# Property: has broker (convenience property)
-gmn:has_broker
-    a owl:ObjectProperty ;
-    a rdf:Property ;
-    rdfs:label "has broker"@en ;
-    rdfs:comment "Convenience property providing a direct link from a sales contract to the person acting as broker for the transaction. This property is automatically added during transformation when gmn:P70_8_documents_broker is used, providing an easy query path without needing to traverse the E8_Acquisition structure. This is a non-CIDOC property for practical data access."@en ;
-    rdfs:domain gmn:E31_1_Sales_Contract ;
-    rdfs:range cidoc:E21_Person ;
-    dcterms:created "2025-10-17"^^xsd:date .
-
-# Property: P70.9 documents payment provider for buyer
-gmn:P70_9_documents_payment_provider_for_buyer
-    a owl:ObjectProperty ;
-    a rdf:Property ;
-    rdfs:label "P70.9 documents payment provider for buyer"@en ;
-    rdfs:comment "Simplified property for associating a sales contract with a third party who provides the payment (funds) on behalf of the buyer. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P9_consists_of > E7_Activity > P14_carried_out_by > E21_Person (payment provider), with P17_was_motivated_by linking to the buyer (E21_Person). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. Unlike procurators (legal representatives), guarantors (security providers), or brokers (facilitators), payment providers are third parties who supply the actual funds for the purchase on behalf of the buyer, often in situations involving family members, business partners, or creditors."@en ;
-    rdfs:subPropertyOf cidoc:P70_documents ;
-    rdfs:domain gmn:E31_1_Sales_Contract ;
-    rdfs:range cidoc:E21_Person ;
-    dcterms:created "2025-10-17"^^xsd:date ;
-    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by, cidoc:P17_was_motivated_by .
-
-# Property: has payment provider for buyer (convenience property)
-gmn:has_payment_provider_for_buyer
-    a owl:ObjectProperty ;
-    a rdf:Property ;
-    rdfs:label "has payment provider for buyer"@en ;
-    rdfs:comment "Convenience property providing a direct link from a sales contract to the person providing payment on behalf of the buyer. This property is automatically added during transformation when gmn:P70_9_documents_payment_provider_for_buyer is used, providing an easy query path without needing to traverse the full E8_Acquisition > E7_Activity structure. This is a non-CIDOC property for practical data access."@en ;
-    rdfs:domain gmn:E31_1_Sales_Contract ;
-    rdfs:range cidoc:E21_Person ;
-    dcterms:created "2025-10-17"^^xsd:date .
-
-# Property: has payment provided by
-gmn:has_payment_provided_by
-    a owl:ObjectProperty ;
-    a rdf:Property ;
-    rdfs:label "has payment provided by"@en ;
-    rdfs:comment "Direct relationship linking a person (buyer) to another person (payment provider) who supplies the funds for their purchase. This property provides a simple semantic link between buyers and those who financially support their acquisitions. When used in the context of sales contracts, this relationship is documented within the contract and elaborated through E7_Activity nodes in the acquisition event structure. This property enables Omeka-S annotations to directly connect buyers with their payment providers."@en ;
-    rdfs:domain cidoc:E21_Person ;
-    rdfs:range cidoc:E21_Person ;
-    dcterms:created "2025-10-17"^^xsd:date .
-
-# Property: P70.10 documents payment recipient for seller
-gmn:P70_10_documents_payment_recipient_for_seller
-    a owl:ObjectProperty ;
-    a rdf:Property ;
-    rdfs:label "P70.10 documents payment recipient for seller"@en ;
-    rdfs:comment "Simplified property for associating a sales contract with a third party who receives the payment (funds) on behalf of the seller. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P9_consists_of > E7_Activity > P14_carried_out_by > E21_Person (payment recipient), with P17_was_motivated_by linking to the seller (E21_Person). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. Unlike procurators (legal representatives), guarantors (security providers), or brokers (facilitators), payment recipients are third parties who receive the actual funds from the purchase on behalf of the seller, often in situations involving family members, business partners, or creditors to whom the seller owes money."@en ;
-    rdfs:subPropertyOf cidoc:P70_documents ;
-    rdfs:domain gmn:E31_1_Sales_Contract ;
-    rdfs:range cidoc:E21_Person ;
-    dcterms:created "2025-10-17"^^xsd:date ;
-    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by, cidoc:P17_was_motivated_by .
-
-# Property: has payment recipient for seller (convenience property)
-gmn:has_payment_recipient_for_seller
-    a owl:ObjectProperty ;
-    a rdf:Property ;
-    rdfs:label "has payment recipient for seller"@en ;
-    rdfs:comment "Convenience property providing a direct link from a sales contract to the person receiving payment on behalf of the seller. This property is automatically added during transformation when gmn:P70_10_documents_payment_recipient_for_seller is used, providing an easy query path without needing to traverse the full E8_Acquisition > E7_Activity structure. This is a non-CIDOC property for practical data access."@en ;
-    rdfs:domain gmn:E31_1_Sales_Contract ;
-    rdfs:range cidoc:E21_Person ;
-    dcterms:created "2025-10-17"^^xsd:date .
-
-# Property: has payment received by
-gmn:has_payment_received_by
-    a owl:ObjectProperty ;
-    a rdf:Property ;
-    rdfs:label "has payment received by"@en ;
-    rdfs:comment "Direct relationship linking a person (seller) to another person (payment recipient) who receives the funds from their sale. This property provides a simple semantic link between sellers and those who collect payment on their behalf. When used in the context of sales contracts, this relationship is documented within the contract and elaborated through E7_Activity nodes in the acquisition event structure. This property enables Omeka-S annotations to directly connect sellers with their payment recipients."@en ;
-    rdfs:domain cidoc:E21_Person ;
-    rdfs:range cidoc:E21_Person ;
-    dcterms:created "2025-10-17"^^xsd:date .
-
 # Property: P1.2 has name from source
 gmn:P1_2_has_name_from_source 
     a owl:DatatypeProperty ;
@@ -401,19 +169,40 @@ gmn:P1_2_has_name_from_source
     ] ;
     gmn:hasImplicitType <http://vocab.getty.edu/page/aat/300456607> .
 
-# Property: P3.1 has editorial note
-gmn:P3_1_has_editorial_note 
+# Property: P1.3 has patrilineal name
+gmn:P1_3_has_patrilineal_name 
     a owl:DatatypeProperty ;
     a rdf:Property ;
-    rdfs:label "P3.1 has editorial note"@en ;
-    rdfs:comment "Simplified property for expressing editorial notes, comments, and internal documentation about an entity. Represents the full CIDOC-CRM path: P67i_is_referred_to_by > E33_Linguistic_Object > P2_has_type <http://vocab.getty.edu/page/aat/300456627> > P190_has_symbolic_content. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The linguistic object type is automatically set to AAT 300456627. This property is intended for internal project use and may be excluded from public data exports."@en ;
-    rdfs:subPropertyOf cidoc:P3_has_note ;
-    rdfs:domain cidoc:E1_CRM_Entity ;
+    rdfs:label "P1.3 has patrilineal name"@en ;
+    rdfs:comment "Simplified property for expressing the patrilineal name of a person, which includes their given name followed by their patronymic ancestry (e.g., 'Giacomo Spinola q. Antonio' meaning 'Giacomo Spinola, son of the late Antonio'). This naming pattern is common in medieval and early modern Italian contexts where 'q.' (quondam) indicates a deceased father or ancestor. Represents the full CIDOC-CRM path: P1_is_identified_by > E41_Appellation > P2_has_type <http://vocab.getty.edu/page/aat/300404651> > P190_has_symbolic_content. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The appellation type is automatically set to AAT 300404651 (patronymics)."@en ;
+    rdfs:subPropertyOf cidoc:P1_is_identified_by ;
+    rdfs:domain cidoc:E21_Person ;
     rdfs:range cidoc:E62_String ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P1_is_identified_by, cidoc:P190_has_symbolic_content, <http://vocab.getty.edu/page/aat/300404651> ;
+    owl:equivalentProperty [
+        a owl:Restriction ;
+        owl:onProperty cidoc:P1_is_identified_by ;
+        owl:allValuesFrom [
+            a owl:Restriction ;
+            owl:onProperty cidoc:P190_has_symbolic_content ;
+            owl:hasValue cidoc:E62_String
+        ]
+    ] ;
+    gmn:hasImplicitType <http://vocab.getty.edu/page/aat/300404651> .
+
+# Property: P1.4 has loconym
+gmn:P1_4_has_loconym
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P1.4 has loconym"@en ;
+    rdfs:comment "Simplified property for expressing a place referenced in a person's name (loconym), indicating that the person or their ancestors originated from that place. Represents the full CIDOC-CRM path: P1_is_identified_by > E41_Appellation > P2_has_type <https://www.wikidata.org/wiki/Q17143070> > P67_refers_to > E53_Place. This captures toponymic naming patterns common in medieval Italian contexts (e.g., 'Giovanni da Genova', 'Bartolomeo de Vignolo'). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The appellation type is automatically set to Wikidata Q17143070 (loconym)."@en ;
+    rdfs:subPropertyOf cidoc:P1_is_identified_by ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range cidoc:E53_Place ;
     dcterms:created "2025-10-16"^^xsd:date ;
-    rdfs:seeAlso cidoc:P3_has_note, cidoc:P67i_is_referred_to_by, cidoc:P190_has_symbolic_content, <http://vocab.getty.edu/page/aat/300456627> ;
-    gmn:hasImplicitType <http://vocab.getty.edu/page/aat/300456627> ;
-    gmn:isInternalOnly true .
+    rdfs:seeAlso cidoc:P1_is_identified_by, cidoc:P67_refers_to, <https://www.wikidata.org/wiki/Q17143070> ;
+    gmn:hasImplicitType <https://www.wikidata.org/wiki/Q17143070> .
 
 # Property: P2.1 has sex/gender
 gmn:P2_1_gender
@@ -434,18 +223,19 @@ gmn:P2_1_gender
     dcterms:created "2025-10-16"^^xsd:date ;
     rdfs:seeAlso cidoc:P2_has_type, <http://vocab.getty.edu/page/aat/300189559>, <http://vocab.getty.edu/page/aat/300189557>, <http://vocab.getty.edu/page/aat/300417544> .
 
-# Property: P1.4 has loconym
-gmn:P1_4_has_loconym
-    a owl:ObjectProperty ;
+# Property: P3.1 has editorial note
+gmn:P3_1_has_editorial_note 
+    a owl:DatatypeProperty ;
     a rdf:Property ;
-    rdfs:label "P1.4 has loconym"@en ;
-    rdfs:comment "Simplified property for expressing a place referenced in a person's name (loconym), indicating that the person or their ancestors originated from that place. Represents the full CIDOC-CRM path: P1_is_identified_by > E41_Appellation > P2_has_type <https://www.wikidata.org/wiki/Q17143070> > P67_refers_to > E53_Place. This captures toponymic naming patterns common in medieval Italian contexts (e.g., 'Giovanni da Genova', 'Bartolomeo de Vignolo'). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The appellation type is automatically set to Wikidata Q17143070 (loconym)."@en ;
-    rdfs:subPropertyOf cidoc:P1_is_identified_by ;
-    rdfs:domain cidoc:E21_Person ;
-    rdfs:range cidoc:E53_Place ;
+    rdfs:label "P3.1 has editorial note"@en ;
+    rdfs:comment "Simplified property for expressing editorial notes, comments, and internal documentation about an entity. Represents the full CIDOC-CRM path: P67i_is_referred_to_by > E33_Linguistic_Object > P2_has_type <http://vocab.getty.edu/page/aat/300456627> > P190_has_symbolic_content. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The linguistic object type is automatically set to AAT 300456627. This property is intended for internal project use and may be excluded from public data exports."@en ;
+    rdfs:subPropertyOf cidoc:P3_has_note ;
+    rdfs:domain cidoc:E1_CRM_Entity ;
+    rdfs:range cidoc:E62_String ;
     dcterms:created "2025-10-16"^^xsd:date ;
-    rdfs:seeAlso cidoc:P1_is_identified_by, cidoc:P67_refers_to, <https://www.wikidata.org/wiki/Q17143070> ;
-    gmn:hasImplicitType <https://www.wikidata.org/wiki/Q17143070> .
+    rdfs:seeAlso cidoc:P3_has_note, cidoc:P67i_is_referred_to_by, cidoc:P190_has_symbolic_content, <http://vocab.getty.edu/page/aat/300456627> ;
+    gmn:hasImplicitType <http://vocab.getty.edu/page/aat/300456627> ;
+    gmn:isInternalOnly true .
 
 # Property: P11i.1 earliest attestation date
 gmn:P11i_1_earliest_attestation_date
@@ -484,6 +274,256 @@ gmn:P11i_3_has_spouse
     rdfs:seeAlso cidoc:P11i_participated_in, cidoc:P11_had_participant, <http://vocab.getty.edu/page/aat/300055475> ;
     gmn:hasImplicitType <http://vocab.getty.edu/page/aat/300055475> .
 
+# Property: P22.1 has owner
+gmn:P22_1_has_owner
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P22.1 has owner"@en ;
+    rdfs:comment "Simplified property for expressing ownership of a building or moveable property by a person. Represents the full CIDOC-CRM path: E22_Human-Made_Object > P24i_changed_ownership_through > E8_Acquisition > P22_transferred_title_to > E21_Person. This property captures ownership relationships through acquisition events. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. Applies to both buildings (E22.1) and moveable property (E22.2)."@en ;
+    rdfs:subPropertyOf cidoc:P24i_changed_ownership_through ;
+    rdfs:domain cidoc:E22_Human-Made_Object ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-16"^^xsd:date ;
+    rdfs:seeAlso cidoc:P24i_changed_ownership_through, cidoc:P22_transferred_title_to .
+
+# Property: P46i.1 is contained in
+gmn:P46i_1_is_contained_in
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P46i.1 is contained in"@en ;
+    rdfs:comment "Simplified property for expressing that a document forms part of a larger archival unit or collection. Use this to link individual contracts to the registers, filze (bundles of contracts tied with string), folders, or other archival containers in which they are physically housed. This represents the direct CIDOC-CRM property P46i_forms_part_of. The range can be any archival unit or collection, including registers (E31_Document subtype), filze, folders, or institutional archives. This captures the archival context and provenance of individual documents."@en ;
+    rdfs:subPropertyOf cidoc:P46i_forms_part_of ;
+    rdfs:domain cidoc:E31_Document ;
+    rdfs:range cidoc:E78_Curated_Holding ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P46i_forms_part_of .
+
+# Property: P53.1 has occupant
+gmn:P53_1_has_occupant
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P53.1 has occupant"@en ;
+    rdfs:comment "Simplified property for expressing occupation/residence in a building by a person who is not the owner. Represents the full CIDOC-CRM path: E22_Human-Made_Object > P53i_is_former_or_current_location_of > E9_Move > P25_moved > E21_Person. This property captures residence/occupation relationships through move events. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. This is distinct from ownership."@en ;
+    rdfs:subPropertyOf cidoc:P53i_is_former_or_current_location_of ;
+    rdfs:domain gmn:E22_1_Building ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-16"^^xsd:date ;
+    rdfs:seeAlso cidoc:P53i_is_former_or_current_location_of, cidoc:P25_moved .
+
+# Property: P70.1 documents seller
+gmn:P70_1_documents_seller
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.1 documents seller"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with the person named as the seller. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P23_transferred_title_from > E21_Person. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The seller is the party transferring ownership of the property being sold."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    dcterms:modified "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by, cidoc:P17_was_motivated_by .
+
+# Property: P70.6 documents seller's guarantor
+gmn:P70_6_documents_sellers_guarantor
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.6 documents seller's guarantor"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with the person named as the guarantor for the seller. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P9_consists_of > E7_Activity > P14_carried_out_by > E21_Person (guarantor), with P17_was_motivated_by linking to the seller (E21_Person). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The transformation creates an E7_Activity node that explicitly links the guarantor to the seller they guarantee via P17_was_motivated_by. Guarantors provide security for the transaction by promising to fulfill obligations if the principal defaults."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by, cidoc:P17_was_motivated_by .
+
+# Property: P70.7 documents buyer's guarantor
+gmn:P70_7_documents_buyers_guarantor
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.7 documents buyer's guarantor"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with the person named as the guarantor for the buyer. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P9_consists_of > E7_Activity > P14_carried_out_by > E21_Person (guarantor), with P17_was_motivated_by linking to the buyer (E21_Person). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The transformation creates an E7_Activity node that explicitly links the guarantor to the buyer they guarantee via P17_was_motivated_by. Guarantors provide security for the transaction by promising to fulfill obligations if the principal defaults."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by, cidoc:P17_was_motivated_by .
+
+# Property: P70.8 documents broker
+gmn:P70_8_documents_broker
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.8 documents broker"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with the person named as the broker who facilitated the transaction. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P14_carried_out_by > E21_Person. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. Unlike procurators and guarantors who act for one party, brokers facilitate the transaction between both parties, arranging the sale and often receiving a commission."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by .
+
+# Property: P70.9 documents payment provider for buyer
+gmn:P70_9_documents_payment_provider_for_buyer
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.9 documents payment provider for buyer"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with a third party who provides the payment (funds) on behalf of the buyer. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P9_consists_of > E7_Activity > P14_carried_out_by > E21_Person (payment provider), with P17_was_motivated_by linking to the buyer (E21_Person). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. Unlike procurators (legal representatives), guarantors (security providers), or brokers (facilitators), payment providers are third parties who supply the actual funds for the purchase on behalf of the buyer, often in situations involving family members, business partners, or creditors."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by, cidoc:P17_was_motivated_by .
+
+# Property: P70.10 documents payment recipient for seller
+gmn:P70_10_documents_payment_recipient_for_seller
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.10 documents payment recipient for seller"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with a third party who receives the payment (funds) on behalf of the seller. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P9_consists_of > E7_Activity > P14_carried_out_by > E21_Person (payment recipient), with P17_was_motivated_by linking to the seller (E21_Person). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. Unlike procurators (legal representatives), guarantors (security providers), or brokers (facilitators), payment recipients are third parties who receive the actual funds from the purchase on behalf of the seller, often in situations involving family members, business partners, or creditors to whom the seller owes money."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by, cidoc:P17_was_motivated_by .
+
+# Property: P70.11 documents referenced person
+gmn:P70_11_documents_referenced_person
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.11 documents referenced person"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with any person referenced or mentioned in the document text who does not have one of the specified transactional roles. This captures persons who appear in the contract narrative but are not parties to the acquisition: witnesses present at the signing, absent parties whose rights or claims are acknowledged, deceased persons whose estates or relationships are mentioned for context (e.g., 'Giovanni, son of the late Marco'), neighbors or adjacent property owners referenced in property descriptions, previous owners mentioned in provenance statements, or any other individuals named in the contract text. Unlike the other P70 properties which document participation in the E8_Acquisition event, this property represents a direct relationship between the document and the person: E31_Document > P67_refers_to > E21_Person. This acknowledges that the person is textually present in the document without implying their participation in the transaction itself."@en ;
+    rdfs:subPropertyOf cidoc:P67_refers_to ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P67_refers_to .
+
+# Property: P70.12 documents payment through organization
+gmn:P70_12_documents_payment_through_organization
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.12 documents payment through organization"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with an organization (typically a bank) through which payment for the transaction is made or facilitated. This captures financial institutions that serve as intermediaries in the payment process, such as banks holding deposits, making transfers, or providing credit facilities for the transaction. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P9_consists_of > E7_Activity > P14_carried_out_by > E74_Group, where the E7_Activity represents the payment facilitation activity. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The organization facilitates the financial aspects of the transaction without being a principal party (buyer/seller) or individual agent (procurator/guarantor)."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E74_Group ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by .
+
+# Property: P70.13 documents referenced place
+gmn:P70_13_documents_referenced_place
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.13 documents referenced place"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with any place referenced or mentioned in the document text. This captures places that appear in the contract narrative such as neighboring properties used for boundary descriptions, landmarks referenced for location, districts or parishes mentioned, or any other geographic locations named in the contract text. Unlike P94i_3_has_place_of_enactment which indicates where the contract was created, this property represents places mentioned within the contract content. Represents the direct CIDOC-CRM relationship: E31_Document > P67_refers_to > E53_Place. This acknowledges that the place is textually present in the document without implying it is the location of the transaction or the contract's creation."@en ;
+    rdfs:subPropertyOf cidoc:P67_refers_to ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E53_Place ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P67_refers_to .
+
+# Property: P70.14 documents referenced legal object
+gmn:P70_14_documents_referenced_legal_object
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.14 documents referenced legal object"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with any legal object referenced or mentioned in the document. Legal objects include rights, obligations, debts, claims, privileges, servitudes, easements, or other intangible legal constructs mentioned in the contract. For example, a contract might reference existing debts being settled, water rights attached to a property, or obligations being transferred. Represents the direct CIDOC-CRM relationship: E31_Document > P67_refers_to > E72_Legal_Object. This acknowledges that the legal object is mentioned in the document, whether as context, as part of the transaction conditions, or as related obligations."@en ;
+    rdfs:subPropertyOf cidoc:P67_refers_to ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E72_Legal_Object ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P67_refers_to .
+
+# Property: P70.15 documents witness
+gmn:P70_15_documents_witness
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.15 documents witness"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with a person who served as a witness to the acquisition. Witnesses were present at the transaction and formally observed the transfer of property, providing legal validation of the event. Unlike referenced persons (P70.11) who are merely mentioned in the text, witnesses actively participated in the acquisition event. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P11_had_participant > E21_Person, with the person's role typed as 'witness' (AAT 300028910). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P11_had_participant .
+
+# Property: P70.16 documents sale price amount
+gmn:P70_16_documents_sale_price_amount
+    a owl:DatatypeProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.16 documents sale price amount"@en ;
+    rdfs:comment "Simplified property for expressing the monetary amount of the sale price documented in a sales contract. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P177_assigned_property_of_type > E97_Monetary_Amount > P180_has_currency > E98_Currency AND P181_has_amount > xsd:decimal. This property captures only the numeric value; use P70.17 to specify the currency. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The value should be a decimal number representing the quantity in the specified currency."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range xsd:decimal ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P177_assigned_property_of_type, cidoc:P181_has_amount .
+
+# Property: P70.17 documents sale price currency
+gmn:P70_17_documents_sale_price_currency
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.17 documents sale price currency"@en ;
+    rdfs:comment "Simplified property for expressing the currency unit of the sale price documented in a sales contract. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P177_assigned_property_of_type > E97_Monetary_Amount > P180_has_currency > E98_Currency. This property captures the currency type (e.g., Genoese lira, florin, ducat). Use P70.16 to specify the numeric amount. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The value should reference a currency entity or use a controlled vocabulary of currency types."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E98_Currency ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P177_assigned_property_of_type, cidoc:P180_has_currency .
+
+# Property: P94i.1 was created by
+gmn:P94i_1_was_created_by
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P94i.1 was created by"@en ;
+    rdfs:comment "Simplified property for expressing the person responsible for creating a document, particularly the notary who recorded a contract. Represents the full CIDOC-CRM path: E31_Document > P94i_was_created_by > E65_Creation > P14_carried_out_by > E21_Person. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. This captures the authorship or recording responsibility for the document."@en ;
+    rdfs:subPropertyOf cidoc:P94i_was_created_by ;
+    rdfs:domain cidoc:E31_Document ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P94i_was_created_by, cidoc:P14_carried_out_by .
+
+# Property: P94i.2 has enactment date
+gmn:P94i_2_has_enactment_date
+    a owl:DatatypeProperty ;
+    a rdf:Property ;
+    rdfs:label "P94i.2 has enactment date"@en ;
+    rdfs:comment "Simplified property for expressing the date(s) when a document was enacted or created. Represents the full CIDOC-CRM path: E31_Document > P94i_was_created_by > E65_Creation > P4_has_time-span > E52_Time-Span > P82_at_some_time_within. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. This property can be used multiple times to capture the original enactment date as well as dates of subsequent addenda or modifications to the document."@en ;
+    rdfs:subPropertyOf cidoc:P94i_was_created_by ;
+    rdfs:domain cidoc:E31_Document ;
+    rdfs:range xsd:date ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P94i_was_created_by, cidoc:P4_has_time-span, cidoc:P82_at_some_time_within .
+
+# Property: P94i.3 has place of enactment
+gmn:P94i_3_has_place_of_enactment
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P94i.3 has place of enactment"@en ;
+    rdfs:comment "Simplified property for expressing the place where a document was enacted or created - where the contract was formally drawn up and witnessed. This is typically the notary's office, a public building, or other location where the parties gathered to formalize the transaction. Represents the full CIDOC-CRM path: E31_Document > P94i_was_created_by > E65_Creation > P7_took_place_at > E53_Place. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. This is distinct from places mentioned within the contract text (use P70.13 for those) and from the location of property being transferred."@en ;
+    rdfs:subPropertyOf cidoc:P94i_was_created_by ;
+    rdfs:domain cidoc:E31_Document ;
+    rdfs:range cidoc:E53_Place ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P94i_was_created_by, cidoc:P7_took_place_at .
+
+# Property: P102.1 has title
+gmn:P102_1_has_title 
+    a owl:DatatypeProperty ;
+    a rdf:Property ;
+    rdfs:label "P102.1 has title"@en ;
+    rdfs:comment "Simplified property for expressing the formal title of a document or work. Represents the full CIDOC-CRM path: E71_Human-Made_Thing > P102_has_title > E35_Title > P190_has_symbolic_content. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. Use this for the authoritative, formal title given by the creator of the document (e.g., the notarial title at the top of a contract), as distinct from modern cataloging names (use gmn:P1_1_has_name for those)."@en ;
+    rdfs:subPropertyOf cidoc:P102_has_title ;
+    rdfs:domain cidoc:E71_Human-Made_Thing ;
+    rdfs:range cidoc:E62_String ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P102_has_title, cidoc:P190_has_symbolic_content ;
+    owl:equivalentProperty [
+        a owl:Restriction ;
+        owl:onProperty cidoc:P102_has_title ;
+        owl:allValuesFrom [
+            a owl:Restriction ;
+            owl:onProperty cidoc:P190_has_symbolic_content ;
+            owl:hasValue cidoc:E62_String
+        ]
+    ] .
+
 # Property: P107i.1 has regional provenance
 gmn:P107i_1_has_regional_provenance
     a owl:ObjectProperty ;
@@ -521,30 +561,6 @@ gmn:P107i_3_has_occupation
     dcterms:created "2025-10-16"^^xsd:date ;
     rdfs:seeAlso cidoc:P107i_is_current_or_former_member_of .
 
-# Property: P22.1 has owner
-gmn:P22_1_has_owner
-    a owl:ObjectProperty ;
-    a rdf:Property ;
-    rdfs:label "P22.1 has owner"@en ;
-    rdfs:comment "Simplified property for expressing ownership of a building or moveable property by a person. Represents the full CIDOC-CRM path: E22_Human-Made_Object > P24i_changed_ownership_through > E8_Acquisition > P22_transferred_title_to > E21_Person. This property captures ownership relationships through acquisition events. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. Applies to both buildings (E22.1) and moveable property (E22.2)."@en ;
-    rdfs:subPropertyOf cidoc:P24i_changed_ownership_through ;
-    rdfs:domain cidoc:E22_Human-Made_Object ;
-    rdfs:range cidoc:E21_Person ;
-    dcterms:created "2025-10-16"^^xsd:date ;
-    rdfs:seeAlso cidoc:P24i_changed_ownership_through, cidoc:P22_transferred_title_to .
-
-# Property: P53.1 has occupant
-gmn:P53_1_has_occupant
-    a owl:ObjectProperty ;
-    a rdf:Property ;
-    rdfs:label "P53.1 has occupant"@en ;
-    rdfs:comment "Simplified property for expressing occupation/residence in a building by a person who is not the owner. Represents the full CIDOC-CRM path: E22_Human-Made_Object > P53i_is_former_or_current_location_of > E9_Move > P25_moved > E21_Person. This property captures residence/occupation relationships through move events. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. This is distinct from ownership."@en ;
-    rdfs:subPropertyOf cidoc:P53i_is_former_or_current_location_of ;
-    rdfs:domain gmn:E22_1_Building ;
-    rdfs:range cidoc:E21_Person ;
-    dcterms:created "2025-10-16"^^xsd:date ;
-    rdfs:seeAlso cidoc:P53i_is_former_or_current_location_of, cidoc:P25_moved .
-
 # Property: P122.1 borders with
 gmn:P122_1_borders_with
     a owl:ObjectProperty ;
@@ -558,499 +574,73 @@ gmn:P122_1_borders_with
     rdfs:seeAlso cidoc:P122_borders_with ;
     a owl:SymmetricProperty .
 
+# Property: P138i.1 has representation
+gmn:P138i_1_has_representation
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P138i.1 has representation"@en ;
+    rdfs:comment "Simplified property for associating a document with a digital representation or media item such as a digitized image (JPEG, TIFF, PDF, etc.) of the physical document. This captures the relationship between the historical document and its digital surrogates created through photography, scanning, or other digitization processes. Represents the CIDOC-CRM path: E31_Document > P138i_has_representation > D1_Digital_Object (from CRMdig extension). The digital object should include technical metadata about the file format, resolution, creation date, and any persistent identifiers (URIs) for accessing the digital file. This property enables linking archival documents to their digital access copies."@en ;
+    rdfs:subPropertyOf cidoc:P138i_has_representation ;
+    rdfs:domain cidoc:E31_Document ;
+    rdfs:range cidoc:D1_Digital_Object ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P138i_has_representation .
+
+##################################
+# Annotation Properties
+##################################
+
 # Custom property for implicit typing
 gmn:hasImplicitType
     a owl:AnnotationProperty ;
     rdfs:label "has implicit type"@en ;
-    rdfs:comment "Indicates a type that should be automatically assigned to the target entity when transforming shortcut properties to full CIDOC-CRM structure. For example, when a property has gmn:hasImplicitType pointing to an AAT URI, that URI should be used as the P2_has_type value on the intermediate entity (E41_Appellation, E33_Linguistic_Object, etc.) created during transformation."@en .
+    rdfs:comment "Indicates a type that should be automatically assigned to the target entity when transforming shortcut properties to full CIDOC-CRM structure. For example, when a property has gmn:hasImplicitType pointing to an AAT URI, that URI should be used as the P2_has_type value on the intermediate entity (E41_Appellation, E33_Linguistic_Object, etc.) created during transformation."@en . gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P23_transferred_title_from .
 
-# Documentation note
-gmn:TransformationNote
-    a rdfs:Resource ;
-    rdfs:label "Transformation Documentation"@en ;
-    rdfs:comment """
-    Shortcut properties in this ontology (such as gmn:P1_1_has_name) are designed 
-    for simplified data entry. When exporting data for interoperability or formal 
-    CIDOC-CRM compliance, these properties should be transformed to their full 
-    CIDOC-CRM equivalents.
-    
-    Example transformation for gmn:P1_1_has_name:
-    
-    INPUT (shortcut):
-    <entity> gmn:P1_1_has_name "San Giorgio" .
-    
-    OUTPUT (CIDOC-CRM compliant):
-    <entity> cidoc:P1_is_identified_by <appellation1> .
-    <appellation1> a cidoc:E41_Appellation ;
-                   cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300404650> ;
-                   cidoc:P190_has_symbolic_content "San Giorgio" .
-    
-    Note: The P2_has_type value (AAT 300404650 - names) is automatically 
-    applied during transformation as specified by gmn:hasImplicitType. This property 
-    now applies to any E1_CRM_Entity, not just E21_Person.
-    
-    Example transformation for gmn:P102_1_has_title:
-    
-    INPUT (shortcut):
-    <document> gmn:P102_1_has_title "Vendicio domus posita in Ianua"@la .
-    
-    OUTPUT (CIDOC-CRM compliant):
-    <document> cidoc:P102_has_title <title1> .
-    <title1> a cidoc:E35_Title ;
-             cidoc:P190_has_symbolic_content "Vendicio domus posita in Ianua"@la .
-    
-    Note: The gmn:P102_1_has_title property provides a simplified way to associate a document 
-    or work with its formal title. When transforming, an E35_Title entity is created and linked 
-    via P102_has_title. The title text is stored in P190_has_symbolic_content, preserving any 
-    language tags. This shortcut is particularly useful for capturing notarial titles at the 
-    top of contracts or other formal document titles without needing to explicitly model the 
-    E35_Title entity during data entry.
-    
-    Example transformation for gmn:P94i_1_was_created_by:
-    
-    INPUT (shortcut):
-    <document> gmn:P94i_1_was_created_by <http://example.com/notaries/antonio_de_credentia> .
-    
-    OUTPUT (CIDOC-CRM compliant):
-    <document> cidoc:P94i_was_created_by <creation1> .
-    <creation1> a cidoc:E65_Creation ;
-                cidoc:P14_carried_out_by <http://example.com/notaries/antonio_de_credentia> .
-    
-    Note: The gmn:P94i_1_was_created_by property provides a simplified way to associate a 
-    document with the person who created or recorded it (typically a notary for contracts). 
-    When transforming, an E65_Creation event is created and linked via P94i_was_created_by, 
-    with the person linked to the creation event via P14_carried_out_by. This properly models 
-    the document creation as an event while maintaining a simple shortcut for data entry.
-    
-    Example transformation for gmn:P94i_2_has_enactment_date:
-    
-    INPUT (shortcut with multiple dates):
-    <document> gmn:P94i_2_has_enactment_date "1427-01-15"^^xsd:date .
-    <document> gmn:P94i_2_has_enactment_date "1428-03-20"^^xsd:date .
-    
-    OUTPUT (CIDOC-CRM compliant):
-    <document> cidoc:P94i_was_created_by <creation1> .
-    <creation1> a cidoc:E65_Creation ;
-                cidoc:P4_has_time-span <timespan1> , <timespan2> .
-    <timespan1> a cidoc:E52_Time-Span ;
-                cidoc:P82_at_some_time_within "1427-01-15"^^xsd:date .
-    <timespan2> a cidoc:E52_Time-Span ;
-                cidoc:P82_at_some_time_within "1428-03-20"^^xsd:date .
-    
-    Note: The gmn:P94i_2_has_enactment_date property provides a simplified way to associate a 
-    document with the date(s) it was enacted or created. When transforming, an E65_Creation 
-    event is created (or reused if it already exists from P94i_1_was_created_by), and E52_Time-Span 
-    entities are created for each date and linked via P4_has_time-span. Multiple dates can be 
-    provided to capture the original enactment date and subsequent addenda dates. If both 
-    gmn:P94i_1_was_created_by and gmn:P94i_2_has_enactment_date are used, they share the same 
-    E65_Creation event, properly linking the notary, date(s), and document together.
-    
-    Example transformation for gmn:P1_2_has_name_from_source:
-    
-    INPUT (shortcut):
-    <person> gmn:P1_2_has_name_from_source "Iohannes Baptista" .
-    
-    OUTPUT (CIDOC-CRM compliant):
-    <person> cidoc:P1_is_identified_by <appellation2> .
-    <appellation2> a cidoc:E41_Appellation ;
-                   cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300456607> ;
-                   cidoc:P190_has_symbolic_content "Iohannes Baptista" .
-    
-    Note: The P2_has_type value (AAT 300456607 - names found in sources) is automatically 
-    applied during transformation as specified by gmn:hasImplicitType.
-    
-    Example transformation for gmn:P3_1_has_editorial_note:
-    
-    INPUT (shortcut):
-    <entity> gmn:P3_1_has_editorial_note "Need to verify this date against archival sources." .
-    
-    OUTPUT (CIDOC-CRM compliant):
-    <entity> cidoc:P67i_is_referred_to_by <linguistic_object1> .
-    <linguistic_object1> a cidoc:E33_Linguistic_Object ;
-                         cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300456627> ;
-                         cidoc:P190_has_symbolic_content "Need to verify this date against archival sources." .
-    
-    Note: The P2_has_type value (AAT 300456627) is automatically applied during transformation 
-    as specified by gmn:hasImplicitType. This property is marked as internal-only and may be 
-    excluded from public exports.
-    
-    Example usage for gmn:P2_1_gender:
-    
-    INPUT (simplified):
-    <person> gmn:P2_1_gender <http://vocab.getty.edu/page/aat/300189557> .
-    
-    OUTPUT (CIDOC-CRM compliant - same structure, as this is already a proper relationship):
-    <person> cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300189557> .
-    
-    Note: gmn:P2_1_gender is a subproperty of cidoc:P2_has_type with a restricted range 
-    (male, female, intersex from Getty AAT). No transformation is needed as this property 
-    directly represents the CIDOC-CRM structure, just with added semantic specificity.
-    
-    Example transformation for gmn:P1_4_has_loconym:
-    
-    INPUT (shortcut):
-    <person> gmn:P1_4_has_loconym <http://example.com/places/genoa> .
-    
-    OUTPUT (CIDOC-CRM compliant):
-    <person> cidoc:P1_is_identified_by <appellation1> .
-    <appellation1> a cidoc:E41_Appellation ;
-                   cidoc:P2_has_type <https://www.wikidata.org/wiki/Q17143070> ;
-                   cidoc:P67_refers_to <http://example.com/places/genoa> .
-    
-    Note: When transforming gmn:P1_4_has_loconym, an E41_Appellation is created that references 
-    the place via P67_refers_to. The appellation type is automatically set to Wikidata Q17143070 
-    (loconym) as specified by gmn:hasImplicitType. If a person already has name appellations, 
-    this should ideally be integrated with or linked to the existing name structure.
-    
-    Example transformation for gmn:P107i_1_has_regional_provenance:
-    
-    INPUT (shortcut):
-    <person> gmn:P107i_1_has_regional_provenance <http://example.com/groups/republic_of_genoa> .
-    
-    OUTPUT (CIDOC-CRM compliant):
-    <person> cidoc:P107i_is_current_or_former_member_of <http://example.com/groups/republic_of_genoa> .
-    <http://example.com/groups/republic_of_genoa> a cidoc:E74_Group ;
-                                                   cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300055490> .
-    
-    Note: When transforming gmn:P107i_1_has_regional_provenance, the group is typed with 
-    AAT 300055490 (regions (geographic)) as specified by gmn:hasImplicitType. If the target 
-    group already exists with a different type, the regional type should be added rather than 
-    replacing existing types.
-    
-    Example transformation for gmn:P107i_2_has_social_category:
-    
-    INPUT (shortcut):
-    <person> gmn:P107i_2_has_social_category <http://example.com/groups/merchants> .
-    
-    OUTPUT (CIDOC-CRM compliant):
-    <person> cidoc:P107i_is_current_or_former_member_of <http://example.com/groups/merchants> .
-    <http://example.com/groups/merchants> a cidoc:E74_Group .
-    
-    Note: gmn:P107i_2_has_social_category transforms directly to cidoc:P107i_is_current_or_former_member_of 
-    without adding an implicit type, allowing flexibility in how social categories are typed. 
-    Social groups can be typed with appropriate AAT terms (e.g., AAT 300025520 for merchants, 
-    AAT 300151202 for nobility) as separate assertions.
-    
-    Example usage for gmn:E74_1_Regional_Provenance:
-    
-    <http://example.com/groups/citizens_of_genoa> a gmn:E74_1_Regional_Provenance ;
-        gmn:P1_1_has_name "Citizens of Genoa" ;
-        cidoc:P74_has_current_or_former_residence <http://example.com/places/genoa> .
-    
-    <person1> cidoc:P107i_is_current_or_former_member_of <http://example.com/groups/citizens_of_genoa> .
-    
-    Note: gmn:E74_1_Regional_Provenance is a subclass of cidoc:E74_Group and inherits all 
-    properties that apply to groups, including P1, P3, and P74. This class provides semantic 
-    clarity that the group represents a regional or geographic affiliation.
-    
-    Example usage for gmn:E74_2_Social_Category:
-    
-    <http://example.com/groups/merchants> a gmn:E74_2_Social_Category ;
-        gmn:P1_1_has_name "Merchants" ;
-        cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300025520> . # merchants (people)
-    
-    <person1> gmn:P107i_2_has_social_category <http://example.com/groups/merchants> .
-    
-    Note: gmn:E74_2_Social_Category is a subclass of cidoc:E74_Group and inherits all 
-    properties that apply to groups. This class provides semantic clarity that the group 
-    represents a social or occupational categorization rather than geographic or kinship groups.
-    
-    Example usage for gmn:E74_3_Occupational_Group:
-    
-    <http://example.com/groups/notaries> a gmn:E74_3_Occupational_Group ;
-        gmn:P1_1_has_name "Notaries" ;
-        cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300025066> . # notaries (people)
-    
-    <person1> gmn:P107i_3_has_occupation <http://example.com/groups/notaries> .
-    
-    Note: gmn:E74_3_Occupational_Group is a subclass of cidoc:E74_Group and inherits all 
-    properties that apply to groups. This class provides semantic clarity that the group 
-    represents a professional or occupational affiliation.
-    
-    Example usage for gmn:E31_1_Sales_Contract:
-    
-    Using shortcut properties (simplified data entry):
-    <http://example.com/documents/contract_1427_01_15> a gmn:E31_1_Sales_Contract ;
-        gmn:P1_1_has_name "Sale of Palazzo in Genoa, January 15, 1427" ;
-        gmn:P102_1_has_title "Vendicio domus posita in Ianua"@la ;
-        gmn:P94i_1_was_created_by <http://example.com/notaries/antonio_de_credentia> ;
-        gmn:P94i_2_has_enactment_date "1427-01-15"^^xsd:date ;
-        gmn:P46i_1_is_contained_in <http://example.com/archives/notary_register_1427> ;
-        gmn:P70_1_documents_seller <http://example.com/persons/giovanni_spinola> ;
-        gmn:P70_2_documents_buyer <http://example.com/persons/luchino_doria> ;
-        gmn:P70_3_documents_transfer_of <http://example.com/buildings/palazzo_doria> ;
-        gmn:P70_4_documents_sellers_procurator <http://example.com/persons/bernardo_grimaldi> ;
-        gmn:P70_5_documents_buyers_procurator <http://example.com/persons/raffaele_cattaneo> ;
-        gmn:P70_6_documents_sellers_guarantor <http://example.com/persons/andrea_fieschi> ;
-        gmn:P70_7_documents_buyers_guarantor <http://example.com/persons/marco_giustiniani> ;
-        gmn:P70_8_documents_broker <http://example.com/persons/paolo_centurione> ;
-        cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300027621> . # contracts (documents)
-    
-    <http://example.com/archives/notary_register_1427> a cidoc:E78_Curated_Holding ;
-        gmn:P1_1_has_name "Notarial Register of Antonio de Credentia, 1427" ;
-        cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300027168> ; # registers (lists)
-        cidoc:P55_has_current_location <http://example.com/institutions/archivio_di_stato_genova> .
-    
-    Full CIDOC-CRM structure (after transformation):
-    <http://example.com/documents/contract_1427_01_15> a gmn:E31_1_Sales_Contract ;
-        cidoc:P1_is_identified_by <http://example.com/documents/contract_1427_01_15/appellation/12345678> ;
-        cidoc:P102_has_title <http://example.com/titles/contract_title_1427> ;
-        cidoc:P94i_was_created_by <http://example.com/documents/contract_1427_01_15/creation> ;
-        cidoc:P46i_forms_part_of <http://example.com/archives/notary_register_1427> ;
-        cidoc:P70_documents <http://example.com/documents/contract_1427_01_15/acquisition> ;
-        gmn:has_sellers_procurator <http://example.com/persons/bernardo_grimaldi> ;
-        gmn:has_buyers_procurator <http://example.com/persons/raffaele_cattaneo> ;
-        gmn:has_sellers_guarantor <http://example.com/persons/andrea_fieschi> ;
-        gmn:has_buyers_guarantor <http://example.com/persons/marco_giustiniani> ;
-        gmn:has_broker <http://example.com/persons/paolo_centurione> ;
-        cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300027621> ;
-        cidoc:P128_carries <http://example.com/texts/contract_text_1427> .
-    
-    <http://example.com/documents/contract_1427_01_15/appellation/12345678> a cidoc:E41_Appellation ;
-        cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300404650> ;
-        cidoc:P190_has_symbolic_content "Sale of Palazzo in Genoa, January 15, 1427" .
-    
-    <http://example.com/titles/contract_title_1427> a cidoc:E35_Title ;
-        cidoc:P190_has_symbolic_content "Vendicio domus posita in Ianua"@la .
-    
-    <http://example.com/documents/contract_1427_01_15/creation> a cidoc:E65_Creation ;
-        cidoc:P14_carried_out_by <http://example.com/notaries/antonio_de_credentia> ;
-        cidoc:P4_has_time-span <http://example.com/documents/contract_1427_01_15/timespan/12345678> .
-    
-    <http://example.com/documents/contract_1427_01_15/timespan/12345678> a cidoc:E52_Time-Span ;
-        cidoc:P82_at_some_time_within "1427-01-15"^^xsd:date .
-    
-    <http://example.com/documents/contract_1427_01_15/acquisition> a cidoc:E8_Acquisition ;
-        cidoc:P23_transferred_title_from <http://example.com/persons/giovanni_spinola> ;
-        cidoc:P22_transferred_title_to <http://example.com/persons/luchino_doria> ;
-        cidoc:P24_transferred_title_of <http://example.com/buildings/palazzo_doria> ;
-        cidoc:P14_carried_out_by <http://example.com/persons/paolo_centurione> ;
-        cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300025234> ; # broker
-        cidoc:P9_consists_of <http://example.com/documents/contract_1427_01_15/activity/sellers_procurator_12345678> ,
-                             <http://example.com/documents/contract_1427_01_15/activity/buyers_procurator_87654321> ,
-                             <http://example.com/documents/contract_1427_01_15/activity/sellers_guarantor_11111111> ,
-                             <http://example.com/documents/contract_1427_01_15/activity/buyers_guarantor_22222222> .
-    
-    <http://example.com/documents/contract_1427_01_15/activity/sellers_procurator_12345678> a cidoc:E7_Activity ;
-        cidoc:P14_carried_out_by <http://example.com/persons/bernardo_grimaldi> ;
-        cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300025972> ; # agent
-        cidoc:P17_was_motivated_by <http://example.com/persons/giovanni_spinola> .
-    
-    <http://example.com/documents/contract_1427_01_15/activity/buyers_procurator_87654321> a cidoc:E7_Activity ;
-        cidoc:P14_carried_out_by <http://example.com/persons/raffaele_cattaneo> ;
-        cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300025972> ; # agent
-        cidoc:P17_was_motivated_by <http://example.com/persons/luchino_doria> .
-    
-    <http://example.com/documents/contract_1427_01_15/activity/sellers_guarantor_11111111> a cidoc:E7_Activity ;
-        cidoc:P14_carried_out_by <http://example.com/persons/andrea_fieschi> ;
-        cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300025614> ; # guarantor
-        cidoc:P17_was_motivated_by <http://example.com/persons/giovanni_spinola> .
-    
-    <http://example.com/documents/contract_1427_01_15/activity/buyers_guarantor_22222222> a cidoc:E7_Activity ;
-        cidoc:P14_carried_out_by <http://example.com/persons/marco_giustiniani> ;
-        cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300025614> ; # guarantor
-        cidoc:P17_was_motivated_by <http://example.com/persons/luchino_doria> .
-    
-    Note: gmn:E31_1_Sales_Contract is a subclass of cidoc:E31_Document and inherits all 
-    properties applicable to documents. The contract document (E31.1) is linked to the acquisition 
-    event (E8) it documents via P70_documents. The shortcut properties for seller, buyer, property, 
-    procurators (P70.4, P70.5), guarantors (P70.6, P70.7), and broker (P70.8) all contribute to 
-    creating the same E8_Acquisition event. Procurators and guarantors are modeled as E7_Activity 
-    nodes (via P9_consists_of) that explicitly link each agent to the principal they represent/guarantee 
-    through P17_was_motivated_by. Brokers are linked directly to the acquisition via P14_carried_out_by 
-    since they facilitate the transaction as a whole rather than acting on behalf of one party.
-    
-    Full CIDOC-CRM structure (after transformation):
-    <http://example.com/documents/contract_1427_01_15> a gmn:E31_1_Sales_Contract ;
-        cidoc:P1_is_identified_by <http://example.com/documents/contract_1427_01_15/appellation/12345678> ;
-        cidoc:P102_has_title <http://example.com/titles/contract_title_1427> ;
-        cidoc:P94i_was_created_by <http://example.com/documents/contract_1427_01_15/creation> ;
-        cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300027621> ; # contracts (documents)
-        cidoc:P70_documents <http://example.com/events/acquisition_palazzo_doria_1427> ;
-        cidoc:P128_carries <http://example.com/texts/contract_text_1427> .
-    
-    <http://example.com/documents/contract_1427_01_15/appellation/12345678> a cidoc:E41_Appellation ;
-        cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300404650> ;
-        cidoc:P190_has_symbolic_content "Sale of Palazzo in Genoa, January 15, 1427" .
-    
-    <http://example.com/titles/contract_title_1427> a cidoc:E35_Title ;
-        cidoc:P190_has_symbolic_content "Vendicio domus posita in Ianua"@la .
-    
-    <http://example.com/documents/contract_1427_01_15/creation> a cidoc:E65_Creation ;
-        cidoc:P14_carried_out_by <http://example.com/notaries/antonio_de_credentia> ;
-        cidoc:P4_has_time-span <http://example.com/documents/contract_1427_01_15/timespan/12345678> .
-    
-    <http://example.com/documents/contract_1427_01_15/timespan/12345678> a cidoc:E52_Time-Span ;
-        cidoc:P82_at_some_time_within "1427-01-15"^^xsd:date .
-    
-    <http://example.com/events/acquisition_palazzo_doria_1427> a cidoc:E8_Acquisition ;
-        cidoc:P24_transferred_title_of <http://example.com/buildings/palazzo_doria> ;
-        cidoc:P23_transferred_title_from <http://example.com/persons/giovanni_spinola> ;
-        cidoc:P22_transferred_title_to <http://example.com/persons/luchino_doria> ;
-        cidoc:P4_has_time-span [
-            a cidoc:E52_Time-Span ;
-            cidoc:P82_at_some_time_within "1427-01-15"^^xsd:date
-        ] .
-    
-    Note: gmn:E31_1_Sales_Contract is a subclass of cidoc:E31_Document and inherits all 
-    properties applicable to documents. This class provides semantic clarity that the document 
-    represents a sales contract. The contract document (E31.1) is linked to the acquisition 
-    event (E8) it documents via P70_documents. The contract can have a name via P1, can be 
-    typed with AAT terms via P2, can reference the notary who created it via P94, and can 
-    carry the textual content via P128. Parties to the transaction (buyer/seller) are modeled 
-    on the E8_Acquisition event, not directly on the contract document.
-    
-    Important distinction: Use cidoc:P102_has_title for the formal, authoritative title given 
-    by the notary (typically appearing at the top of the contract document), and gmn:P1_1_has_name 
-    for modern descriptive names used for cataloging purposes. P102_has_title links to an 
-    E35_Title entity which carries the exact title text via P190_has_symbolic_content. This 
-    captures the semantic difference between the historical document's formal title and modern 
-    cataloging identifiers.
-    
-    Example transformation for gmn:P11i_1_earliest_attestation_date:
-    
-    INPUT (shortcut):
-    <person> gmn:P11i_1_earliest_attestation_date "1427-01-01"^^xsd:date .
-    
-    OUTPUT (CIDOC-CRM compliant):
-    <person> cidoc:P11i_participated_in <event1> .
-    <event1> a cidoc:E5_Event ;
-             cidoc:P4_has_time-span <timespan1> .
-    <timespan1> a cidoc:E52_Time-Span ;
-                cidoc:P82a_begin_of_the_begin "1427-01-01"^^xsd:date .
-    
-    Note: When transforming gmn:P11i_1_earliest_attestation_date, an E5_Event and E52_Time-Span 
-    are created to properly model the attestation. The event represents the earliest documented 
-    occurrence of the person in historical sources. This captures both the date and the fact 
-    that it represents participation in a datable event.
-    
-    Example transformation for gmn:P11i_2_latest_attestation_date:
-    
-    INPUT (shortcut):
-    <person> gmn:P11i_2_latest_attestation_date "1450-12-31"^^xsd:date .
-    
-    OUTPUT (CIDOC-CRM compliant):
-    <person> cidoc:P11i_participated_in <event2> .
-    <event2> a cidoc:E5_Event ;
-             cidoc:P4_has_time-span <timespan2> .
-    <timespan2> a cidoc:E52_Time-Span ;
-                cidoc:P82b_end_of_the_end "1450-12-31"^^xsd:date .
-    
-    Note: When transforming gmn:P11i_2_latest_attestation_date, an E5_Event and E52_Time-Span 
-    are created to properly model the attestation. The event represents the latest documented 
-    occurrence of the person in historical sources, using P82b_end_of_the_end to indicate 
-    this is the end point of the documented timespan.
-    
-    Example transformation for gmn:P96_1_has_mother:
-    
-    INPUT (shortcut):
-    <person1> gmn:P96_1_has_mother <person2> .
-    
-    OUTPUT (CIDOC-CRM compliant):
-    <person1> cidoc:P98i_was_born <birth1> .
-    <birth1> a cidoc:E67_Birth ;
-             cidoc:P96_by_mother <person2> .
-    
-    Note: When transforming gmn:P96_1_has_mother, an E67_Birth event is created to properly 
-    model the biological parent relationship. If the person already has a birth event, 
-    the mother should be added to that existing event rather than creating a duplicate.
-    
-    Example transformation for gmn:P97_1_has_father:
-    
-    INPUT (shortcut):
-    <person1> gmn:P97_1_has_father <person3> .
-    
-    OUTPUT (CIDOC-CRM compliant):
-    <person1> cidoc:P98i_was_born <birth1> .
-    <birth1> a cidoc:E67_Birth ;
-             cidoc:P97_from_father <person3> .
-    
-    Note: When transforming gmn:P97_1_has_father, an E67_Birth event is created to properly 
-    model the biological parent relationship. If the person already has a birth event, 
-    the father should be added to that existing event rather than creating a duplicate.
-    Both mother and father can be added to the same birth event.
-    
-    Example transformation for gmn:P11i_3_has_spouse:
-    
-    INPUT (shortcut):
-    <person1> gmn:P11i_3_has_spouse <person2> .
-    
-    OUTPUT (CIDOC-CRM compliant):
-    <person1> cidoc:P11i_participated_in <marriage1> .
-    <marriage1> a cidoc:E5_Event ;
-                cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300055475> ;
-                cidoc:P11_had_participant <person1> , <person2> .
-    
-    Note: When transforming gmn:P11i_3_has_spouse, an E5_Event is created and typed as a 
-    marriage (AAT 300055475). Both spouses are added as participants via P11_had_participant. 
-    The marriage event can later be enriched with dates, places, and other information. 
-    If modeling multiple marriages, separate events should be created for each.
-    
-    Example usage for gmn:E22_1_Building:
-    
-    <http://example.com/buildings/palazzo_doria> a gmn:E22_1_Building ;
-        gmn:P1_1_has_name "Palazzo Doria" ;
-        cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300005452> ; # palazzo
-        cidoc:P53_has_former_or_current_location <http://example.com/places/genoa> .
-    
-    Note: gmn:E22_1_Building is a subclass of cidoc:E22_Human-Made_Object and inherits all 
-    properties applicable to human-made objects. This class provides semantic clarity that 
-    the object represents a building or built structure.
-    
-    Example usage for gmn:E22_2_Moveable_Property:
-    
-    <http://example.com/objects/galley_san_marco> a gmn:E22_2_Moveable_Property ;
-        gmn:P1_1_has_name "Galley San Marco" ;
-        cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300024062> ; # galley
-        gmn:P22_1_has_owner <http://example.com/person/giovanni_doria> .
-    
-    Note: gmn:E22_2_Moveable_Property is a subclass of cidoc:E22_Human-Made_Object and 
-    inherits all properties applicable to human-made objects. This class provides semantic 
-    clarity that the object represents moveable property (boats, merchandise, furniture, etc.) 
-    rather than immoveable real estate.
-    
-    Example transformation for gmn:P22_1_has_owner:
-    
-    INPUT (shortcut):
-    <building1> gmn:P22_1_has_owner <person1> .
-    
-    OUTPUT (CIDOC-CRM compliant):
-    <building1> cidoc:P24i_changed_ownership_through <acquisition1> .
-    <acquisition1> a cidoc:E8_Acquisition ;
-                   cidoc:P22_transferred_title_to <person1> ;
-                   cidoc:P24_transferred_title_of <building1> .
-    
-    Note: When transforming gmn:P22_1_has_owner, an E8_Acquisition event is created. 
-    This property works for both buildings (gmn:E22_1_Building) and moveable property 
-    (gmn:E22_2_Moveable_Property). For time-specific ownership, date information should 
-    be added to the acquisition event via P4_has_time-span.
-    
-    Example transformation for gmn:P53_1_has_occupant:
-    
-    INPUT (shortcut):
-    <building1> gmn:P53_1_has_occupant <person2> .
-    
-    OUTPUT (CIDOC-CRM compliant):
-    <building1> cidoc:P53i_is_former_or_current_location_of <move1> .
-    <move1> a cidoc:E9_Move ;
-            cidoc:P25_moved <person2> ;
-            cidoc:P26_moved_to <building1> .
-    
-    Note: When transforming gmn:P53_1_has_occupant, an E9_Move event is created to model 
-    the person taking up residence. For time-specific occupation, date information should 
-    be added to the move event via P4_has_time-span.
-    
-    Example usage for gmn:P122_1_borders_with:
-    
-    INPUT:
-    <building1> gmn:P122_1_borders_with <building2> .
-    
-    OUTPUT (same as input, as this is a direct relationship):
-    <building1> cidoc:P122_borders_with <building2> .
-    
-    Note: gmn:P122_1_borders_with is a symmetric property and a subproperty of 
-    cidoc:P122_borders_with. No transformation is needed as it represents a direct 
-    spatial relationship. The symmetry means if Building A borders Building B, 
-    the inverse is automatically implied.
-    """@en .
-    
+# Property: P70.2 documents buyer
+gmn:P70_2_documents_buyer
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.2 documents buyer"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with the person named as the buyer. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P22_transferred_title_to > E21_Person. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The buyer is the party receiving ownership of the property being sold."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P22_transferred_title_to .
+
+# Property: P70.3 documents transfer of
+gmn:P70_3_documents_transfer_of
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.3 documents transfer of"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with the physical thing (property, object, or person) being transferred. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P24_transferred_title_of > E18_Physical_Thing. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The range includes buildings (gmn:E22_1_Building), moveable property (gmn:E22_2_Moveable_Property), and persons (E21_Person, for the historical documentation of enslaved persons or other instances where people were treated as property)."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E18_Physical_Thing ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P24_transferred_title_of .
+
+# Property: P70.4 documents seller's procurator
+gmn:P70_4_documents_sellers_procurator
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.4 documents seller's procurator"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with the person named as the procurator (legal representative) for the seller. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P9_consists_of > E7_Activity > P14_carried_out_by > E21_Person (procurator), with P17_was_motivated_by linking to the seller (E21_Person). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The transformation creates an E7_Activity node that explicitly links the procurator to the seller they represent via P17_was_motivated_by."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    dcterms:modified "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by, cidoc:P17_was_motivated_by .
+
+# Property: P70.5 documents buyer's procurator
+gmn:P70_5_documents_buyers_procurator
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.5 documents buyer's procurator"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with the person named as the procurator (legal representative) for the buyer. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P9_consists_of > E7_Activity > P14_carried_out_by > E21_Person (procurator), with P17_was_motivated_by linking to the buyer (E21_Person). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The transformation creates an E7_Activity node that explicitly links the procurator to the buyer they represent via P17_was_motivated_by."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain
