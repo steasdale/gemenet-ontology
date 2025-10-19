@@ -1,3 +1,412 @@
+#!/usr/bin/env python3
+"""
+Transform GMN shortcut properties to full CIDOC-CRM compliant structure.
+
+This script reads JSON-LD export from Omeka-S and transforms custom shortcut
+properties (like gmn:P1_1_has_name) into their full CIDOC-CRM equivalents.
+
+Updated to reflect class hierarchy:
+- gmn:E31_1_Contract (general contract class)
+- gmn:E31_2_Sales_Contract (specialized sales contract, subclass of E31_1_Contract)
+"""
+
+import json
+import sys
+from uuid import uuid4
+
+# Getty AAT URI for names (general)
+AAT_NAME = "http://vocab.getty.edu/page/aat/300404650"
+# Getty AAT URI for names found in sources
+AAT_NAME_FROM_SOURCE = "http://vocab.getty.edu/page/aat/300456607"
+# Getty AAT URI for patronymics (patrilineal names)
+AAT_PATRONYMIC = "http://vocab.getty.edu/page/aat/300404651"
+# Getty AAT URI for editorial notes
+AAT_EDITORIAL_NOTE = "http://vocab.getty.edu/page/aat/300456627"
+# Wikidata URI for loconyms
+WIKIDATA_LOCONYM = "https://www.wikidata.org/wiki/Q17143070"
+# Getty AAT URI for regions (geographic)
+AAT_REGION = "http://vocab.getty.edu/page/aat/300055490"
+# Getty AAT URI for marriages
+AAT_MARRIAGE = "http://vocab.getty.edu/page/aat/300055475"
+# Getty AAT URI for procurators/agents
+AAT_AGENT = "http://vocab.getty.edu/page/aat/300025972"
+# Getty AAT URI for guarantors
+AAT_GUARANTOR = "http://vocab.getty.edu/page/aat/300025614"
+# Getty AAT URI for brokers
+AAT_BROKER = "http://vocab.getty.edu/page/aat/300025234"
+# Getty AAT URI for payers
+AAT_PAYER = "http://vocab.getty.edu/page/aat/300386048"
+# Getty AAT URI for payees
+AAT_PAYEE = "http://vocab.getty.edu/page/aat/300386184"
+# Getty AAT URI for transfer of rights
+AAT_TRANSFER_OF_RIGHTS = "http://vocab.getty.edu/page/aat/300417639"
+# Getty AAT URI for financial transactions
+AAT_FINANCIAL_TRANSACTION = "http://vocab.getty.edu/page/aat/300055984"
+# Getty AAT URI for witnesses
+AAT_WITNESS = "http://vocab.getty.edu/page/aat/300028910"
+# Getty AAT URI for declarations
+AAT_DECLARATION = "http://vocab.getty.edu/page/aat/300027623"
+# Getty AAT URI for correspondance
+AAT_CORRESPONDENCE = "http://vocab.getty.edu/page/aat/300026877"
+
+def generate_appellation_uri(subject_uri, name_value, suffix=""):
+    """Generate a unique URI for an appellation resource."""
+    # Create a deterministic URI based on subject and name
+    name_hash = str(hash(name_value + suffix))[-8:]
+    return f"{subject_uri}/appellation/{name_hash}"
+
+def transform_name_property(data, property_name, aat_type_uri):
+    """
+    Generic function to transform name shortcut properties to full CIDOC-CRM structure.
+    
+    Args:
+        data: The item data dictionary
+        property_name: The shortcut property to transform (e.g., 'gmn:P1_1_has_name')
+        aat_type_uri: The Getty AAT URI for the appellation type
+    
+    Returns:
+        Modified data dictionary
+    """
+    if property_name not in data:
+        return data
+    
+    names = data[property_name]
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    # Initialize P11i if it doesn't exist
+    if 'cidoc:P11i_participated_in' not in data:
+        data['cidoc:P11i_participated_in'] = []
+    
+    # Transform each spouse (each represents a separate marriage)
+    for spouse_obj in spouses:
+        # Handle both URI references and full objects
+        if isinstance(spouse_obj, dict):
+            spouse_uri = spouse_obj.get('@id', '')
+            spouse_data = spouse_obj.copy()
+            if '@type' not in spouse_data:
+                spouse_data['@type'] = 'cidoc:E21_Person'
+        else:
+            spouse_uri = str(spouse_obj)
+            spouse_data = {
+                '@id': spouse_uri,
+                '@type': 'cidoc:E21_Person'
+            }
+        
+        # Create marriage event URI
+        spouse_hash = str(hash(spouse_uri + 'marriage'))[-8:]
+        marriage_uri = f"{subject_uri}/marriage/{spouse_hash}"
+        
+        # Create full CIDOC-CRM structure
+        marriage_event = {
+            '@id': marriage_uri,
+            '@type': 'cidoc:E5_Event',
+            'cidoc:P2_has_type': {
+                '@id': AAT_MARRIAGE,
+                '@type': 'cidoc:E55_Type'
+            },
+            'cidoc:P11_had_participant': [
+                {
+                    '@id': subject_uri,
+                    '@type': 'cidoc:E21_Person'
+                },
+                spouse_data
+            ]
+        }
+        
+        # Add to P11i
+        data['cidoc:P11i_participated_in'].append(marriage_event)
+    
+    # Remove shortcut property
+    del data['gmn:P11i_3_has_spouse']
+    
+    return data
+
+def transform_p22_1_has_owner(data):
+    """
+    Transform gmn:P22_1_has_owner to full CIDOC-CRM structure:
+    P24i_changed_ownership_through > E8_Acquisition > P22_transferred_title_to > E21_Person
+    
+    Works for both buildings (gmn:E22_1_Building) and moveable property (gmn:E22_2_Moveable_Property).
+    
+    Args:
+        data: The item data dictionary
+    
+    Returns:
+        Modified data dictionary
+    """
+    if 'gmn:P22_1_has_owner' not in data:
+        return data
+    
+    owners = data['gmn:P22_1_has_owner']
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    # Determine the type of the object (building or moveable property)
+    object_type = 'cidoc:E22_Human-Made_Object'
+    if '@type' in data:
+        if isinstance(data['@type'], list):
+            if 'gmn:E22_1_Building' in data['@type']:
+                object_type = 'gmn:E22_1_Building'
+            elif 'gmn:E22_2_Moveable_Property' in data['@type']:
+                object_type = 'gmn:E22_2_Moveable_Property'
+        elif data['@type'] in ['gmn:E22_1_Building', 'gmn:E22_2_Moveable_Property']:
+            object_type = data['@type']
+    
+    # Initialize P24i if it doesn't exist
+    if 'cidoc:P24i_changed_ownership_through' not in data:
+        data['cidoc:P24i_changed_ownership_through'] = []
+    
+    # Transform each owner (each represents a separate acquisition)
+    for owner_obj in owners:
+        # Handle both URI references and full objects
+        if isinstance(owner_obj, dict):
+            owner_uri = owner_obj.get('@id', '')
+            owner_data = owner_obj.copy()
+            if '@type' not in owner_data:
+                owner_data['@type'] = 'cidoc:E21_Person'
+        else:
+            owner_uri = str(owner_obj)
+            owner_data = {
+                '@id': owner_uri,
+                '@type': 'cidoc:E21_Person'
+            }
+        
+        # Create acquisition event URI
+        owner_hash = str(hash(owner_uri + 'acquisition'))[-8:]
+        acquisition_uri = f"{subject_uri}/acquisition/{owner_hash}"
+        
+        # Create full CIDOC-CRM structure
+        acquisition_event = {
+            '@id': acquisition_uri,
+            '@type': 'cidoc:E8_Acquisition',
+            'cidoc:P24_transferred_title_of': {
+                '@id': subject_uri,
+                '@type': object_type
+            },
+            'cidoc:P22_transferred_title_to': owner_data
+        }
+        
+        # Add to P24i
+        data['cidoc:P24i_changed_ownership_through'].append(acquisition_event)
+    
+    # Remove shortcut property
+    del data['gmn:P22_1_has_owner']
+    
+    return data
+
+    """
+    Transform gmn:P53_1_has_occupant to full CIDOC-CRM structure:
+    P53i_is_former_or_current_location_of > E9_Move > P25_moved > E21_Person
+    
+    Args:
+        data: The item data dictionary
+    
+    Returns:
+        Modified data dictionary
+    """
+    if 'gmn:P53_1_has_occupant' not in data:
+        return data
+    
+    occupants = data['gmn:P53_1_has_occupant']
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    # Initialize P53i if it doesn't exist
+    if 'cidoc:P53i_is_former_or_current_location_of' not in data:
+        data['cidoc:P53i_is_former_or_current_location_of'] = []
+    
+    # Transform each occupant (each represents a separate move)
+    for occupant_obj in occupants:
+        # Handle both URI references and full objects
+        if isinstance(occupant_obj, dict):
+            occupant_uri = occupant_obj.get('@id', '')
+            occupant_data = occupant_obj.copy()
+            if '@type' not in occupant_data:
+                occupant_data['@type'] = 'cidoc:E21_Person'
+        else:
+            occupant_uri = str(occupant_obj)
+            occupant_data = {
+                '@id': occupant_uri,
+                '@type': 'cidoc:E21_Person'
+            }
+        
+        # Create move event URI
+        occupant_hash = str(hash(occupant_uri + 'move'))[-8:]
+        move_uri = f"{subject_uri}/move/{occupant_hash}"
+        
+        # Create full CIDOC-CRM structure
+        move_event = {
+            '@id': move_uri,
+            '@type': 'cidoc:E9_Move',
+            'cidoc:P25_moved': occupant_data,
+            'cidoc:P26_moved_to': {
+                '@id': subject_uri,
+                '@type': 'gmn:E22_1_Building'
+            }
+        }
+        
+        # Add to P53i
+        data['cidoc:P53i_is_former_or_current_location_of'].append(move_event)
+    
+    # Remove shortcut property
+    del data['gmn:P53_1_has_occupant']
+    
+    return data
+
+def transform_p53_1_has_occupant(data):
+
+def transform_p70_1_documents_seller(data):
+    """
+    Transform gmn:P70_1_documents_seller to full CIDOC-CRM structure:
+    P70_documents > E8_Acquisition > P23_transferred_title_from > E21_Person
+    
+    Args:
+        data: The item data dictionary
+    
+    Returns:
+        Modified data dictionary
+    """
+    if 'gmn:P70_1_documents_seller' not in data:
+        return data
+    
+    sellers = data['gmn:P70_1_documents_seller']
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    # Check if acquisition event already exists
+    existing_acquisition = None
+    if 'cidoc:P70_documents' in data and len(data['cidoc:P70_documents']) > 0:
+        # Use existing acquisition event (assuming only one acquisition per contract)
+        existing_acquisition = data['cidoc:P70_documents'][0]
+    else:
+        # Create new acquisition event
+        acquisition_uri = f"{subject_uri}/acquisition"
+        existing_acquisition = {
+            '@id': acquisition_uri,
+            '@type': 'cidoc:E8_Acquisition'
+        }
+        data['cidoc:P70_documents'] = [existing_acquisition]
+    
+    # Initialize P23 if it doesn't exist
+    if 'cidoc:P23_transferred_title_from' not in existing_acquisition:
+        existing_acquisition['cidoc:P23_transferred_title_from'] = []
+    
+    # Add sellers to acquisition event
+    for seller_obj in sellers:
+        # Handle both URI references and full objects
+        if isinstance(seller_obj, dict):
+            seller_data = seller_obj.copy()
+            if '@type' not in seller_data:
+                seller_data['@type'] = 'cidoc:E21_Person'
+        else:
+            seller_uri = str(seller_obj)
+            seller_data = {
+                '@id': seller_uri,
+                '@type': 'cidoc:E21_Person'
+            }
+        
+        # Add to acquisition event
+        existing_acquisition['cidoc:P23_transferred_title_from'].append(seller_data)
+    
+    # Remove shortcut property
+    del data['gmn:P70_1_documents_seller']
+    
+    return data
+
+def transform_p70_2_documents_buyer(data):
+    """
+    Transform gmn:P70_2_documents_buyer to full CIDOC-CRM structure:
+    P70_documents > E8_Acquisition > P22_transferred_title_to > E21_Person
+    
+    Args:
+        data: The item data dictionary
+    
+    Returns:
+        Modified data dictionary
+    """
+    if 'gmn:P70_2_documents_buyer' not in data:
+        return data
+    
+    buyers = data['gmn:P70_2_documents_buyer']
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    # Check if acquisition event already exists
+    existing_acquisition = None
+    if 'cidoc:P70_documents' in data and len(data['cidoc:P70_documents']) > 0:
+        # Use existing acquisition event
+        existing_acquisition = data['cidoc:P70_documents'][0]
+    else:
+        # Create new acquisition event
+        acquisition_uri = f"{subject_uri}/acquisition"
+        existing_acquisition = {
+            '@id': acquisition_uri,
+            '@type': 'cidoc:E8_Acquisition'
+        }
+        data['cidoc:P70_documents'] = [existing_acquisition]
+    
+    # Initialize P22 if it doesn't exist
+    if 'cidoc:P22_transferred_title_to' not in existing_acquisition:
+        existing_acquisition['cidoc:P22_transferred_title_to'] = []
+    
+    # Add buyers to acquisition event
+    for buyer_obj in buyers:
+        # Handle both URI references and full objects
+        if isinstance(buyer_obj, dict):
+            buyer_data = buyer_obj.copy()
+            if '@type' not in buyer_data:
+                buyer_data['@type'] = 'cidoc:E21_Person'
+        else:
+            buyer_uri = str(buyer_obj)
+            buyer_data = {
+                '@id': buyer_uri,
+                '@type': 'cidoc:E21_Person'
+            }
+        
+        # Add to acquisition event
+        existing_acquisition['cidoc:P22_transferred_title_to'].append(buyer_data)
+    
+    # Remove shortcut property
+    del data['gmn:P70_2_documents_buyer']
+    
+    return data
+
+def transform_p70_3_documents_transfer_of(data):
+    """
+    Transform gmn:P70_3_documents_transfer_of to full CIDOC-CRM structure:
+    P70_documents > E8_Acquisition > P24_transferred_title_of > E18_Physical_Thing
+    
+    Args:
+        data: The item data dictionary
+    
+    Returns:
+        Modified data dictionary
+    """
+    if 'gmn:P70_3_documents_transfer_of' not in data:
+        return data
+    
+    objects = data['gmn:P70_3_documents_transfer_of']
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    # Check if acquisition event already exists
+    existing_acquisition = None
+    if 'cidoc:P70_documents' in data and len(data['cidoc:P70_documents']) > 0:
+        # Use existing acquisition event
+        existing_acquisition = data['cidoc:P70_documents'][0]
+    else:
+        # Create new acquisition event
+        acquisition_uri = f"{subject_uri}/acquisition"
+        existing_acquisition = {
+            '@id': acquisition_uri,
+            '@type': 'cidoc:E8_Acquisition'
+        }
+        data['cidoc:P70_documents'] = [existing_acquisition]
+    
+    # Initialize P24 if it doesn't exist
+    if 'cidoc:P24_transferred_title_of' not in existing_acquisition:
+        existing_acquisition['cidoc:P24_transferred_title_of'] = []
+    
+    # Add objects to acquisition event
+    for object_obj in objects:
+        # Handle both URI references and full objects
+        if isinstance(object_obj, dict):
+            object_data = object_obj.copy()
             # Preserve existing type or default to E18_Physical_Thing
             if '@type' not in object_data:
                 object_data['@type'] = 'cidoc:E18_Physical_Thing'
@@ -283,113 +692,6 @@ def transform_p70_6_documents_sellers_guarantor(data):
             else:
                 seller_uri = str(seller_obj)
                 seller_data = {'@id': seller_uri, '@type': 'cidoc:E21_Person'}
-    
-    # Transform each guarantor into an E7_Activity
-    for guarantor_obj in guarantors:
-        # Handle both URI references and full objects
-        if isinstance(guarantor_obj, dict):
-            guarantor_uri = guarantor_obj.get('@id', '')
-            guarantor_data = guarantor_obj.copy()
-            if '@type' not in guarantor_data:
-                guarantor_data['@type'] = 'cidoc:E21_Person'
-        else:
-            guarantor_uri = str(guarantor_obj)
-            guarantor_data = {
-                '@id': guarantor_uri,
-                '@type': 'cidoc:E21_Person'
-            }
-        
-        # Add is_guaranteed_by relationship from seller to guarantor
-        if seller_uri:
-            if '_guarantee_links' not in data:
-                data['_guarantee_links'] = []
-            data['_guarantee_links'].append({
-                'principal': seller_uri,
-                'guarantor': guarantor_uri,
-                'property': 'gmn:is_guaranteed_by'
-            })
-        
-        # Create activity URI
-        activity_hash = str(hash(guarantor_uri + 'seller_guarantor'))[-8:]
-        activity_uri = f"{subject_uri}/activity/sellers_guarantor_{activity_hash}"
-        
-        # Create E7_Activity
-        activity = {
-            '@id': activity_uri,
-            '@type': 'cidoc:E7_Activity',
-            'cidoc:P14_carried_out_by': [guarantor_data],
-            'cidoc:P14.1_in_the_role_of': {
-                '@id': AAT_GUARANTOR,
-                '@type': 'cidoc:E55_Type'
-            }
-        }
-        
-        # Add P17_was_motivated_by if we have seller
-        if seller_uri:
-            activity['cidoc:P17_was_motivated_by'] = {
-                '@id': seller_uri,
-                '@type': 'cidoc:E21_Person'
-            }
-        
-        # Add activity to acquisition
-        existing_acquisition['cidoc:P9_consists_of'].append(activity)
-    
-    # Remove shortcut property
-    del data['gmn:P70_6_documents_sellers_guarantor']
-    
-    return data
-
-def transform_p70_7_documents_buyers_guarantor(data):
-    """
-    Transform gmn:P70_7_documents_buyers_guarantor to full CIDOC-CRM structure:
-    P70_documents > E8_Acquisition > P9_consists_of > E7_Activity > P14_carried_out_by > E21_Person
-    with P17_was_motivated_by linking to the buyer
-    
-    Also adds gmn:is_guaranteed_by property from buyer to guarantor.
-    
-    Args:
-        data: The item data dictionary
-    
-    Returns:
-        Modified data dictionary
-    """
-    if 'gmn:P70_7_documents_buyers_guarantor' not in data:
-        return data
-    
-    guarantors = data['gmn:P70_7_documents_buyers_guarantor']
-    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
-    
-    # Check if acquisition event already exists
-    existing_acquisition = None
-    if 'cidoc:P70_documents' in data and len(data['cidoc:P70_documents']) > 0:
-        # Use existing acquisition event
-        existing_acquisition = data['cidoc:P70_documents'][0]
-    else:
-        # Create new acquisition event
-        acquisition_uri = f"{subject_uri}/acquisition"
-        existing_acquisition = {
-            '@id': acquisition_uri,
-            '@type': 'cidoc:E8_Acquisition'
-        }
-        data['cidoc:P70_documents'] = [existing_acquisition]
-    
-    # Initialize P9 if it doesn't exist
-    if 'cidoc:P9_consists_of' not in existing_acquisition:
-        existing_acquisition['cidoc:P9_consists_of'] = []
-    
-    # Get buyer URI and data for P17 link and is_guaranteed_by (if P22 exists)
-    buyer_uri = None
-    buyer_data = None
-    if 'cidoc:P22_transferred_title_to' in existing_acquisition:
-        buyers = existing_acquisition['cidoc:P22_transferred_title_to']
-        if len(buyers) > 0:
-            buyer_obj = buyers[0]
-            if isinstance(buyer_obj, dict):
-                buyer_uri = buyer_obj.get('@id')
-                buyer_data = buyer_obj
-            else:
-                buyer_uri = str(buyer_obj)
-                buyer_data = {'@id': buyer_uri, '@type': 'cidoc:E21_Person'}
     
     # Transform each guarantor into an E7_Activity
     for guarantor_obj in guarantors:
@@ -1151,12 +1453,10 @@ def transform_p70_17_documents_sale_price_currency(data):
     
     return data
 
-# Arbitration Agreement transformation functions
-
 def transform_p70_18_documents_disputing_party(data):
     """
     Transform gmn:P70_18_documents_disputing_party to full CIDOC-CRM structure:
-    P70_documents > E7_Activity > P14_carried_out_by > E39_Actor
+    P70_documents > E13_Attribute_Assignment > P140_assigned_attribute_to > E39_Actor
     
     Args:
         data: The item data dictionary
@@ -1170,27 +1470,23 @@ def transform_p70_18_documents_disputing_party(data):
     parties = data['gmn:P70_18_documents_disputing_party']
     subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
     
-    # Check if arbitration activity already exists
-    existing_activity = None
+    # Check if attribute assignment already exists
+    existing_assignment = None
     if 'cidoc:P70_documents' in data and len(data['cidoc:P70_documents']) > 0:
-        # Use existing arbitration activity
-        existing_activity = data['cidoc:P70_documents'][0]
+        # Use existing attribute assignment
+        existing_assignment = data['cidoc:P70_documents'][0]
     else:
-        # Create new arbitration activity
-        activity_uri = f"{subject_uri}/arbitration"
-        existing_activity = {
-            '@id': activity_uri,
-            '@type': 'cidoc:E7_Activity',
-            'cidoc:P2_has_type': {
-                '@id': AAT_ARBITRATION,
-                '@type': 'cidoc:E55_Type'
-            }
+        # Create new attribute assignment
+        assignment_uri = f"{subject_uri}/arbitration_assignment"
+        existing_assignment = {
+            '@id': assignment_uri,
+            '@type': 'cidoc:E13_Attribute_Assignment'
         }
-        data['cidoc:P70_documents'] = [existing_activity]
+        data['cidoc:P70_documents'] = [existing_assignment]
     
-    # Initialize P14 if it doesn't exist
-    if 'cidoc:P14_carried_out_by' not in existing_activity:
-        existing_activity['cidoc:P14_carried_out_by'] = []
+    # Initialize P140 if it doesn't exist
+    if 'cidoc:P140_assigned_attribute_to' not in existing_assignment:
+        existing_assignment['cidoc:P140_assigned_attribute_to'] = []
     
     # Add disputing parties
     for party_obj in parties:
@@ -1206,8 +1502,8 @@ def transform_p70_18_documents_disputing_party(data):
                 '@type': 'cidoc:E39_Actor'
             }
         
-        # Add to arbitration activity
-        existing_activity['cidoc:P14_carried_out_by'].append(party_data)
+        # Add to attribute assignment
+        existing_assignment['cidoc:P140_assigned_attribute_to'].append(party_data)
     
     # Remove shortcut property
     del data['gmn:P70_18_documents_disputing_party']
@@ -1217,7 +1513,7 @@ def transform_p70_18_documents_disputing_party(data):
 def transform_p70_19_documents_arbitrator(data):
     """
     Transform gmn:P70_19_documents_arbitrator to full CIDOC-CRM structure:
-    P70_documents > E7_Activity > P14_carried_out_by > E39_Actor
+    P70_documents > E13_Attribute_Assignment > P14_carried_out_by > E39_Actor
     
     Args:
         data: The item data dictionary
@@ -1231,27 +1527,23 @@ def transform_p70_19_documents_arbitrator(data):
     arbitrators = data['gmn:P70_19_documents_arbitrator']
     subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
     
-    # Check if arbitration activity already exists
-    existing_activity = None
+    # Check if attribute assignment already exists
+    existing_assignment = None
     if 'cidoc:P70_documents' in data and len(data['cidoc:P70_documents']) > 0:
-        # Use existing arbitration activity
-        existing_activity = data['cidoc:P70_documents'][0]
+        # Use existing attribute assignment
+        existing_assignment = data['cidoc:P70_documents'][0]
     else:
-        # Create new arbitration activity
-        activity_uri = f"{subject_uri}/arbitration"
-        existing_activity = {
-            '@id': activity_uri,
-            '@type': 'cidoc:E7_Activity',
-            'cidoc:P2_has_type': {
-                '@id': AAT_ARBITRATION,
-                '@type': 'cidoc:E55_Type'
-            }
+        # Create new attribute assignment
+        assignment_uri = f"{subject_uri}/arbitration_assignment"
+        existing_assignment = {
+            '@id': assignment_uri,
+            '@type': 'cidoc:E13_Attribute_Assignment'
         }
-        data['cidoc:P70_documents'] = [existing_activity]
+        data['cidoc:P70_documents'] = [existing_assignment]
     
     # Initialize P14 if it doesn't exist
-    if 'cidoc:P14_carried_out_by' not in existing_activity:
-        existing_activity['cidoc:P14_carried_out_by'] = []
+    if 'cidoc:P14_carried_out_by' not in existing_assignment:
+        existing_assignment['cidoc:P14_carried_out_by'] = []
     
     # Add arbitrators
     for arbitrator_obj in arbitrators:
@@ -1267,8 +1559,8 @@ def transform_p70_19_documents_arbitrator(data):
                 '@type': 'cidoc:E39_Actor'
             }
         
-        # Add to arbitration activity
-        existing_activity['cidoc:P14_carried_out_by'].append(arbitrator_data)
+        # Add to attribute assignment
+        existing_assignment['cidoc:P14_carried_out_by'].append(arbitrator_data)
     
     # Remove shortcut property
     del data['gmn:P70_19_documents_arbitrator']
@@ -1278,7 +1570,9 @@ def transform_p70_19_documents_arbitrator(data):
 def transform_p70_20_documents_dispute_subject(data):
     """
     Transform gmn:P70_20_documents_dispute_subject to full CIDOC-CRM structure:
-    P70_documents > E7_Activity > P16_used_specific_object > E1_CRM_Entity
+    P67_refers_to > E1_CRM_Entity
+    
+    This creates a direct relationship between the document and the subject of the dispute.
     
     Args:
         data: The item data dictionary
@@ -1290,29 +1584,10 @@ def transform_p70_20_documents_dispute_subject(data):
         return data
     
     subjects = data['gmn:P70_20_documents_dispute_subject']
-    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
     
-    # Check if arbitration activity already exists
-    existing_activity = None
-    if 'cidoc:P70_documents' in data and len(data['cidoc:P70_documents']) > 0:
-        # Use existing arbitration activity
-        existing_activity = data['cidoc:P70_documents'][0]
-    else:
-        # Create new arbitration activity
-        activity_uri = f"{subject_uri}/arbitration"
-        existing_activity = {
-            '@id': activity_uri,
-            '@type': 'cidoc:E7_Activity',
-            'cidoc:P2_has_type': {
-                '@id': AAT_ARBITRATION,
-                '@type': 'cidoc:E55_Type'
-            }
-        }
-        data['cidoc:P70_documents'] = [existing_activity]
-    
-    # Initialize P16 if it doesn't exist
-    if 'cidoc:P16_used_specific_object' not in existing_activity:
-        existing_activity['cidoc:P16_used_specific_object'] = []
+    # Initialize P67 if it doesn't exist
+    if 'cidoc:P67_refers_to' not in data:
+        data['cidoc:P67_refers_to'] = []
     
     # Add dispute subjects
     for subject_obj in subjects:
@@ -1322,17 +1597,1003 @@ def transform_p70_20_documents_dispute_subject(data):
             if '@type' not in subject_data:
                 subject_data['@type'] = 'cidoc:E1_CRM_Entity'
         else:
-            subject_uri_ref = str(subject_obj)
+            subject_uri = str(subject_obj)
             subject_data = {
-                '@id': subject_uri_ref,
+                '@id': subject_uri,
                 '@type': 'cidoc:E1_CRM_Entity'
             }
         
-        # Add to arbitration activity
-        existing_activity['cidoc:P16_used_specific_object'].append(subject_data)
+        # Add to P67
+        data['cidoc:P67_refers_to'].append(subject_data)
     
     # Remove shortcut property
     del data['gmn:P70_20_documents_dispute_subject']
+    
+    return data
+
+def transform_p70_21_indicates_conceding_party(data):
+    """
+    Transform gmn:P70_21_indicates_conceding_party to full CIDOC-CRM structure:
+    P70_documents > E7_Activity > P14_carried_out_by > E39_Actor
+    
+    Args:
+        data: The item data dictionary
+    
+    Returns:
+        Modified data dictionary
+    """
+    if 'gmn:P70_21_indicates_conceding_party' not in data:
+        return data
+    
+    conceding_parties = data['gmn:P70_21_indicates_conceding_party']
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    # Check if cession activity already exists
+    existing_activity = None
+    if 'cidoc:P70_documents' in data and len(data['cidoc:P70_documents']) > 0:
+        # Use existing cession activity
+        existing_activity = data['cidoc:P70_documents'][0]
+    else:
+        # Create new cession activity
+        activity_uri = f"{subject_uri}/cession"
+        existing_activity = {
+            '@id': activity_uri,
+            '@type': 'cidoc:E7_Activity',
+            'cidoc:P2_has_type': {
+                '@id': AAT_TRANSFER_OF_RIGHTS,
+                '@type': 'cidoc:E55_Type'
+            }
+        }
+        data['cidoc:P70_documents'] = [existing_activity]
+    
+    # Initialize P14 if it doesn't exist
+    if 'cidoc:P14_carried_out_by' not in existing_activity:
+        existing_activity['cidoc:P14_carried_out_by'] = []
+    
+    # Add conceding parties
+    for party_obj in conceding_parties:
+        # Handle both URI references and full objects
+        if isinstance(party_obj, dict):
+            party_data = party_obj.copy()
+            if '@type' not in party_data:
+                party_data['@type'] = 'cidoc:E39_Actor'
+        else:
+            party_uri = str(party_obj)
+            party_data = {
+                '@id': party_uri,
+                '@type': 'cidoc:E39_Actor'
+            }
+        
+        # Add to cession activity
+        existing_activity['cidoc:P14_carried_out_by'].append(party_data)
+    
+    # Remove shortcut property
+    del data['gmn:P70_21_indicates_conceding_party']
+    
+    return data
+
+def transform_p70_22_indicates_receiving_party(data):
+
+def transform_p70_23_indicates_object_of_cession(data):
+    """
+    Transform gmn:P70_23_indicates_object_of_cession to full CIDOC-CRM structure:
+    P70_documents > E7_Activity > P16_used_specific_object > E72_Legal_Object
+    
+    Args:
+        data: The item data dictionary
+    
+    Returns:
+        Modified data dictionary
+    """
+    if 'gmn:P70_23_indicates_object_of_cession' not in data:
+        return data
+    
+    rights = data['gmn:P70_23_indicates_object_of_cession']
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    # Check if cession activity already exists
+    existing_activity = None
+    if 'cidoc:P70_documents' in data and len(data['cidoc:P70_documents']) > 0:
+        # Use existing cession activity
+        existing_activity = data['cidoc:P70_documents'][0]
+    else:
+        # Create new cession activity
+        activity_uri = f"{subject_uri}/cession"
+        existing_activity = {
+            '@id': activity_uri,
+            '@type': 'cidoc:E7_Activity',
+            'cidoc:P2_has_type': {
+                '@id': AAT_TRANSFER_OF_RIGHTS,
+                '@type': 'cidoc:E55_Type'
+            }
+        }
+        data['cidoc:P70_documents'] = [existing_activity]
+    
+    # Initialize P16 if it doesn't exist
+    if 'cidoc:P16_used_specific_object' not in existing_activity:
+        existing_activity['cidoc:P16_used_specific_object'] = []
+    
+    # Add objects of cession
+    for right_obj in rights:
+        # Handle both URI references and full objects
+        if isinstance(right_obj, dict):
+            right_data = right_obj.copy()
+            if '@type' not in right_data:
+                right_data['@type'] = 'cidoc:E72_Legal_Object'
+        else:
+            right_uri = str(right_obj)
+            right_data = {
+                '@id': right_uri,
+                '@type': 'cidoc:E72_Legal_Object'
+            }
+        
+        # Add to cession activity
+        existing_activity['cidoc:P16_used_specific_object'].append(right_data)
+    
+    # Remove shortcut property
+    del data['gmn:P70_23_indicates_object_of_cession']
+    
+    return data
+
+    """
+    Transform gmn:P70_22_indicates_receiving_party to full CIDOC-CRM structure.
+    
+    Handles two different document types:
+    - For E31_4_Cession_of_Rights_Contract: P70_documents > E7_Activity > P14_carried_out_by > E39_Actor
+    - For E31_5_Declaration: P70_documents > E7_Activity > P01_has_domain > E39_Actor
+    
+    Args:
+        data: The item data dictionary
+    
+    Returns:
+        Modified data dictionary
+    """
+    if 'gmn:P70_22_indicates_receiving_party' not in data:
+        return data
+    
+    receiving_parties = data['gmn:P70_22_indicates_receiving_party']
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    # Determine document type to decide which property to use
+    is_declaration = False
+    is_cession = False
+    
+    if '@type' in data:
+        types = data['@type'] if isinstance(data['@type'], list) else [data['@type']]
+        is_declaration = 'gmn:E31_5_Declaration' in types
+        is_cession = 'gmn:E31_4_Cession_of_Rights_Contract' in types
+    
+    # Check if activity already exists
+    existing_activity = None
+    if 'cidoc:P70_documents' in data and len(data['cidoc:P70_documents']) > 0:
+        # Use existing activity
+        existing_activity = data['cidoc:P70_documents'][0]
+    else:
+        # Create new activity with appropriate type
+        activity_uri = f"{subject_uri}/{'declaration' if is_declaration else 'cession'}"
+        activity_type = AAT_DECLARATION if is_declaration else AAT_TRANSFER_OF_RIGHTS
+        existing_activity = {
+            '@id': activity_uri,
+            '@type': 'cidoc:E7_Activity',
+            'cidoc:P2_has_type': {
+                '@id': activity_type,
+                '@type': 'cidoc:E55_Type'
+            }
+        }
+        data['cidoc:P70_documents'] = [existing_activity]
+    
+    # For declarations, use P01_has_domain
+    # For cessions, use P14_carried_out_by (both parties actively carry out the cession)
+    property_key = 'cidoc:P01_has_domain' if is_declaration else 'cidoc:P14_carried_out_by'
+    
+    # Initialize property if it doesn't exist
+    if property_key not in existing_activity:
+        existing_activity[property_key] = []
+    
+    # Add receiving parties
+    for party_obj in receiving_parties:
+        # Handle both URI references and full objects
+        if isinstance(party_obj, dict):
+            party_data = party_obj.copy()
+            if '@type' not in party_data:
+                party_data['@type'] = 'cidoc:E39_Actor'
+        else:
+            party_uri = str(party_obj)
+            party_data = {
+                '@id': party_uri,
+                '@type': 'cidoc:E39_Actor'
+            }
+        
+        # Add to activity
+        existing_activity[property_key].append(party_data)
+    
+    # Remove shortcut property
+    del data['gmn:P70_22_indicates_receiving_party']
+    
+    return data
+
+def transform_p70_24_indicates_declarant(data):
+    """
+    Transform gmn:P70_24_indicates_declarant to full CIDOC-CRM structure:
+    P70_documents > E7_Activity > P14_carried_out_by > E39_Actor
+    
+    Args:
+        data: The item data dictionary
+    
+    Returns:
+        Modified data dictionary
+    """
+    if 'gmn:P70_24_indicates_declarant' not in data:
+        return data
+    
+    declarants = data['gmn:P70_24_indicates_declarant']
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    # Check if declaration activity already exists
+    existing_activity = None
+    if 'cidoc:P70_documents' in data and len(data['cidoc:P70_documents']) > 0:
+        # Use existing declaration activity
+        existing_activity = data['cidoc:P70_documents'][0]
+    else:
+        # Create new declaration activity
+        activity_uri = f"{subject_uri}/declaration"
+        existing_activity = {
+            '@id': activity_uri,
+            '@type': 'cidoc:E7_Activity',
+            'cidoc:P2_has_type': {
+                '@id': AAT_DECLARATION,
+                '@type': 'cidoc:E55_Type'
+            }
+        }
+        data['cidoc:P70_documents'] = [existing_activity]
+    
+    # Initialize P14 if it doesn't exist
+    if 'cidoc:P14_carried_out_by' not in existing_activity:
+        existing_activity['cidoc:P14_carried_out_by'] = []
+    
+    # Add declarants to declaration activity
+    for declarant_obj in declarants:
+        # Handle both URI references and full objects
+        if isinstance(declarant_obj, dict):
+            declarant_data = declarant_obj.copy()
+            if '@type' not in declarant_data:
+                declarant_data['@type'] = 'cidoc:E39_Actor'
+        else:
+            declarant_uri = str(declarant_obj)
+            declarant_data = {
+                '@id': declarant_uri,
+                '@type': 'cidoc:E39_Actor'
+            }
+        
+        # Add to declaration activity
+        existing_activity['cidoc:P14_carried_out_by'].append(declarant_data)
+    
+    # Remove shortcut property
+    del data['gmn:P70_24_indicates_declarant']
+    
+    return data
+
+def transform_p70_25_indicates_declaration_subject(data):
+    """
+    Transform gmn:P70_25_indicates_declaration_subject to full CIDOC-CRM structure:
+    P70_documents > E7_Activity > P16_used_specific_object > E1_CRM_Entity
+    
+    Args:
+        data: The item data dictionary
+    
+    Returns:
+        Modified data dictionary
+    """
+    if 'gmn:P70_25_indicates_declaration_subject' not in data:
+        return data
+    
+    subjects = data['gmn:P70_25_indicates_declaration_subject']
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    # Check if declaration activity already exists
+    existing_activity = None
+    if 'cidoc:P70_documents' in data and len(data['cidoc:P70_documents']) > 0:
+        # Use existing declaration activity
+        existing_activity = data['cidoc:P70_documents'][0]
+    else:
+        # Create new declaration activity
+        activity_uri = f"{subject_uri}/declaration"
+        existing_activity = {
+            '@id': activity_uri,
+            '@type': 'cidoc:E7_Activity',
+            'cidoc:P2_has_type': {
+                '@id': AAT_DECLARATION,
+                '@type': 'cidoc:E55_Type'
+            }
+        }
+        data['cidoc:P70_documents'] = [existing_activity]
+    
+    # Initialize P16 if it doesn't exist
+    if 'cidoc:P16_used_specific_object' not in existing_activity:
+        existing_activity['cidoc:P16_used_specific_object'] = []
+    
+    # Add declaration subjects
+    for subject_obj in subjects:
+        # Handle both URI references and full objects
+        if isinstance(subject_obj, dict):
+            subject_data = subject_obj.copy()
+            if '@type' not in subject_data:
+                subject_data['@type'] = 'cidoc:E1_CRM_Entity'
+        else:
+            subj_uri = str(subject_obj)
+            subject_data = {
+                '@id': subj_uri,
+                '@type': 'cidoc:E1_CRM_Entity'
+            }
+        
+        # Add to declaration activity
+        existing_activity['cidoc:P16_used_specific_object'].append(subject_data)
+    
+    # Remove shortcut property
+    del data['gmn:P70_25_indicates_declaration_subject']
+    
+    return data
+
+def transform_p70_26_indicates_sender(data):
+    """
+    Transform gmn:P70_26_indicates_sender to full CIDOC-CRM structure:
+    P70_documents > E7_Activity > P14_carried_out_by > E39_Actor
+    
+    Args:
+        data: The item data dictionary
+    
+    Returns:
+        Modified data dictionary
+    """
+    if 'gmn:P70_26_indicates_sender' not in data:
+        return data
+    
+    senders = data['gmn:P70_26_indicates_sender']
+    if not isinstance(senders, list):
+        senders = [senders]
+    
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    # Check if correspondence activity already exists
+    existing_activity = None
+    if 'cidoc:P70_documents' in data and len(data['cidoc:P70_documents']) > 0:
+        # Look for existing correspondence activity
+        for activity in data['cidoc:P70_documents']:
+            if isinstance(activity, dict) and activity.get('@id', '').endswith('/correspondence'):
+                existing_activity = activity
+                break
+    
+    if existing_activity is None:
+        # Create new correspondence activity
+        activity_uri = f"{subject_uri}/correspondence"
+        existing_activity = {
+            '@id': activity_uri,
+            '@type': 'cidoc:E7_Activity',
+            'cidoc:P2_has_type': {
+                '@id': 'http://vocab.getty.edu/page/aat/300026877',
+                '@type': 'cidoc:E55_Type'
+            }
+        }
+        if 'cidoc:P70_documents' not in data:
+            data['cidoc:P70_documents'] = []
+        data['cidoc:P70_documents'].append(existing_activity)
+    
+    # Initialize P14_carried_out_by if not exists
+    if 'cidoc:P14_carried_out_by' not in existing_activity:
+        existing_activity['cidoc:P14_carried_out_by'] = []
+    
+    # Add senders
+    for sender_obj in senders:
+        # Handle both URI references and full objects
+        if isinstance(sender_obj, dict):
+            sender_data = sender_obj.copy()
+            if '@type' not in sender_data:
+                sender_data['@type'] = 'cidoc:E39_Actor'
+        else:
+            sender_uri = str(sender_obj)
+            sender_data = {
+                '@id': sender_uri,
+                '@type': 'cidoc:E39_Actor'
+            }
+        
+        # Add to activity
+        existing_activity['cidoc:P14_carried_out_by'].append(sender_data)
+    
+    # Remove shortcut property
+    del data['gmn:P70_26_indicates_sender']
+    
+    return data
+
+def transform_p70_27_has_address_of_origin(data):
+    """
+    Transform gmn:P70_27_has_address_of_origin to full CIDOC-CRM structure:
+    P70_documents > E7_Activity > P7_took_place_at > E53_Place
+    
+    Args:
+        data: The item data dictionary
+    
+    Returns:
+        Modified data dictionary
+    """
+    if 'gmn:P70_27_has_address_of_origin' not in data:
+        return data
+    
+    origin_places = data['gmn:P70_27_has_address_of_origin']
+    if not isinstance(origin_places, list):
+        origin_places = [origin_places]
+    
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    # Check if correspondence activity already exists
+    existing_activity = None
+    if 'cidoc:P70_documents' in data and len(data['cidoc:P70_documents']) > 0:
+        for activity in data['cidoc:P70_documents']:
+            if isinstance(activity, dict) and activity.get('@id', '').endswith('/correspondence'):
+                existing_activity = activity
+                break
+    
+    if existing_activity is None:
+        # Create new correspondence activity
+        activity_uri = f"{subject_uri}/correspondence"
+        existing_activity = {
+            '@id': activity_uri,
+            '@type': 'cidoc:E7_Activity',
+            'cidoc:P2_has_type': {
+                '@id': 'http://vocab.getty.edu/page/aat/300026877',
+                '@type': 'cidoc:E55_Type'
+            }
+        }
+        if 'cidoc:P70_documents' not in data:
+            data['cidoc:P70_documents'] = []
+        data['cidoc:P70_documents'].append(existing_activity)
+    
+    # Add origin places
+    for place_obj in origin_places:
+        # Handle both URI references and full objects
+        if isinstance(place_obj, dict):
+            place_data = place_obj.copy()
+            if '@type' not in place_data:
+                place_data['@type'] = 'cidoc:E53_Place'
+        else:
+            place_uri = str(place_obj)
+            place_data = {
+                '@id': place_uri,
+                '@type': 'cidoc:E53_Place'
+            }
+        
+        # Set P7_took_place_at (typically only one origin)
+        existing_activity['cidoc:P7_took_place_at'] = place_data
+    
+    # Remove shortcut property
+    del data['gmn:P70_27_has_address_of_origin']
+    
+    return data
+
+def transform_p70_28_indicates_recipient(data):
+    """
+    Transform gmn:P70_28_indicates_recipient to full CIDOC-CRM structure:
+    P70_documents > E7_Activity > P01_has_domain > E39_Actor
+    
+    Args:
+        data: The item data dictionary
+    
+    Returns:
+        Modified data dictionary
+    """
+    if 'gmn:P70_28_indicates_recipient' not in data:
+        return data
+    
+    recipients = data['gmn:P70_28_indicates_recipient']
+    if not isinstance(recipients, list):
+        recipients = [recipients]
+    
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    # Check if correspondence activity already exists
+    existing_activity = None
+    if 'cidoc:P70_documents' in data and len(data['cidoc:P70_documents']) > 0:
+        for activity in data['cidoc:P70_documents']:
+            if isinstance(activity, dict) and activity.get('@id', '').endswith('/correspondence'):
+                existing_activity = activity
+                break
+    
+    if existing_activity is None:
+        # Create new correspondence activity
+        activity_uri = f"{subject_uri}/correspondence"
+        existing_activity = {
+            '@id': activity_uri,
+            '@type': 'cidoc:E7_Activity',
+            'cidoc:P2_has_type': {
+                '@id': 'http://vocab.getty.edu/page/aat/300026877',
+                '@type': 'cidoc:E55_Type'
+            }
+        }
+        if 'cidoc:P70_documents' not in data:
+            data['cidoc:P70_documents'] = []
+        data['cidoc:P70_documents'].append(existing_activity)
+    
+    # Initialize P01_has_domain if not exists
+    if 'cidoc:P01_has_domain' not in existing_activity:
+        existing_activity['cidoc:P01_has_domain'] = []
+    
+    # Add recipients
+    for recipient_obj in recipients:
+        # Handle both URI references and full objects
+        if isinstance(recipient_obj, dict):
+            recipient_data = recipient_obj.copy()
+            if '@type' not in recipient_data:
+                recipient_data['@type'] = 'cidoc:E39_Actor'
+        else:
+            recipient_uri = str(recipient_obj)
+            recipient_data = {
+                '@id': recipient_uri,
+                '@type': 'cidoc:E39_Actor'
+            }
+        
+        # Add to activity
+        existing_activity['cidoc:P01_has_domain'].append(recipient_data)
+    
+    # Remove shortcut property
+    del data['gmn:P70_28_indicates_recipient']
+    
+    return data
+
+def transform_p70_29_indicates_holder_of_item(data):
+    """
+    Transform gmn:P70_29_indicates_holder_of_item to full CIDOC-CRM structure:
+    P70_documents > E7_Activity > P16_used_specific_object > E7_Activity > P14_carried_out_by > E39_Actor
+    
+    Args:
+        data: The item data dictionary
+    
+    Returns:
+        Modified data dictionary
+    """
+    if 'gmn:P70_29_indicates_holder_of_item' not in data:
+        return data
+    
+    holders = data['gmn:P70_29_indicates_holder_of_item']
+    if not isinstance(holders, list):
+        holders = [holders]
+    
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    # Check if correspondence activity already exists
+    existing_activity = None
+    if 'cidoc:P70_documents' in data and len(data['cidoc:P70_documents']) > 0:
+        for activity in data['cidoc:P70_documents']:
+            if isinstance(activity, dict) and activity.get('@id', '').endswith('/correspondence'):
+                existing_activity = activity
+                break
+    
+    if existing_activity is None:
+        # Create new correspondence activity
+        activity_uri = f"{subject_uri}/correspondence"
+        existing_activity = {
+            '@id': activity_uri,
+            '@type': 'cidoc:E7_Activity',
+            'cidoc:P2_has_type': {
+                '@id': 'http://vocab.getty.edu/page/aat/300026877',
+                '@type': 'cidoc:E55_Type'
+            }
+        }
+        if 'cidoc:P70_documents' not in data:
+            data['cidoc:P70_documents'] = []
+        data['cidoc:P70_documents'].append(existing_activity)
+    
+    # Initialize P16_used_specific_object if not exists
+    if 'cidoc:P16_used_specific_object' not in existing_activity:
+        existing_activity['cidoc:P16_used_specific_object'] = []
+    
+    # Create holding activities for each holder
+    for idx, holder_obj in enumerate(holders):
+        # Create holding activity
+        holding_activity_uri = f"{subject_uri}/holding_activity_{idx}"
+        holding_activity = {
+            '@id': holding_activity_uri,
+            '@type': 'cidoc:E7_Activity',
+            'cidoc:P2_has_type': {
+                '@id': 'http://vocab.getty.edu/page/aat/300077993',  # AAT: holding
+                '@type': 'cidoc:E55_Type'
+            }
+        }
+        
+        # Handle both URI references and full objects
+        if isinstance(holder_obj, dict):
+            holder_data = holder_obj.copy()
+            if '@type' not in holder_data:
+                holder_data['@type'] = 'cidoc:E39_Actor'
+        else:
+            holder_uri = str(holder_obj)
+            holder_data = {
+                '@id': holder_uri,
+                '@type': 'cidoc:E39_Actor'
+            }
+        
+        holding_activity['cidoc:P14_carried_out_by'] = holder_data
+        
+        # Add holding activity to correspondence activity
+        existing_activity['cidoc:P16_used_specific_object'].append(holding_activity)
+    
+    # Remove shortcut property
+    del data['gmn:P70_29_indicates_holder_of_item']
+    
+    return data
+
+def transform_p70_30_refers_to_described_event(data):
+    """
+    Transform gmn:P70_30_refers_to_described_event to full CIDOC-CRM structure:
+    P70_documents > E7_Activity > P16_used_specific_object > E5_Event
+    
+    Note: This property has domain E31_Document, so it can be used with any document type.
+    
+    Args:
+        data: The item data dictionary
+    
+    Returns:
+        Modified data dictionary
+    """
+    if 'gmn:P70_30_refers_to_described_event' not in data:
+        return data
+    
+    events = data['gmn:P70_30_refers_to_described_event']
+    if not isinstance(events, list):
+        events = [events]
+    
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    # Check if an activity already exists (could be correspondence, declaration, etc.)
+    existing_activity = None
+    if 'cidoc:P70_documents' in data and len(data['cidoc:P70_documents']) > 0:
+        # Use the first activity found
+        existing_activity = data['cidoc:P70_documents'][0]
+    
+    if existing_activity is None:
+        # Create new activity (type depends on document class)
+        # For correspondence, use correspondence activity
+        activity_uri = f"{subject_uri}/activity"
+        existing_activity = {
+            '@id': activity_uri,
+            '@type': 'cidoc:E7_Activity'
+        }
+        if 'cidoc:P70_documents' not in data:
+            data['cidoc:P70_documents'] = []
+        data['cidoc:P70_documents'].append(existing_activity)
+    
+    # Initialize P16_used_specific_object if not exists
+    if 'cidoc:P16_used_specific_object' not in existing_activity:
+        existing_activity['cidoc:P16_used_specific_object'] = []
+    
+    # Add described events
+    for event_obj in events:
+        # Handle both URI references and full objects
+        if isinstance(event_obj, dict):
+            event_data = event_obj.copy()
+            if '@type' not in event_data:
+                event_data['@type'] = 'cidoc:E5_Event'
+        else:
+            event_uri = str(event_obj)
+            event_data = {
+                '@id': event_uri,
+                '@type': 'cidoc:E5_Event'
+            }
+        
+        # Add to activity
+        existing_activity['cidoc:P16_used_specific_object'].append(event_data)
+    
+    # Remove shortcut property
+    del data['gmn:P70_30_refers_to_described_event']
+    
+    return data
+
+def transform_p70_31_has_address_of_destination(data):
+    """
+    Transform gmn:P70_31_has_address_of_destination to full CIDOC-CRM structure:
+    P70_documents > E7_Activity > P26_moved_to > E53_Place
+    
+    Args:
+        data: The item data dictionary
+    
+    Returns:
+        Modified data dictionary
+    """
+    if 'gmn:P70_31_has_address_of_destination' not in data:
+        return data
+    
+    destination_places = data['gmn:P70_31_has_address_of_destination']
+    if not isinstance(destination_places, list):
+        destination_places = [destination_places]
+    
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    # Check if correspondence activity already exists
+    existing_activity = None
+    if 'cidoc:P70_documents' in data and len(data['cidoc:P70_documents']) > 0:
+        for activity in data['cidoc:P70_documents']:
+            if isinstance(activity, dict) and activity.get('@id', '').endswith('/correspondence'):
+                existing_activity = activity
+                break
+    
+    if existing_activity is None:
+        # Create new correspondence activity
+        activity_uri = f"{subject_uri}/correspondence"
+        existing_activity = {
+            '@id': activity_uri,
+            '@type': 'cidoc:E7_Activity',
+            'cidoc:P2_has_type': {
+                '@id': 'http://vocab.getty.edu/page/aat/300026877',
+                '@type': 'cidoc:E55_Type'
+            }
+        }
+        if 'cidoc:P70_documents' not in data:
+            data['cidoc:P70_documents'] = []
+        data['cidoc:P70_documents'].append(existing_activity)
+    
+    # Add destination places
+    for place_obj in destination_places:
+        # Handle both URI references and full objects
+        if isinstance(place_obj, dict):
+            place_data = place_obj.copy()
+            if '@type' not in place_data:
+                place_data['@type'] = 'cidoc:E53_Place'
+        else:
+            place_uri = str(place_obj)
+            place_data = {
+                '@id': place_uri,
+                '@type': 'cidoc:E53_Place'
+            }
+        
+        # Set P26_moved_to (typically only one destination)
+        existing_activity['cidoc:P26_moved_to'] = place_data
+    
+    # Remove shortcut property
+    del data['gmn:P70_31_has_address_of_destination']
+    
+    return data
+
+def transform_p94i_3_has_place_of_enactment(data):
+    """
+    Transform gmn:P70_17_documents_sale_price_currency to full CIDOC-CRM structure:
+    P70_documents > E8_Acquisition > P177_assigned_property_of_type > E97_Monetary_Amount > P180_has_currency > E98_Currency
+    
+    Args:
+        data: The item data dictionary
+    
+    Returns:
+        Modified data dictionary
+    """
+    if 'gmn:P70_17_documents_sale_price_currency' not in data:
+        return data
+    
+    currencies = data['gmn:P70_17_documents_sale_price_currency']
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    # Check if acquisition event already exists
+    existing_acquisition = None
+    if 'cidoc:P70_documents' in data and len(data['cidoc:P70_documents']) > 0:
+        # Use existing acquisition event
+        existing_acquisition = data['cidoc:P70_documents'][0]
+    else:
+        # Create new acquisition event
+        acquisition_uri = f"{subject_uri}/acquisition"
+        existing_acquisition = {
+            '@id': acquisition_uri,
+            '@type': 'cidoc:E8_Acquisition'
+        }
+        data['cidoc:P70_documents'] = [existing_acquisition]
+    
+    # Check if monetary amount already exists
+    existing_monetary_amount = None
+    if 'cidoc:P177_assigned_property_of_type' in existing_acquisition:
+        # Use existing monetary amount if it exists
+        existing_monetary_amount = existing_acquisition['cidoc:P177_assigned_property_of_type']
+    else:
+        # Create new monetary amount
+        monetary_amount_uri = f"{subject_uri}/monetary_amount"
+        existing_monetary_amount = {
+            '@id': monetary_amount_uri,
+            '@type': 'cidoc:E97_Monetary_Amount'
+        }
+        existing_acquisition['cidoc:P177_assigned_property_of_type'] = existing_monetary_amount
+    
+    # Add currencies (typically only one, but handle multiple)
+    for currency_obj in currencies:
+        # Handle both URI references and full objects
+        if isinstance(currency_obj, dict):
+            currency_data = currency_obj.copy()
+            if '@type' not in currency_data:
+                currency_data['@type'] = 'cidoc:E98_Currency'
+        else:
+            currency_uri = str(currency_obj)
+            currency_data = {
+                '@id': currency_uri,
+                '@type': 'cidoc:E98_Currency'
+            }
+        
+        # Set P180_has_currency
+        existing_monetary_amount['cidoc:P180_has_currency'] = currency_data
+    
+    # Remove shortcut property
+    del data['gmn:P70_17_documents_sale_price_currency']
+    
+    return data
+
+def transform_p94i_3_has_place_of_enactment(data):
+    """
+    Transform gmn:P70_15_documents_witness to full CIDOC-CRM structure:
+    P70_documents > E8_Acquisition > P11_had_participant > E21_Person
+    
+    Witnesses are participants in the acquisition event who observed and validated
+    the transaction.
+    
+    Args:
+        data: The item data dictionary
+    
+    Returns:
+        Modified data dictionary
+    """
+    if 'gmn:P70_15_documents_witness' not in data:
+        return data
+    
+    witnesses = data['gmn:P70_15_documents_witness']
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    # Check if acquisition event already exists
+    existing_acquisition = None
+    if 'cidoc:P70_documents' in data and len(data['cidoc:P70_documents']) > 0:
+        # Use existing acquisition event
+        existing_acquisition = data['cidoc:P70_documents'][0]
+    else:
+        # Create new acquisition event
+        acquisition_uri = f"{subject_uri}/acquisition"
+        existing_acquisition = {
+            '@id': acquisition_uri,
+            '@type': 'cidoc:E8_Acquisition'
+        }
+        data['cidoc:P70_documents'] = [existing_acquisition]
+    
+    # Initialize P11 if it doesn't exist
+    if 'cidoc:P11_had_participant' not in existing_acquisition:
+        existing_acquisition['cidoc:P11_had_participant'] = []
+    
+    # Add witnesses to acquisition event
+    for witness_obj in witnesses:
+        # Handle both URI references and full objects
+        if isinstance(witness_obj, dict):
+            witness_data = witness_obj.copy()
+            if '@type' not in witness_data:
+                witness_data['@type'] = 'cidoc:E21_Person'
+        else:
+            witness_uri = str(witness_obj)
+            witness_data = {
+                '@id': witness_uri,
+                '@type': 'cidoc:E21_Person'
+            }
+        
+        # Add witness to acquisition event via P11
+        existing_acquisition['cidoc:P11_had_participant'].append(witness_data)
+    
+    # Add role type for witnesses if any were added
+    if len(witnesses) > 0:
+        if 'cidoc:P11.1_in_the_role_of' not in existing_acquisition:
+            existing_acquisition['cidoc:P11.1_in_the_role_of'] = []
+        
+        # Add witness role type
+        witness_role = {
+            '@id': AAT_WITNESS,
+            '@type': 'cidoc:E55_Type'
+        }
+        # Check if witness role not already present
+        role_already_present = any(
+            isinstance(r, dict) and r.get('@id') == AAT_WITNESS
+            for r in existing_acquisition['cidoc:P11.1_in_the_role_of']
+        )
+        if not role_already_present:
+            existing_acquisition['cidoc:P11.1_in_the_role_of'].append(witness_role)
+    
+    # Remove shortcut property
+    del data['gmn:P70_15_documents_witness']
+    
+    return data
+
+def transform_p94i_3_has_place_of_enactment(data):
+    """
+    Transform gmn:P94i_3_has_place_of_enactment to full CIDOC-CRM structure:
+    P94i_was_created_by > E65_Creation > P7_took_place_at > E53_Place
+    
+    Args:
+        data: The item data dictionary
+    
+    Returns:
+        Modified data dictionary
+    """
+    if 'gmn:P94i_3_has_place_of_enactment' not in data:
+        return data
+    
+    places = data['gmn:P94i_3_has_place_of_enactment']
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    # Check if creation event already exists
+    existing_creation = None
+    if 'cidoc:P94i_was_created_by' in data and len(data['cidoc:P94i_was_created_by']) > 0:
+        # Use existing creation event
+        existing_creation = data['cidoc:P94i_was_created_by'][0]
+    else:
+        # Create new creation event
+        creation_uri = f"{subject_uri}/creation"
+        existing_creation = {
+            '@id': creation_uri,
+            '@type': 'cidoc:E65_Creation'
+        }
+        data['cidoc:P94i_was_created_by'] = [existing_creation]
+    
+    # Initialize P7 if it doesn't exist
+    if 'cidoc:P7_took_place_at' not in existing_creation:
+        existing_creation['cidoc:P7_took_place_at'] = []
+    
+    # Add places to creation event
+    for place_obj in places:
+        # Handle both URI references and full objects
+        if isinstance(place_obj, dict):
+            place_data = place_obj.copy()
+            if '@type' not in place_data:
+                place_data['@type'] = 'cidoc:E53_Place'
+        else:
+            place_uri = str(place_obj)
+            place_data = {
+                '@id': place_uri,
+                '@type': 'cidoc:E53_Place'
+            }
+        
+        # Add to creation event
+        existing_creation['cidoc:P7_took_place_at'].append(place_data)
+    
+    # Remove shortcut property
+    del data['gmn:P94i_3_has_place_of_enactment']
+    
+    return data
+
+def transform_p138i_1_has_representation(data):
+    """
+    Transform gmn:P138i_1_has_representation to full CIDOC-CRM structure:
+    P138i_has_representation > D1_Digital_Object
+    
+    This links documents to their digital representations (JPEG, TIFF, PDF, etc.).
+    
+    Args:
+        data: The item data dictionary
+    
+    Returns:
+        Modified data dictionary
+    """
+    if 'gmn:P138i_1_has_representation' not in data:
+        return data
+    
+    representations = data['gmn:P138i_1_has_representation']
+    
+    # Initialize P138i if it doesn't exist
+    if 'cidoc:P138i_has_representation' not in data:
+        data['cidoc:P138i_has_representation'] = []
+    
+    # Add digital representations to the document
+    for rep_obj in representations:
+        # Handle both URI references and full objects
+        if isinstance(rep_obj, dict):
+            rep_data = rep_obj.copy()
+            if '@type' not in rep_data:
+                rep_data['@type'] = 'cidoc:D1_Digital_Object'
+        else:
+            rep_uri = str(rep_obj)
+            rep_data = {
+                '@id': rep_uri,
+                '@type': 'cidoc:D1_Digital_Object'
+            }
+        
+        # Add digital object to document via P138i
+        data['cidoc:P138i_has_representation'].append(rep_data)
+    
+    # Remove shortcut property
+    del data['gmn:P138i_1_has_representation']
     
     return data
 
@@ -1345,39 +2606,13 @@ def transform_item(item, include_internal=False):
         include_internal: If True, transform internal notes to CIDOC-CRM. 
                          If False (default), remove internal notes entirely.
     """
-    # Name and identification properties
     item = transform_p1_1_has_name(item)
     item = transform_p1_2_has_name_from_source(item)
     item = transform_p1_3_has_patrilineal_name(item)
-    item = transform_p1_4_has_loconym(item)
     item = transform_p102_1_has_title(item)
-    
-    # Editorial notes
-    item = transform_p3_1_has_editorial_note(item, include_internal)
-    
-    # Biographical properties
-    item = transform_p11i_1_earliest_attestation_date(item)
-    item = transform_p11i_2_latest_attestation_date(item)
-    item = transform_p11i_3_has_spouse(item)
-    item = transform_p96_1_has_mother(item)
-    item = transform_p97_1_has_father(item)
-    
-    # Group membership properties
-    item = transform_p107i_1_has_regional_provenance(item)
-    item = transform_p107i_2_has_social_category(item)
-    item = transform_p107i_3_has_occupation(item)
-    
-    # Property ownership and occupation
-    item = transform_p22_1_has_owner(item)
-    item = transform_p53_1_has_occupant(item)
-    
-    # Document creation properties
     item = transform_p94i_1_was_created_by(item)
     item = transform_p94i_2_has_enactment_date(item)
     item = transform_p94i_3_has_place_of_enactment(item)
-    item = transform_p138i_1_has_representation(item)
-    
-    # Sales contract properties
     item = transform_p70_1_documents_seller(item)
     item = transform_p70_2_documents_buyer(item)
     item = transform_p70_3_documents_transfer_of(item)
@@ -1395,12 +2630,22 @@ def transform_item(item, include_internal=False):
     item = transform_p70_15_documents_witness(item)
     item = transform_p70_16_documents_sale_price_amount(item)
     item = transform_p70_17_documents_sale_price_currency(item)
-    
-    # Arbitration agreement properties
     item = transform_p70_18_documents_disputing_party(item)
     item = transform_p70_19_documents_arbitrator(item)
     item = transform_p70_20_documents_dispute_subject(item)
-    
+    item = transform_p138i_1_has_representation(item)
+    item = transform_p1_4_has_loconym(item)
+    item = transform_p11i_1_earliest_attestation_date(item)
+    item = transform_p11i_2_latest_attestation_date(item)
+    item = transform_p11i_3_has_spouse(item)
+    item = transform_p22_1_has_owner(item)
+    item = transform_p53_1_has_occupant(item)
+    item = transform_p96_1_has_mother(item)
+    item = transform_p97_1_has_father(item)
+    item = transform_p107i_1_has_regional_provenance(item)
+    item = transform_p107i_2_has_social_category(item)
+    item = transform_p107i_3_has_occupation(item)
+    item = transform_p3_1_has_editorial_note(item, include_internal)
     return item
 
 def transform_export(input_file, output_file, include_internal=False):
@@ -1452,8 +2697,7 @@ def main():
         print("\nExamples:")
         print("  python transform_gmn.py omeka_export.json public_output.json")
         print("  python transform_gmn.py omeka_export.json full_output.json --include-internal")
-        print("\nNote: This script handles gmn:E31_1_Contract, gmn:E31_2_Sales_Contract,")
-        print("      and gmn:E31_3_Arbitration_Agreement")
+        print("\nNote: This script now handles both gmn:E31_1_Contract and gmn:E31_2_Sales_Contract")
         sys.exit(1)
     
     input_file = sys.argv[1]
@@ -1469,157 +2713,181 @@ def main():
     sys.exit(0 if success else 1)
 
 if __name__ == '__main__':
-    main()
-    if 'cidoc:P53i_is_former_or_current_location_of' not in data:
-        data['cidoc:P53i_is_former_or_current_location_of'] = []
-    
-    # Transform each occupant (each represents a separate move)
-    for occupant_obj in occupants:
-        # Handle both URI references and full objects
-        if isinstance(occupant_obj, dict):
-            occupant_uri = occupant_obj.get('@id', '')
-            occupant_data = occupant_obj.copy()
-            if '@type' not in occupant_data:
-                occupant_data['@type'] = 'cidoc:E21_Person'
-        else:
-            occupant_uri = str(occupant_obj)
-            occupant_data = {
-                '@id': occupant_uri,
+    main() guarantor_uri,
                 '@type': 'cidoc:E21_Person'
             }
         
-        # Create move event URI
-        occupant_hash = str(hash(occupant_uri + 'move'))[-8:]
-        move_uri = f"{subject_uri}/move/{occupant_hash}"
+        # Add is_guaranteed_by relationship from seller to guarantor
+        if seller_uri:
+            if '_guarantee_links' not in data:
+                data['_guarantee_links'] = []
+            data['_guarantee_links'].append({
+                'principal': seller_uri,
+                'guarantor': guarantor_uri,
+                'property': 'gmn:is_guaranteed_by'
+            })
+        
+        # Create activity URI
+        activity_hash = str(hash(guarantor_uri + 'seller_guarantor'))[-8:]
+        activity_uri = f"{subject_uri}/activity/sellers_guarantor_{activity_hash}"
+        
+        # Create E7_Activity
+        activity = {
+            '@id': activity_uri,
+            '@type': 'cidoc:E7_Activity',
+            'cidoc:P14_carried_out_by': [guarantor_data],
+            'cidoc:P14.1_in_the_role_of': {
+                '@id': AAT_GUARANTOR,
+                '@type': 'cidoc:E55_Type'
+            }
+        }
+        
+        # Add P17_was_motivated_by if we have seller
+        if seller_uri:
+            activity['cidoc:P17_was_motivated_by'] = {
+                '@id': seller_uri,
+                '@type': 'cidoc:E21_Person'
+            }
+        
+        # Add activity to acquisition
+        existing_acquisition['cidoc:P9_consists_of'].append(activity)
+    
+    # Remove shortcut property
+    del data['gmn:P70_6_documents_sellers_guarantor']
+    
+    return data
+
+def transform_p70_7_documents_buyers_guarantor(data):
+    """
+    Transform gmn:P70_7_documents_buyers_guarantor to full CIDOC-CRM structure:
+    P70_documents > E8_Acquisition > P9_consists_of > E7_Activity > P14_carried_out_by > E21_Person
+    with P17_was_motivated_by linking to the buyer
+    
+    Also adds gmn:is_guaranteed_by property from buyer to guarantor.
+    
+    Args:
+        data: The item data dictionary
+    
+    Returns:
+        Modified data dictionary
+    """
+    if 'gmn:P70_7_documents_buyers_guarantor' not in data:
+        return data
+    
+    guarantors = data['gmn:P70_7_documents_buyers_guarantor']
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    # Check if acquisition event already exists
+    existing_acquisition = None
+    if 'cidoc:P70_documents' in data and len(data['cidoc:P70_documents']) > 0:
+        # Use existing acquisition event
+        existing_acquisition = data['cidoc:P70_documents'][0]
+    else:
+        # Create new acquisition event
+        acquisition_uri = f"{subject_uri}/acquisition"
+        existing_acquisition = {
+            '@id': acquisition_uri,
+            '@type': 'cidoc:E8_Acquisition'
+        }
+        data['cidoc:P70_documents'] = [existing_acquisition]
+    
+    # Initialize P9 if it doesn't exist
+    if 'cidoc:P9_consists_of' not in existing_acquisition:
+        existing_acquisition['cidoc:P9_consists_of'] = []
+    
+    # Get buyer URI and data for P17 link and is_guaranteed_by (if P22 exists)
+    buyer_uri = None
+    buyer_data = None
+    if 'cidoc:P22_transferred_title_to' in existing_acquisition:
+        buyers = existing_acquisition['cidoc:P22_transferred_title_to']
+        if len(buyers) > 0:
+            buyer_obj = buyers[0]
+            if isinstance(buyer_obj, dict):
+                buyer_uri = buyer_obj.get('@id')
+                buyer_data = buyer_obj
+            else:
+                buyer_uri = str(buyer_obj)
+                buyer_data = {'@id': buyer_uri, '@type': 'cidoc:E21_Person'}
+    
+    # Transform each guarantor into an E7_Activity
+    for guarantor_obj in guarantors:
+        # Handle both URI references and full objects
+        if isinstance(guarantor_obj, dict):
+            guarantor_uri = guarantor_obj.get('@id', '')
+            guarantor_data = guarantor_obj.copy()
+            if '@type' not in guarantor_data:
+                guarantor_data['@type'] = 'cidoc:E21_Person'
+        else:
+            guarantor_uri = str(guarantor_obj)
+            guarantor_data = {
+                '@id':urn:uuid:{uuid4()}")
+    
+    # Initialize P1 if it doesn't exist
+    if 'cidoc:P1_is_identified_by' not in data:
+        data['cidoc:P1_is_identified_by'] = []
+    
+    # Transform each name
+    for name_obj in names:
+        # Handle both simple string values and object values
+        if isinstance(name_obj, dict):
+            name_value = name_obj.get('@value', '')
+            language = name_obj.get('@language', None)
+        else:
+            name_value = str(name_obj)
+            language = None
+        
+        # Create appellation URI (use property name as suffix for uniqueness)
+        appellation_uri = generate_appellation_uri(subject_uri, name_value, property_name)
+        
+        # Build P190 content
+        p190_content = {'@value': name_value}
+        if language:
+            p190_content['@language'] = language
         
         # Create full CIDOC-CRM structure
-        move_event = {
-            '@id': move_uri,
-            '@type': 'cidoc:E9_Move',
-            'cidoc:P25_moved': occupant_data,
-            'cidoc:P26_moved_to': {
-                '@id': subject_uri,
-                '@type': 'gmn:E22_1_Building'
-            }
+        appellation = {
+            '@id': appellation_uri,
+            '@type': 'cidoc:E41_Appellation',
+            'cidoc:P2_has_type': {
+                '@id': aat_type_uri,
+                '@type': 'cidoc:E55_Type'
+            },
+            'cidoc:P190_has_symbolic_content': [p190_content]
         }
         
-        # Add to P53i
-        data['cidoc:P53i_is_former_or_current_location_of'].append(move_event)
+        # Add to P1
+        data['cidoc:P1_is_identified_by'].append(appellation)
     
     # Remove shortcut property
-    del data['gmn:P53_1_has_occupant']
+    del data[property_name]
     
     return data
 
-def transform_p96_1_has_mother(data):
+def transform_p1_1_has_name(data):
     """
-    Transform gmn:P96_1_has_mother to full CIDOC-CRM structure:
-    P98i_was_born > E67_Birth > P96_by_mother > E21_Person
+    Transform gmn:P1_1_has_name to full CIDOC-CRM structure:
+    P1_is_identified_by > E41_Appellation > P2_has_type (AAT 300404650) > P190_has_symbolic_content
     
-    Args:
-        data: The item data dictionary
-    
-    Returns:
-        Modified data dictionary
+    Note: This now applies to any E1_CRM_Entity, not just E21_Person.
     """
-    if 'gmn:P96_1_has_mother' not in data:
-        return data
-    
-    mothers = data['gmn:P96_1_has_mother']
-    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
-    
-    # Check if birth event already exists
-    existing_birth = None
-    if 'cidoc:P98i_was_born' in data and len(data['cidoc:P98i_was_born']) > 0:
-        # Use existing birth event
-        existing_birth = data['cidoc:P98i_was_born'][0]
-    else:
-        # Create new birth event
-        birth_uri = f"{subject_uri}/birth"
-        existing_birth = {
-            '@id': birth_uri,
-            '@type': 'cidoc:E67_Birth'
-        }
-        data['cidoc:P98i_was_born'] = [existing_birth]
-    
-    # Add mothers to birth event
-    for mother_obj in mothers:
-        # Handle both URI references and full objects
-        if isinstance(mother_obj, dict):
-            mother_data = mother_obj.copy()
-            if '@type' not in mother_data:
-                mother_data['@type'] = 'cidoc:E21_Person'
-        else:
-            mother_uri = str(mother_obj)
-            mother_data = {
-                '@id': mother_uri,
-                '@type': 'cidoc:E21_Person'
-            }
-        
-        # Add to birth event
-        if 'cidoc:P96_by_mother' not in existing_birth:
-            existing_birth['cidoc:P96_by_mother'] = []
-        existing_birth['cidoc:P96_by_mother'].append(mother_data)
-    
-    # Remove shortcut property
-    del data['gmn:P96_1_has_mother']
-    
-    return data
+    return transform_name_property(data, 'gmn:P1_1_has_name', AAT_NAME)
 
-def transform_p97_1_has_father(data):
+def transform_p1_2_has_name_from_source(data):
     """
-    Transform gmn:P97_1_has_father to full CIDOC-CRM structure:
-    P98i_was_born > E67_Birth > P97_from_father > E21_Person
-    
-    Args:
-        data: The item data dictionary
-    
-    Returns:
-        Modified data dictionary
+    Transform gmn:P1_2_has_name_from_source to full CIDOC-CRM structure:
+    P1_is_identified_by > E41_Appellation > P2_has_type (AAT 300456607) > P190_has_symbolic_content
     """
-    if 'gmn:P97_1_has_father' not in data:
-        return data
+    return transform_name_property(data, 'gmn:P1_2_has_name_from_source', AAT_NAME_FROM_SOURCE)
+
+def transform_p1_3_has_patrilineal_name(data):
+    """
+    Transform gmn:P1_3_has_patrilineal_name to full CIDOC-CRM structure:
+    P1_is_identified_by > E41_Appellation > P2_has_type (AAT 300404651) > P190_has_symbolic_content
     
-    fathers = data['gmn:P97_1_has_father']
-    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
-    
-    # Check if birth event already exists
-    existing_birth = None
-    if 'cidoc:P98i_was_born' in data and len(data['cidoc:P98i_was_born']) > 0:
-        # Use existing birth event
-        existing_birth = data['cidoc:P98i_was_born'][0]
-    else:
-        # Create new birth event
-        birth_uri = f"{subject_uri}/birth"
-        existing_birth = {
-            '@id': birth_uri,
-            '@type': 'cidoc:E67_Birth'
-        }
-        data['cidoc:P98i_was_born'] = [existing_birth]
-    
-    # Add fathers to birth event
-    for father_obj in fathers:
-        # Handle both URI references and full objects
-        if isinstance(father_obj, dict):
-            father_data = father_obj.copy()
-            if '@type' not in father_data:
-                father_data['@type'] = 'cidoc:E21_Person'
-        else:
-            father_uri = str(father_obj)
-            father_data = {
-                '@id': father_uri,
-                '@type': 'cidoc:E21_Person'
-            }
-        
-        # Add to birth event
-        if 'cidoc:P97_from_father' not in existing_birth:
-            existing_birth['cidoc:P97_from_father'] = []
-        existing_birth['cidoc:P97_from_father'].append(father_data)
-    
-    # Remove shortcut property
-    del data['gmn:P97_1_has_father']
-    
-    return data
+    This captures patrilineal names that include patronymic ancestry chains,
+    such as "Giacomo Spinola q. Antonio" (son of the late Antonio).
+    """
+    return transform_name_property(data, 'gmn:P1_3_has_patrilineal_name', AAT_PATRONYMIC)
 
 def transform_p102_1_has_title(data):
     """
@@ -1673,6 +2941,251 @@ def transform_p102_1_has_title(data):
     
     # Remove shortcut property
     del data['gmn:P102_1_has_title']
+    
+    return data
+
+def transform_p94i_1_was_created_by(data):
+    """
+    Transform gmn:P94i_1_was_created_by to full CIDOC-CRM structure:
+    P94i_was_created_by > E65_Creation > P14_carried_out_by > E21_Person
+    
+    Args:
+        data: The item data dictionary
+    
+    Returns:
+        Modified data dictionary
+    """
+    if 'gmn:P94i_1_was_created_by' not in data:
+        return data
+    
+    creators = data['gmn:P94i_1_was_created_by']
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    # Check if creation event already exists
+    existing_creation = None
+    if 'cidoc:P94i_was_created_by' in data and len(data['cidoc:P94i_was_created_by']) > 0:
+        # Use existing creation event (assuming only one creation event per document)
+        existing_creation = data['cidoc:P94i_was_created_by'][0]
+    else:
+        # Create new creation event
+        creation_uri = f"{subject_uri}/creation"
+        existing_creation = {
+            '@id': creation_uri,
+            '@type': 'cidoc:E65_Creation'
+        }
+        data['cidoc:P94i_was_created_by'] = [existing_creation]
+    
+    # Initialize P14 if it doesn't exist
+    if 'cidoc:P14_carried_out_by' not in existing_creation:
+        existing_creation['cidoc:P14_carried_out_by'] = []
+    
+    # Add creators to creation event
+    for creator_obj in creators:
+        # Handle both URI references and full objects
+        if isinstance(creator_obj, dict):
+            creator_data = creator_obj.copy()
+            if '@type' not in creator_data:
+                creator_data['@type'] = 'cidoc:E21_Person'
+        else:
+            creator_uri = str(creator_obj)
+            creator_data = {
+                '@id': creator_uri,
+                '@type': 'cidoc:E21_Person'
+            }
+        
+        # Add to creation event
+        existing_creation['cidoc:P14_carried_out_by'].append(creator_data)
+    
+    # Remove shortcut property
+    del data['gmn:P94i_1_was_created_by']
+    
+    return data
+
+def transform_p94i_2_has_enactment_date(data):
+    """
+    Transform gmn:P94i_2_has_enactment_date to full CIDOC-CRM structure:
+    P94i_was_created_by > E65_Creation > P4_has_time-span > E52_Time-Span > P82_at_some_time_within
+    
+    Args:
+        data: The item data dictionary
+    
+    Returns:
+        Modified data dictionary
+    """
+    if 'gmn:P94i_2_has_enactment_date' not in data:
+        return data
+    
+    dates = data['gmn:P94i_2_has_enactment_date']
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    # Check if creation event already exists
+    existing_creation = None
+    if 'cidoc:P94i_was_created_by' in data and len(data['cidoc:P94i_was_created_by']) > 0:
+        # Use existing creation event
+        existing_creation = data['cidoc:P94i_was_created_by'][0]
+    else:
+        # Create new creation event
+        creation_uri = f"{subject_uri}/creation"
+        existing_creation = {
+            '@id': creation_uri,
+            '@type': 'cidoc:E65_Creation'
+        }
+        data['cidoc:P94i_was_created_by'] = [existing_creation]
+    
+    # Initialize P4 if it doesn't exist
+    if 'cidoc:P4_has_time-span' not in existing_creation:
+        existing_creation['cidoc:P4_has_time-span'] = []
+    
+    # Transform each date
+    for date_obj in dates:
+        # Handle both simple string values and object values
+        if isinstance(date_obj, dict):
+            date_value = date_obj.get('@value', '')
+            date_type = date_obj.get('@type', 'http://www.w3.org/2001/XMLSchema#date')
+        else:
+            date_value = str(date_obj)
+            date_type = 'http://www.w3.org/2001/XMLSchema#date'
+        
+        # Create timespan URI
+        date_hash = str(hash(date_value + 'enactment'))[-8:]
+        timespan_uri = f"{subject_uri}/timespan/{date_hash}"
+        
+        # Create full CIDOC-CRM structure
+        timespan = {
+            '@id': timespan_uri,
+            '@type': 'cidoc:E52_Time-Span',
+            'cidoc:P82_at_some_time_within': {
+                '@value': date_value,
+                '@type': date_type
+            }
+        }
+        
+        # Add to creation event
+        existing_creation['cidoc:P4_has_time-span'].append(timespan)
+    
+    # Remove shortcut property
+    del data['gmn:P94i_2_has_enactment_date']
+    
+    return data
+
+def transform_p3_1_has_editorial_note(data, include_internal=False):
+    """
+    Transform gmn:P3_1_has_editorial_note to full CIDOC-CRM structure:
+    P67i_is_referred_to_by > E33_Linguistic_Object > P2_has_type (AAT 300456627) > P190_has_symbolic_content
+    
+    Args:
+        data: The item data dictionary
+        include_internal: If False (default), removes editorial notes entirely. 
+                         If True, transforms them to full CIDOC-CRM structure.
+    
+    Returns:
+        Modified data dictionary
+    """
+    if 'gmn:P3_1_has_editorial_note' not in data:
+        return data
+    
+    # If we're not including internal notes, just remove them
+    if not include_internal:
+        del data['gmn:P3_1_has_editorial_note']
+        return data
+    
+    notes = data['gmn:P3_1_has_editorial_note']
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    # Initialize P67i if it doesn't exist
+    if 'cidoc:P67i_is_referred_to_by' not in data:
+        data['cidoc:P67i_is_referred_to_by'] = []
+    
+    # Transform each note
+    for note_obj in notes:
+        # Handle both simple string values and object values
+        if isinstance(note_obj, dict):
+            note_value = note_obj.get('@value', '')
+            language = note_obj.get('@language', None)
+        else:
+            note_value = str(note_obj)
+            language = None
+        
+        # Create linguistic object URI
+        note_hash = str(hash(note_value + 'editorial'))[-8:]
+        linguistic_obj_uri = f"{subject_uri}/linguistic_object/{note_hash}"
+        
+        # Build P190 content
+        p190_content = {'@value': note_value}
+        if language:
+            p190_content['@language'] = language
+        
+        # Create full CIDOC-CRM structure
+        linguistic_object = {
+            '@id': linguistic_obj_uri,
+            '@type': 'cidoc:E33_Linguistic_Object',
+            'cidoc:P2_has_type': {
+                '@id': AAT_EDITORIAL_NOTE,
+                '@type': 'cidoc:E55_Type'
+            },
+            'cidoc:P190_has_symbolic_content': [p190_content]
+        }
+        
+        # Add to P67i
+        data['cidoc:P67i_is_referred_to_by'].append(linguistic_object)
+    
+    # Remove shortcut property
+    del data['gmn:P3_1_has_editorial_note']
+    
+    return data
+
+def transform_p1_4_has_loconym(data):
+    """
+    Transform gmn:P1_4_has_loconym to full CIDOC-CRM structure:
+    P1_is_identified_by > E41_Appellation > P2_has_type (Wikidata Q17143070) > P67_refers_to > E53_Place
+    
+    Args:
+        data: The item data dictionary
+    
+    Returns:
+        Modified data dictionary
+    """
+    if 'gmn:P1_4_has_loconym' not in data:
+        return data
+    
+    places = data['gmn:P1_4_has_loconym']
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    # Initialize P1 if it doesn't exist
+    if 'cidoc:P1_is_identified_by' not in data:
+        data['cidoc:P1_is_identified_by'] = []
+    
+    # Transform each place reference
+    for place_obj in places:
+        # Handle both URI references and objects
+        if isinstance(place_obj, dict):
+            place_uri = place_obj.get('@id', place_obj.get('@value', ''))
+        else:
+            place_uri = str(place_obj)
+        
+        # Create appellation URI
+        place_hash = str(hash(place_uri + 'loconym'))[-8:]
+        appellation_uri = f"{subject_uri}/appellation/loconym_{place_hash}"
+        
+        # Create full CIDOC-CRM structure
+        appellation = {
+            '@id': appellation_uri,
+            '@type': 'cidoc:E41_Appellation',
+            'cidoc:P2_has_type': {
+                '@id': WIKIDATA_LOCONYM,
+                '@type': 'cidoc:E55_Type'
+            },
+            'cidoc:P67_refers_to': {
+                '@id': place_uri,
+                '@type': 'cidoc:E53_Place'
+            }
+        }
+        
+        # Add to P1
+        data['cidoc:P1_is_identified_by'].append(appellation)
+    
+    # Remove shortcut property
+    del data['gmn:P1_4_has_loconym']
     
     return data
 
@@ -1839,647 +3352,6 @@ def transform_p107i_3_has_occupation(data):
     
     return data
 
-def transform_p94i_1_was_created_by(data):
-    """
-    Transform gmn:P94i_1_was_created_by to full CIDOC-CRM structure:
-    P94i_was_created_by > E65_Creation > P14_carried_out_by > E21_Person
-    
-    Args:
-        data: The item data dictionary
-    
-    Returns:
-        Modified data dictionary
-    """
-    if 'gmn:P94i_1_was_created_by' not in data:
-        return data
-    
-    creators = data['gmn:P94i_1_was_created_by']
-    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
-    
-    # Check if creation event already exists
-    existing_creation = None
-    if 'cidoc:P94i_was_created_by' in data and len(data['cidoc:P94i_was_created_by']) > 0:
-        # Use existing creation event (assuming only one creation event per document)
-        existing_creation = data['cidoc:P94i_was_created_by'][0]
-    else:
-        # Create new creation event
-        creation_uri = f"{subject_uri}/creation"
-        existing_creation = {
-            '@id': creation_uri,
-            '@type': 'cidoc:E65_Creation'
-        }
-        data['cidoc:P94i_was_created_by'] = [existing_creation]
-    
-    # Initialize P14 if it doesn't exist
-    if 'cidoc:P14_carried_out_by' not in existing_creation:
-        existing_creation['cidoc:P14_carried_out_by'] = []
-    
-    # Add creators to creation event
-    for creator_obj in creators:
-        # Handle both URI references and full objects
-        if isinstance(creator_obj, dict):
-            creator_data = creator_obj.copy()
-            if '@type' not in creator_data:
-                creator_data['@type'] = 'cidoc:E21_Person'
-        else:
-            creator_uri = str(creator_obj)
-            creator_data = {
-                '@id': creator_uri,
-                '@type': 'cidoc:E21_Person'
-            }
-        
-        # Add to creation event
-        existing_creation['cidoc:P14_carried_out_by'].append(creator_data)
-    
-    # Remove shortcut property
-    del data['gmn:P94i_1_was_created_by']
-    
-    return data
-
-def transform_p94i_2_has_enactment_date(data):
-    """
-    Transform gmn:P94i_2_has_enactment_date to full CIDOC-CRM structure:
-    P94i_was_created_by > E65_Creation > P4_has_time-span > E52_Time-Span > P82_at_some_time_within
-    
-    Args:
-        data: The item data dictionary
-    
-    Returns:
-        Modified data dictionary
-    """
-    if 'gmn:P94i_2_has_enactment_date' not in data:
-        return data
-    
-    dates = data['gmn:P94i_2_has_enactment_date']
-    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
-    
-    # Check if creation event already exists
-    existing_creation = None
-    if 'cidoc:P94i_was_created_by' in data and len(data['cidoc:P94i_was_created_by']) > 0:
-        # Use existing creation event
-        existing_creation = data['cidoc:P94i_was_created_by'][0]
-    else:
-        # Create new creation event
-        creation_uri = f"{subject_uri}/creation"
-        existing_creation = {
-            '@id': creation_uri,
-            '@type': 'cidoc:E65_Creation'
-        }
-        data['cidoc:P94i_was_created_by'] = [existing_creation]
-    
-    # Initialize P4 if it doesn't exist
-    if 'cidoc:P4_has_time-span' not in existing_creation:
-        existing_creation['cidoc:P4_has_time-span'] = []
-    
-    # Transform each date
-    for date_obj in dates:
-        # Handle both simple string values and object values
-        if isinstance(date_obj, dict):
-            date_value = date_obj.get('@value', '')
-            date_type = date_obj.get('@type', 'http://www.w3.org/2001/XMLSchema#date')
-        else:
-            date_value = str(date_obj)
-            date_type = 'http://www.w3.org/2001/XMLSchema#date'
-        
-        # Create timespan URI
-        date_hash = str(hash(date_value + 'enactment'))[-8:]
-        timespan_uri = f"{subject_uri}/timespan/{date_hash}"
-        
-        # Create full CIDOC-CRM structure
-        timespan = {
-            '@id': timespan_uri,
-            '@type': 'cidoc:E52_Time-Span',
-            'cidoc:P82_at_some_time_within': {
-                '@value': date_value,
-                '@type': date_type
-            }
-        }
-        
-        # Add to creation event
-        existing_creation['cidoc:P4_has_time-span'].append(timespan)
-    
-    # Remove shortcut property
-    del data['gmn:P94i_2_has_enactment_date']
-    
-    return data
-
-def transform_p94i_3_has_place_of_enactment(data):
-    """
-    Transform gmn:P94i_3_has_place_of_enactment to full CIDOC-CRM structure:
-    P94i_was_created_by > E65_Creation > P7_took_place_at > E53_Place
-    
-    Args:
-        data: The item data dictionary
-    
-    Returns:
-        Modified data dictionary
-    """
-    if 'gmn:P94i_3_has_place_of_enactment' not in data:
-        return data
-    
-    places = data['gmn:P94i_3_has_place_of_enactment']
-    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
-    
-    # Check if creation event already exists
-    existing_creation = None
-    if 'cidoc:P94i_was_created_by' in data and len(data['cidoc:P94i_was_created_by']) > 0:
-        # Use existing creation event
-        existing_creation = data['cidoc:P94i_was_created_by'][0]
-    else:
-        # Create new creation event
-        creation_uri = f"{subject_uri}/creation"
-        existing_creation = {
-            '@id': creation_uri,
-            '@type': 'cidoc:E65_Creation'
-        }
-        data['cidoc:P94i_was_created_by'] = [existing_creation]
-    
-    # Initialize P7 if it doesn't exist
-    if 'cidoc:P7_took_place_at' not in existing_creation:
-        existing_creation['cidoc:P7_took_place_at'] = []
-    
-    # Add places to creation event
-    for place_obj in places:
-        # Handle both URI references and full objects
-        if isinstance(place_obj, dict):
-            place_data = place_obj.copy()
-            if '@type' not in place_data:
-                place_data['@type'] = 'cidoc:E53_Place'
-        else:
-            place_uri = str(place_obj)
-            place_data = {
-                '@id': place_uri,
-                '@type': 'cidoc:E53_Place'
-            }
-        
-        # Add to creation event
-        existing_creation['cidoc:P7_took_place_at'].append(place_data)
-    
-    # Remove shortcut property
-    del data['gmn:P94i_3_has_place_of_enactment']
-    
-    return data
-
-def transform_p138i_1_has_representation(data):
-    """
-    Transform gmn:P138i_1_has_representation to full CIDOC-CRM structure:
-    P138i_has_representation > D1_Digital_Object
-    
-    This links documents to their digital representations (JPEG, TIFF, PDF, etc.).
-    
-    Args:
-        data: The item data dictionary
-    
-    Returns:
-        Modified data dictionary
-    """
-    if 'gmn:P138i_1_has_representation' not in data:
-        return data
-    
-    representations = data['gmn:P138i_1_has_representation']
-    
-    # Initialize P138i if it doesn't exist
-    if 'cidoc:P138i_has_representation' not in data:
-        data['cidoc:P138i_has_representation'] = []
-    
-    # Add digital representations to the document
-    for rep_obj in representations:
-        # Handle both URI references and full objects
-        if isinstance(rep_obj, dict):
-            rep_data = rep_obj.copy()
-            if '@type' not in rep_data:
-                rep_data['@type'] = 'cidoc:D1_Digital_Object'
-        else:
-            rep_uri = str(rep_obj)
-            rep_data = {
-                '@id': rep_uri,
-                '@type': 'cidoc:D1_Digital_Object'
-            }
-        
-        # Add digital object to document via P138i
-        data['cidoc:P138i_has_representation'].append(rep_data)
-    
-    # Remove shortcut property
-    del data['gmn:P138i_1_has_representation']
-    
-    return data
-
-# Sales Contract transformation functions
-
-def transform_p70_1_documents_seller(data):
-    """
-    Transform gmn:P70_1_documents_seller to full CIDOC-CRM structure:
-    P70_documents > E8_Acquisition > P23_transferred_title_from > E21_Person
-    
-    Args:
-        data: The item data dictionary
-    
-    Returns:
-        Modified data dictionary
-    """
-    if 'gmn:P70_1_documents_seller' not in data:
-        return data
-    
-    sellers = data['gmn:P70_1_documents_seller']
-    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
-    
-    # Check if acquisition event already exists
-    existing_acquisition = None
-    if 'cidoc:P70_documents' in data and len(data['cidoc:P70_documents']) > 0:
-        # Use existing acquisition event (assuming only one acquisition per contract)
-        existing_acquisition = data['cidoc:P70_documents'][0]
-    else:
-        # Create new acquisition event
-        acquisition_uri = f"{subject_uri}/acquisition"
-        existing_acquisition = {
-            '@id': acquisition_uri,
-            '@type': 'cidoc:E8_Acquisition'
-        }
-        data['cidoc:P70_documents'] = [existing_acquisition]
-    
-    # Initialize P23 if it doesn't exist
-    if 'cidoc:P23_transferred_title_from' not in existing_acquisition:
-        existing_acquisition['cidoc:P23_transferred_title_from'] = []
-    
-    # Add sellers to acquisition event
-    for seller_obj in sellers:
-        # Handle both URI references and full objects
-        if isinstance(seller_obj, dict):
-            seller_data = seller_obj.copy()
-            if '@type' not in seller_data:
-                seller_data['@type'] = 'cidoc:E21_Person'
-        else:
-            seller_uri = str(seller_obj)
-            seller_data = {
-                '@id': seller_uri,
-                '@type': 'cidoc:E21_Person'
-            }
-        
-        # Add to acquisition event
-        existing_acquisition['cidoc:P23_transferred_title_from'].append(seller_data)
-    
-    # Remove shortcut property
-    del data['gmn:P70_1_documents_seller']
-    
-    return data
-
-def transform_p70_2_documents_buyer(data):
-    """
-    Transform gmn:P70_2_documents_buyer to full CIDOC-CRM structure:
-    P70_documents > E8_Acquisition > P22_transferred_title_to > E21_Person
-    
-    Args:
-        data: The item data dictionary
-    
-    Returns:
-        Modified data dictionary
-    """
-    if 'gmn:P70_2_documents_buyer' not in data:
-        return data
-    
-    buyers = data['gmn:P70_2_documents_buyer']
-    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
-    
-    # Check if acquisition event already exists
-    existing_acquisition = None
-    if 'cidoc:P70_documents' in data and len(data['cidoc:P70_documents']) > 0:
-        # Use existing acquisition event
-        existing_acquisition = data['cidoc:P70_documents'][0]
-    else:
-        # Create new acquisition event
-        acquisition_uri = f"{subject_uri}/acquisition"
-        existing_acquisition = {
-            '@id': acquisition_uri,
-            '@type': 'cidoc:E8_Acquisition'
-        }
-        data['cidoc:P70_documents'] = [existing_acquisition]
-    
-    # Initialize P22 if it doesn't exist
-    if 'cidoc:P22_transferred_title_to' not in existing_acquisition:
-        existing_acquisition['cidoc:P22_transferred_title_to'] = []
-    
-    # Add buyers to acquisition event
-    for buyer_obj in buyers:
-        # Handle both URI references and full objects
-        if isinstance(buyer_obj, dict):
-            buyer_data = buyer_obj.copy()
-            if '@type' not in buyer_data:
-                buyer_data['@type'] = 'cidoc:E21_Person'
-        else:
-            buyer_uri = str(buyer_obj)
-            buyer_data = {
-                '@id': buyer_uri,
-                '@type': 'cidoc:E21_Person'
-            }
-        
-        # Add to acquisition event
-        existing_acquisition['cidoc:P22_transferred_title_to'].append(buyer_data)
-    
-    # Remove shortcut property
-    del data['gmn:P70_2_documents_buyer']
-    
-    return data
-
-def transform_p70_3_documents_transfer_of(data):
-    """
-    Transform gmn:P70_3_documents_transfer_of to full CIDOC-CRM structure:
-    P70_documents > E8_Acquisition > P24_transferred_title_of > E18_Physical_Thing
-    
-    Args:
-        data: The item data dictionary
-    
-    Returns:
-        Modified data dictionary
-    """
-    if 'gmn:P70_3_documents_transfer_of' not in data:
-        return data
-    
-    objects = data['gmn:P70_3_documents_transfer_of']
-    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
-    
-    # Check if acquisition event already exists
-    existing_acquisition = None
-    if 'cidoc:P70_documents' in data and len(data['cidoc:P70_documents']) > 0:
-        # Use existing acquisition event
-        existing_acquisition = data['cidoc:P70_documents'][0]
-    else:
-        # Create new acquisition event
-        acquisition_uri = f"{subject_uri}/acquisition"
-        existing_acquisition = {
-            '@id': acquisition_uri,
-            '@type': 'cidoc:E8_Acquisition'
-        }
-        data['cidoc:P70_documents'] = [existing_acquisition]
-    
-    # Initialize P24 if it doesn't exist
-    if 'cidoc:P24_transferred_title_of' not in existing_acquisition:
-        existing_acquisition['cidoc:P24_transferred_title_of'] = []
-    
-    # Add objects to acquisition event
-    for object_obj in objects:
-        # Handle both URI references and full objects
-        if isinstance(object_obj, dict):
-            object_data = object_obj.copy()
-            # Preserve existing type or default to E18_Physical_Thing#!/usr/bin/env python3
-"""
-Transform GMN shortcut properties to full CIDOC-CRM compliant structure.
-
-This script reads JSON-LD export from Omeka-S and transforms custom shortcut
-properties (like gmn:P1_1_has_name) into their full CIDOC-CRM equivalents.
-
-Updated to reflect class hierarchy:
-- gmn:E31_1_Contract (general contract class)
-- gmn:E31_2_Sales_Contract (specialized sales contract, subclass of E31_1_Contract)
-- gmn:E31_3_Arbitration_Agreement (specialized arbitration agreement, subclass of E31_1_Contract)
-"""
-
-import json
-import sys
-from uuid import uuid4
-
-# Getty AAT URI for names (general)
-AAT_NAME = "http://vocab.getty.edu/page/aat/300404650"
-# Getty AAT URI for names found in sources
-AAT_NAME_FROM_SOURCE = "http://vocab.getty.edu/page/aat/300456607"
-# Getty AAT URI for patronymics (patrilineal names)
-AAT_PATRONYMIC = "http://vocab.getty.edu/page/aat/300404651"
-# Getty AAT URI for editorial notes
-AAT_EDITORIAL_NOTE = "http://vocab.getty.edu/page/aat/300456627"
-# Wikidata URI for loconyms
-WIKIDATA_LOCONYM = "https://www.wikidata.org/wiki/Q17143070"
-# Getty AAT URI for regions (geographic)
-AAT_REGION = "http://vocab.getty.edu/page/aat/300055490"
-# Getty AAT URI for marriages
-AAT_MARRIAGE = "http://vocab.getty.edu/page/aat/300055475"
-# Getty AAT URI for procurators/agents
-AAT_AGENT = "http://vocab.getty.edu/page/aat/300025972"
-# Getty AAT URI for guarantors
-AAT_GUARANTOR = "http://vocab.getty.edu/page/aat/300025614"
-# Getty AAT URI for brokers
-AAT_BROKER = "http://vocab.getty.edu/page/aat/300025234"
-# Getty AAT URI for payers
-AAT_PAYER = "http://vocab.getty.edu/page/aat/300386048"
-# Getty AAT URI for payees
-AAT_PAYEE = "http://vocab.getty.edu/page/aat/300386184"
-# Getty AAT URI for financial transactions
-AAT_FINANCIAL_TRANSACTION = "http://vocab.getty.edu/page/aat/300055984"
-# Getty AAT URI for witnesses
-AAT_WITNESS = "http://vocab.getty.edu/page/aat/300028910"
-# Getty AAT URI for arbitration (process)
-AAT_ARBITRATION = "http://vocab.getty.edu/page/aat/300417271"
-
-def generate_appellation_uri(subject_uri, name_value, suffix=""):
-    """Generate a unique URI for an appellation resource."""
-    # Create a deterministic URI based on subject and name
-    name_hash = str(hash(name_value + suffix))[-8:]
-    return f"{subject_uri}/appellation/{name_hash}"
-
-def transform_name_property(data, property_name, aat_type_uri):
-    """
-    Generic function to transform name shortcut properties to full CIDOC-CRM structure.
-    
-    Args:
-        data: The item data dictionary
-        property_name: The shortcut property to transform (e.g., 'gmn:P1_1_has_name')
-        aat_type_uri: The Getty AAT URI for the appellation type
-    
-    Returns:
-        Modified data dictionary
-    """
-    if property_name not in data:
-        return data
-    
-    names = data[property_name]
-    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
-    
-    # Initialize P1 if it doesn't exist
-    if 'cidoc:P1_is_identified_by' not in data:
-        data['cidoc:P1_is_identified_by'] = []
-    
-    # Transform each name
-    for name_obj in names:
-        # Handle both simple string values and object values
-        if isinstance(name_obj, dict):
-            name_value = name_obj.get('@value', '')
-            language = name_obj.get('@language', None)
-        else:
-            name_value = str(name_obj)
-            language = None
-        
-        # Create appellation URI (use property name as suffix for uniqueness)
-        appellation_uri = generate_appellation_uri(subject_uri, name_value, property_name)
-        
-        # Build P190 content
-        p190_content = {'@value': name_value}
-        if language:
-            p190_content['@language'] = language
-        
-        # Create full CIDOC-CRM structure
-        appellation = {
-            '@id': appellation_uri,
-            '@type': 'cidoc:E41_Appellation',
-            'cidoc:P2_has_type': {
-                '@id': aat_type_uri,
-                '@type': 'cidoc:E55_Type'
-            },
-            'cidoc:P190_has_symbolic_content': [p190_content]
-        }
-        
-        # Add to P1
-        data['cidoc:P1_is_identified_by'].append(appellation)
-    
-    # Remove shortcut property
-    del data[property_name]
-    
-    return data
-
-def transform_p1_1_has_name(data):
-    """
-    Transform gmn:P1_1_has_name to full CIDOC-CRM structure:
-    P1_is_identified_by > E41_Appellation > P2_has_type (AAT 300404650) > P190_has_symbolic_content
-    
-    Note: This now applies to any E1_CRM_Entity, not just E21_Person.
-    """
-    return transform_name_property(data, 'gmn:P1_1_has_name', AAT_NAME)
-
-def transform_p1_2_has_name_from_source(data):
-    """
-    Transform gmn:P1_2_has_name_from_source to full CIDOC-CRM structure:
-    P1_is_identified_by > E41_Appellation > P2_has_type (AAT 300456607) > P190_has_symbolic_content
-    """
-    return transform_name_property(data, 'gmn:P1_2_has_name_from_source', AAT_NAME_FROM_SOURCE)
-
-def transform_p1_3_has_patrilineal_name(data):
-    """
-    Transform gmn:P1_3_has_patrilineal_name to full CIDOC-CRM structure:
-    P1_is_identified_by > E41_Appellation > P2_has_type (AAT 300404651) > P190_has_symbolic_content
-    
-    This captures patrilineal names that include patronymic ancestry chains,
-    such as "Giacomo Spinola q. Antonio" (son of the late Antonio).
-    """
-    return transform_name_property(data, 'gmn:P1_3_has_patrilineal_name', AAT_PATRONYMIC)
-
-def transform_p1_4_has_loconym(data):
-    """
-    Transform gmn:P1_4_has_loconym to full CIDOC-CRM structure:
-    P1_is_identified_by > E41_Appellation > P2_has_type (Wikidata Q17143070) > P67_refers_to > E53_Place
-    
-    Args:
-        data: The item data dictionary
-    
-    Returns:
-        Modified data dictionary
-    """
-    if 'gmn:P1_4_has_loconym' not in data:
-        return data
-    
-    places = data['gmn:P1_4_has_loconym']
-    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
-    
-    # Initialize P1 if it doesn't exist
-    if 'cidoc:P1_is_identified_by' not in data:
-        data['cidoc:P1_is_identified_by'] = []
-    
-    # Transform each place reference
-    for place_obj in places:
-        # Handle both URI references and objects
-        if isinstance(place_obj, dict):
-            place_uri = place_obj.get('@id', place_obj.get('@value', ''))
-        else:
-            place_uri = str(place_obj)
-        
-        # Create appellation URI
-        place_hash = str(hash(place_uri + 'loconym'))[-8:]
-        appellation_uri = f"{subject_uri}/appellation/loconym_{place_hash}"
-        
-        # Create full CIDOC-CRM structure
-        appellation = {
-            '@id': appellation_uri,
-            '@type': 'cidoc:E41_Appellation',
-            'cidoc:P2_has_type': {
-                '@id': WIKIDATA_LOCONYM,
-                '@type': 'cidoc:E55_Type'
-            },
-            'cidoc:P67_refers_to': {
-                '@id': place_uri,
-                '@type': 'cidoc:E53_Place'
-            }
-        }
-        
-        # Add to P1
-        data['cidoc:P1_is_identified_by'].append(appellation)
-    
-    # Remove shortcut property
-    del data['gmn:P1_4_has_loconym']
-    
-    return data
-
-def transform_p3_1_has_editorial_note(data, include_internal=False):
-    """
-    Transform gmn:P3_1_has_editorial_note to full CIDOC-CRM structure:
-    P67i_is_referred_to_by > E33_Linguistic_Object > P2_has_type (AAT 300456627) > P190_has_symbolic_content
-    
-    Args:
-        data: The item data dictionary
-        include_internal: If False (default), removes editorial notes entirely. 
-                         If True, transforms them to full CIDOC-CRM structure.
-    
-    Returns:
-        Modified data dictionary
-    """
-    if 'gmn:P3_1_has_editorial_note' not in data:
-        return data
-    
-    # If we're not including internal notes, just remove them
-    if not include_internal:
-        del data['gmn:P3_1_has_editorial_note']
-        return data
-    
-    notes = data['gmn:P3_1_has_editorial_note']
-    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
-    
-    # Initialize P67i if it doesn't exist
-    if 'cidoc:P67i_is_referred_to_by' not in data:
-        data['cidoc:P67i_is_referred_to_by'] = []
-    
-    # Transform each note
-    for note_obj in notes:
-        # Handle both simple string values and object values
-        if isinstance(note_obj, dict):
-            note_value = note_obj.get('@value', '')
-            language = note_obj.get('@language', None)
-        else:
-            note_value = str(note_obj)
-            language = None
-        
-        # Create linguistic object URI
-        note_hash = str(hash(note_value + 'editorial'))[-8:]
-        linguistic_obj_uri = f"{subject_uri}/linguistic_object/{note_hash}"
-        
-        # Build P190 content
-        p190_content = {'@value': note_value}
-        if language:
-            p190_content['@language'] = language
-        
-        # Create full CIDOC-CRM structure
-        linguistic_object = {
-            '@id': linguistic_obj_uri,
-            '@type': 'cidoc:E33_Linguistic_Object',
-            'cidoc:P2_has_type': {
-                '@id': AAT_EDITORIAL_NOTE,
-                '@type': 'cidoc:E55_Type'
-            },
-            'cidoc:P190_has_symbolic_content': [p190_content]
-        }
-        
-        # Add to P67i
-        data['cidoc:P67i_is_referred_to_by'].append(linguistic_object)
-    
-    # Remove shortcut property
-    del data['gmn:P3_1_has_editorial_note']
-    
-    return data
-
 def transform_p11i_1_earliest_attestation_date(data):
     """
     Transform gmn:P11i_1_earliest_attestation_date to full CIDOC-CRM structure:
@@ -2596,10 +3468,10 @@ def transform_p11i_2_latest_attestation_date(data):
     
     return data
 
-def transform_p11i_3_has_spouse(data):
+def transform_p96_1_has_mother(data):
     """
-    Transform gmn:P11i_3_has_spouse to full CIDOC-CRM structure:
-    P11i_participated_in > E5_Event (marriage) > P11_had_participant > E21_Person
+    Transform gmn:P96_1_has_mother to full CIDOC-CRM structure:
+    P98i_was_born > E67_Birth > P96_by_mother > E21_Person
     
     Args:
         data: The item data dictionary
@@ -2607,66 +3479,54 @@ def transform_p11i_3_has_spouse(data):
     Returns:
         Modified data dictionary
     """
-    if 'gmn:P11i_3_has_spouse' not in data:
+    if 'gmn:P96_1_has_mother' not in data:
         return data
     
-    spouses = data['gmn:P11i_3_has_spouse']
+    mothers = data['gmn:P96_1_has_mother']
     subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
     
-    # Initialize P11i if it doesn't exist
-    if 'cidoc:P11i_participated_in' not in data:
-        data['cidoc:P11i_participated_in'] = []
+    # Check if birth event already exists
+    existing_birth = None
+    if 'cidoc:P98i_was_born' in data and len(data['cidoc:P98i_was_born']) > 0:
+        # Use existing birth event
+        existing_birth = data['cidoc:P98i_was_born'][0]
+    else:
+        # Create new birth event
+        birth_uri = f"{subject_uri}/birth"
+        existing_birth = {
+            '@id': birth_uri,
+            '@type': 'cidoc:E67_Birth'
+        }
+        data['cidoc:P98i_was_born'] = [existing_birth]
     
-    # Transform each spouse (each represents a separate marriage)
-    for spouse_obj in spouses:
+    # Add mothers to birth event
+    for mother_obj in mothers:
         # Handle both URI references and full objects
-        if isinstance(spouse_obj, dict):
-            spouse_uri = spouse_obj.get('@id', '')
-            spouse_data = spouse_obj.copy()
-            if '@type' not in spouse_data:
-                spouse_data['@type'] = 'cidoc:E21_Person'
+        if isinstance(mother_obj, dict):
+            mother_data = mother_obj.copy()
+            if '@type' not in mother_data:
+                mother_data['@type'] = 'cidoc:E21_Person'
         else:
-            spouse_uri = str(spouse_obj)
-            spouse_data = {
-                '@id': spouse_uri,
+            mother_uri = str(mother_obj)
+            mother_data = {
+                '@id': mother_uri,
                 '@type': 'cidoc:E21_Person'
             }
         
-        # Create marriage event URI
-        spouse_hash = str(hash(spouse_uri + 'marriage'))[-8:]
-        marriage_uri = f"{subject_uri}/marriage/{spouse_hash}"
-        
-        # Create full CIDOC-CRM structure
-        marriage_event = {
-            '@id': marriage_uri,
-            '@type': 'cidoc:E5_Event',
-            'cidoc:P2_has_type': {
-                '@id': AAT_MARRIAGE,
-                '@type': 'cidoc:E55_Type'
-            },
-            'cidoc:P11_had_participant': [
-                {
-                    '@id': subject_uri,
-                    '@type': 'cidoc:E21_Person'
-                },
-                spouse_data
-            ]
-        }
-        
-        # Add to P11i
-        data['cidoc:P11i_participated_in'].append(marriage_event)
+        # Add to birth event
+        if 'cidoc:P96_by_mother' not in existing_birth:
+            existing_birth['cidoc:P96_by_mother'] = []
+        existing_birth['cidoc:P96_by_mother'].append(mother_data)
     
     # Remove shortcut property
-    del data['gmn:P11i_3_has_spouse']
+    del data['gmn:P96_1_has_mother']
     
     return data
 
-def transform_p22_1_has_owner(data):
+def transform_p97_1_has_father(data):
     """
-    Transform gmn:P22_1_has_owner to full CIDOC-CRM structure:
-    P24i_changed_ownership_through > E8_Acquisition > P22_transferred_title_to > E21_Person
-    
-    Works for both buildings (gmn:E22_1_Building) and moveable property (gmn:E22_2_Moveable_Property).
+    Transform gmn:P97_1_has_father to full CIDOC-CRM structure:
+    P98i_was_born > E67_Birth > P97_from_father > E21_Person
     
     Args:
         data: The item data dictionary
@@ -2674,81 +3534,166 @@ def transform_p22_1_has_owner(data):
     Returns:
         Modified data dictionary
     """
-    if 'gmn:P22_1_has_owner' not in data:
+    if 'gmn:P97_1_has_father' not in data:
         return data
     
-    owners = data['gmn:P22_1_has_owner']
+    fathers = data['gmn:P97_1_has_father']
     subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
     
-    # Determine the type of the object (building or moveable property)
-    object_type = 'cidoc:E22_Human-Made_Object'
-    if '@type' in data:
-        if isinstance(data['@type'], list):
-            if 'gmn:E22_1_Building' in data['@type']:
-                object_type = 'gmn:E22_1_Building'
-            elif 'gmn:E22_2_Moveable_Property' in data['@type']:
-                object_type = 'gmn:E22_2_Moveable_Property'
-        elif data['@type'] in ['gmn:E22_1_Building', 'gmn:E22_2_Moveable_Property']:
-            object_type = data['@type']
+    # Check if birth event already exists
+    existing_birth = None
+    if 'cidoc:P98i_was_born' in data and len(data['cidoc:P98i_was_born']) > 0:
+        # Use existing birth event
+        existing_birth = data['cidoc:P98i_was_born'][0]
+    else:
+        # Create new birth event
+        birth_uri = f"{subject_uri}/birth"
+        existing_birth = {
+            '@id': birth_uri,
+            '@type': 'cidoc:E67_Birth'
+        }
+        data['cidoc:P98i_was_born'] = [existing_birth]
     
-    # Initialize P24i if it doesn't exist
-    if 'cidoc:P24i_changed_ownership_through' not in data:
-        data['cidoc:P24i_changed_ownership_through'] = []
-    
-    # Transform each owner (each represents a separate acquisition)
-    for owner_obj in owners:
+    # Add fathers to birth event
+    for father_obj in fathers:
         # Handle both URI references and full objects
-        if isinstance(owner_obj, dict):
-            owner_uri = owner_obj.get('@id', '')
-            owner_data = owner_obj.copy()
-            if '@type' not in owner_data:
-                owner_data['@type'] = 'cidoc:E21_Person'
+        if isinstance(father_obj, dict):
+            father_data = father_obj.copy()
+            if '@type' not in father_data:
+                father_data['@type'] = 'cidoc:E21_Person'
         else:
-            owner_uri = str(owner_obj)
-            owner_data = {
-                '@id': owner_uri,
+            father_uri = str(father_obj)
+            father_data = {
+                '@id': father_uri,
                 '@type': 'cidoc:E21_Person'
             }
         
-        # Create acquisition event URI
-        owner_hash = str(hash(owner_uri + 'acquisition'))[-8:]
-        acquisition_uri = f"{subject_uri}/acquisition/{owner_hash}"
-        
-        # Create full CIDOC-CRM structure
-        acquisition_event = {
-            '@id': acquisition_uri,
-            '@type': 'cidoc:E8_Acquisition',
-            'cidoc:P24_transferred_title_of': {
-                '@id': subject_uri,
-                '@type': object_type
-            },
-            'cidoc:P22_transferred_title_to': owner_data
-        }
-        
-        # Add to P24i
-        data['cidoc:P24i_changed_ownership_through'].append(acquisition_event)
+        # Add to birth event
+        if 'cidoc:P97_from_father' not in existing_birth:
+            existing_birth['cidoc:P97_from_father'] = []
+        existing_birth['cidoc:P97_from_father'].append(father_data)
     
     # Remove shortcut property
-    del data['gmn:P22_1_has_owner']
+    del data['gmn:P97_1_has_father']
     
     return data
 
-def transform_p53_1_has_occupant(data):
+
+def transform_item(item):
+    """Transform a single item, applying all transformation rules."""
+    item = transform_p1_1_has_name(item)
+    # Add more transformation functions here as needed
+    return item
+
+def transform_export(input_file, output_file):
     """
-    Transform gmn:P53_1_has_occupant to full CIDOC-CRM structure:
-    P53i_is_former_or_current_location_of > E9_Move > P25_moved > E21_Person
+    Transform an entire JSON-LD export file.
     
     Args:
-        data: The item data dictionary
-    
-    Returns:
-        Modified data dictionary
+        input_file: Path to input JSON-LD file
+        output_file: Path to output CIDOC-CRM compliant file
     """
-    if 'gmn:P53_1_has_occupant' not in data:
-        return data
+    try:
+        with open(input_file, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        
+        # Handle both single items and arrays of items
+        if isinstance(data, list):
+            transformed = [transform_item(item) for item in data]
+        elif isinstance(data, dict) and '@graph' in data:
+            # Handle JSON-LD with @graph
+            data['@graph'] = [transform_item(item) for item in data['@graph']]
+            transformed = data
+        else:
+            transformed = transform_item(data)
+        
+        # Write output
+        with open(output_file, 'w', encoding='utf-8') as f:
+            json.dump(transformed, f, indent=2, ensure_ascii=False)
+        
+        print(f"✓ Transformation complete: {output_file}")
+        return True
+        
+    except FileNotFoundError:
+        print(f"✗ Error: Input file '{input_file}' not found", file=sys.stderr)
+        return False
+    except json.JSONDecodeError as e:
+        print(f"✗ Error: Invalid JSON in input file: {e}", file=sys.stderr)
+        return False
+    except Exception as e:
+        print(f"✗ Error during transformation: {e}", file=sys.stderr)
+        return False
+
+def main():
+    """Main entry point for command-line usage."""
+    if len(sys.argv) != 3:
+        print("Usage: python transform_gmn.py <input_file.json> <output_file.json>")
+        print("\nExample:")
+        print("  python transform_gmn.py omeka_export.json cidoc_compliant.json")
+        sys.exit(1)
     
-    occupants = data['gmn:P53_1_has_occupant']
-    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    input_file = sys.argv[1]
+    output_file = sys.argv[2]
     
-    # Initialize P53i if it doesn't exist
-    if 'ci
+    success = transform_export(input_file, output_file)
+    sys.exit(0 if success else 1)
+
+if __name__ == '__main__':
+    main()
+
+def transform_item(item, include_internal=False):
+    """
+    Transform a single item, applying all transformation rules.
+    
+    Args:
+        item: Item data dictionary
+        include_internal: If True, transform internal notes to CIDOC-CRM. 
+                         If False (default), remove internal notes entirely.
+    """
+    item = transform_p1_1_has_name(item)
+    item = transform_p1_2_has_name_from_source(item)
+    item = transform_p1_3_has_patrilineal_name(item)
+    item = transform_p102_1_has_title(item)
+    item = transform_p94i_1_was_created_by(item)
+    item = transform_p94i_2_has_enactment_date(item)
+    item = transform_p94i_3_has_place_of_enactment(item)
+    item = transform_p70_1_documents_seller(item)
+    item = transform_p70_2_documents_buyer(item)
+    item = transform_p70_3_documents_transfer_of(item)
+    item = transform_p70_4_documents_sellers_procurator(item)
+    item = transform_p70_5_documents_buyers_procurator(item)
+    item = transform_p70_6_documents_sellers_guarantor(item)
+    item = transform_p70_7_documents_buyers_guarantor(item)
+    item = transform_p70_8_documents_broker(item)
+    item = transform_p70_9_documents_payment_provider_for_buyer(item)
+    item = transform_p70_10_documents_payment_recipient_for_seller(item)
+    item = transform_p70_11_documents_referenced_person(item)
+    item = transform_p70_12_documents_payment_through_organization(item)
+    item = transform_p70_13_documents_referenced_place(item)
+    item = transform_p70_14_documents_referenced_object(item)
+    item = transform_p70_15_documents_witness(item)
+    item = transform_p70_16_documents_sale_price_amount(item)
+    item = transform_p70_17_documents_sale_price_currency(item)
+    item = transform_p70_18_documents_disputing_party(item)
+    item = transform_p70_19_documents_arbitrator(item)
+    item = transform_p70_20_documents_dispute_subject(item)
+    item = transform_p70_21_indicates_conceding_party(item)
+    item = transform_p70_22_indicates_receiving_party(item)
+    item = transform_p70_23_indicates_object_of_cession(item)
+    item = transform_p70_24_indicates_declarant(item)
+    item = transform_p70_25_indicates_recipient(item)
+    item = transform_p70_26_indicates_declaration_subject(item)
+    item = transform_p138i_1_has_representation(item)
+    item = transform_p1_4_has_loconym(item)
+    item = transform_p11i_1_earliest_attestation_date(item)
+    item = transform_p11i_2_latest_attestation_date(item)
+    item = transform_p11i_3_has_spouse(item)
+    item = transform_p22_1_has_owner(item)
+    item = transform_p53_1_has_occupant(item)
+    item = transform_p96_1_has_mother(item)
+    item = transform_p97_1_has_father(item)
+    item = transform_p107i_1_has_regional_provenance(item)
+    item = transform_p107i_2_has_social_category(item)
+    item = transform_p107i_3_has_occupation(item)
+    item = transform_p3_1_has_editorial_note(item, include_internal)
+    return item
