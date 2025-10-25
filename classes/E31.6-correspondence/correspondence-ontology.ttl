@@ -1,0 +1,148 @@
+# ============================================================================
+# E31.6 CORRESPONDENCE - TTL ADDITIONS FOR gmn_ontology.ttl
+# ============================================================================
+# Version: 1.0
+# Date: 2025-10-18
+# 
+# INSTRUCTIONS:
+# 1. Add the Class definition to the Classes section (alphabetically)
+# 2. Add all Property definitions to the Properties section (numerically)
+# 3. Update the CLASS HIERARCHY comment at the end of the file
+# ============================================================================
+
+# ============================================================================
+# SECTION 1: CLASS DEFINITION
+# ============================================================================
+# Add this to the Classes section, after other E31 document classes
+
+# Class: E31.6 Correspondence
+gmn:E31_6_Correspondence
+    a owl:Class ;
+    rdfs:subClassOf cidoc:E31_Document ;
+    rdfs:label "E31.6 Correspondence"@en ;
+    rdfs:comment "A specialized type of E31_Document representing letters and other forms of written correspondence. These are documents written by one party from one location and sent to another party at a different location. Correspondence documents capture communication events between individuals or groups, including the sender, recipient, origin location, destination location, and any events or parties described within the letter's content. This class extends E31_Document to capture the specific structure and participants involved in epistolary communication."@en ;
+    dcterms:created "2025-10-18"^^xsd:date .
+
+# ============================================================================
+# SECTION 2: PROPERTY DEFINITIONS
+# ============================================================================
+# Add these to the Properties section, in numerical order (P70.26-P70.31)
+
+# Property: P70.26 indicates sender
+gmn:P70_26_indicates_sender
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.26 indicates sender"@en ;
+    rdfs:comment "Simplified property for associating a correspondence document with the party who writes and sends the letter. This is the author and initiator of the communication. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E7_Activity > P14_carried_out_by > E39_Actor, where the E7_Activity is typed as correspondence/letter writing (AAT 300026877 - correspondence). The sender is the active party who carries out the writing and sending activity. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_6_Correspondence ;
+    rdfs:range cidoc:E39_Actor ;
+    dcterms:created "2025-10-18"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by ;
+    gmn:hasImplicitType <http://vocab.getty.edu/page/aat/300026877> .
+
+# Property: P70.27 has address of origin
+gmn:P70_27_has_address_of_origin
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.27 has address of origin"@en ;
+    rdfs:comment "Simplified property for associating a correspondence document with the place from which the letter originates and is sent. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E7_Activity > P7_took_place_at > E53_Place. The correspondence activity (letter writing/sending) took place at this location. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_6_Correspondence ;
+    rdfs:range cidoc:E53_Place ;
+    dcterms:created "2025-10-18"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P7_took_place_at .
+
+# Property: P70.28 indicates recipient
+gmn:P70_28_indicates_recipient
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.28 indicates recipient"@en ;
+    rdfs:comment "Simplified property for associating a correspondence document with the intended recipient of the letter. This is the party to whom the letter is addressed and directed. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E7_Activity > P01_has_domain > E39_Actor (using the inverse P01i_is_domain_of). The recipient is the target or addressee of the communication activity. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_6_Correspondence ;
+    rdfs:range cidoc:E39_Actor ;
+    dcterms:created "2025-10-18"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P01_has_domain .
+
+# Property: P70.29 indicates holder of item
+gmn:P70_29_indicates_holder_of_item
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.29 indicates holder of item"@en ;
+    rdfs:comment "Simplified property for associating a correspondence document with a party named as holding or carrying an item described in the letter's content. This captures references within the correspondence to individuals or groups who possess, transport, or maintain custody of objects, documents, or goods mentioned in the letter. This is distinct from the letter's sender and recipient - it refers to third parties mentioned in the letter's narrative. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E7_Activity > P16_used_specific_object > E7_Activity > P14_carried_out_by > E39_Actor, where the nested E7_Activity represents the holding/carrying activity described in the letter. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_6_Correspondence ;
+    rdfs:range cidoc:E39_Actor ;
+    dcterms:created "2025-10-18"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P16_used_specific_object, cidoc:P14_carried_out_by .
+
+# Property: P70.30 refers to described event
+gmn:P70_30_refers_to_described_event
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.30 refers to described event"@en ;
+    rdfs:comment "Simplified property for associating a document with an event described in its content. This captures references within the document to activities, occurrences, or happenings that are narrated or reported. The event is part of the document's subject matter, not the document creation activity itself. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E7_Activity > P16_used_specific_object > E5_Event. The documented activity references the described event through P16_used_specific_object. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain cidoc:E31_Document ;
+    rdfs:range cidoc:E5_Event ;
+    dcterms:created "2025-10-18"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P16_used_specific_object .
+
+# Property: P70.31 has address of destination
+gmn:P70_31_has_address_of_destination
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.31 has address of destination"@en ;
+    rdfs:comment "Simplified property for associating a correspondence document with the place to which the letter is sent - the destination or location of the recipient. This is distinct from the origin place (P70.27) from which the letter was sent. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E7_Activity > P26_moved_to > E53_Place, modeling the correspondence as a transfer activity where the letter moves from the origin to the destination. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_6_Correspondence ;
+    rdfs:range cidoc:E53_Place ;
+    dcterms:created "2025-10-18"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P26_moved_to .
+
+# ============================================================================
+# SECTION 3: CLASS HIERARCHY UPDATE
+# ============================================================================
+# Update the CLASS HIERARCHY comment at the end of your ontology file:
+
+CLASS HIERARCHY:
+
+cidoc:E31_Document
+  ├─ gmn:E31_1_Contract (general notarial contracts)
+  │   ├─ gmn:E31_2_Sales_Contract (specialized for sales)
+  │   ├─ gmn:E31_3_Arbitration_Agreement
+  │   ├─ gmn:E31_4_Cession_of_Rights_Contract
+  │   └─ gmn:E31_7_Donation_Contract
+  ├─ gmn:E31_5_Declaration
+  └─ gmn:E31_6_Correspondence
+
+cidoc:E22_Human-Made_Object
+  ├─ gmn:E22_1_Building (immovable real estate)
+  └─ gmn:E22_2_Moveable_Property (transportable goods)
+
+cidoc:E74_Group
+  ├─ gmn:E74_1_Regional_Provenance (geographic origins)
+  ├─ gmn:E74_2_Social_Category (social classes)
+  └─ gmn:E74_3_Occupational_Group (professional affiliations)
+
+# ============================================================================
+# SECTION 4: PROPERTY DOMAIN DISTRIBUTION UPDATE (OPTIONAL)
+# ============================================================================
+# If you have a property distribution section, add:
+
+Properties on gmn:E31_6_Correspondence:
+- P70.26 indicates sender
+- P70.27 has address of origin
+- P70.28 indicates recipient
+- P70.29 indicates holder of item
+- P70.31 has address of destination
+
+Properties on cidoc:E31_Document (all document types):
+- P70.30 refers to described event
+- P70.11 documents referenced person
+- [other universal document properties...]
+
+# ============================================================================
+# END OF TTL ADDITIONS
+# ============================================================================
