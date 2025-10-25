@@ -1,0 +1,57 @@
+# Dowry Contract Ontology Additions
+# To be added to gmn_ontology.ttl
+
+#######################
+# Classes
+#######################
+
+# Class: E31.8 Dowry Contract
+gmn:E31_8_Dowry_Contract
+    a owl:Class ;
+    rdfs:subClassOf gmn:E31_1_Contract ;
+    rdfs:label "E31.8 Dowry Contract"@en ;
+    rdfs:comment "Specialized class that describes dowry contract documents. This is a specialized type of gmn:E31_1_Contract used to represent legal documents that record the transfer of property (dowry) from a donor to a person receiving the dowry, typically in the context of marriage arrangements. Like all notarial contracts in this ontology, dowry contracts model the transfer of rights: the donor agrees or obliges themselves to transfer an object of dowry to the person receiving the dowry. Dowry contracts typically include information about the donor (often a parent or family member), the recipient (often the spouse or the couple), the property being transferred as dowry, any conditions attached to the transfer, date of transaction, and witnessing notaries. Instances of this class represent the physical or conceptual document itself, while the actual transfer of ownership is modeled through E8_Acquisition events that the document documents (via P70_documents)."@en ;
+    dcterms:created "2025-10-25"^^xsd:date ;
+    rdfs:seeAlso gmn:E31_1_Contract, cidoc:E8_Acquisition, cidoc:P70_documents .
+
+#############################
+# Properties (Updated and New)
+#############################
+
+# Property: P70.32 indicates donor (UPDATED - expand domain)
+# Find this property in the existing ontology and replace its domain with:
+gmn:P70_32_indicates_donor
+    rdfs:domain [
+        a owl:Class ;
+        owl:unionOf (
+            gmn:E31_7_Donation_Contract
+            gmn:E31_8_Dowry_Contract
+        )
+    ] ;
+    dcterms:modified "2025-10-25"^^xsd:date .
+
+# Property: P70.22 indicates receiving party (UPDATED - expand domain)
+# Find this property in the existing ontology and replace its domain with:
+gmn:P70_22_indicates_receiving_party
+    rdfs:domain [
+        a owl:Class ;
+        owl:unionOf (
+            gmn:E31_4_Cession_of_Rights_Contract
+            gmn:E31_5_Declaration
+            gmn:E31_7_Donation_Contract
+            gmn:E31_8_Dowry_Contract
+        )
+    ] ;
+    dcterms:modified "2025-10-25"^^xsd:date .
+
+# Property: P70.34 indicates object of dowry (NEW)
+gmn:P70_34_indicates_object_of_dowry
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.34 indicates object of dowry"@en ;
+    rdfs:comment "Simplified property for associating a dowry contract with the physical thing (property or object) being transferred as dowry. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P24_transferred_title_of > E18_Physical_Thing. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The range includes buildings (gmn:E22_1_Building) and moveable property (gmn:E22_2_Moveable_Property) that are being transferred as dowry, typically in the context of marriage arrangements."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_8_Dowry_Contract ;
+    rdfs:range cidoc:E18_Physical_Thing ;
+    dcterms:created "2025-10-25"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P24_transferred_title_of .

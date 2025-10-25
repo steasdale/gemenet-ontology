@@ -1,0 +1,161 @@
+##########################
+# Dowry Contract Transformation Documentation
+# To be added to documentation_note.txt
+##########################
+
+Example transformation for gmn:P70_32_indicates_donor (UPDATED to include dowries):
+
+INPUT (shortcut):
+<dowry_contract> gmn:P70_32_indicates_donor <father_giacomo> .
+
+OUTPUT (CIDOC-CRM compliant):
+<dowry_contract> cidoc:P70_documents <acquisition1> .
+<acquisition1> a cidoc:E8_Acquisition ;
+               cidoc:P23_transferred_title_from <father_giacomo> .
+
+Note: This property now works for both gmn:E31_7_Donation_Contract and 
+gmn:E31_8_Dowry_Contract. The domain was expanded to include both contract types.
+
+Example transformation for gmn:P70_22_indicates_receiving_party (UPDATED to include dowries):
+
+INPUT (shortcut):
+<dowry_contract> gmn:P70_22_indicates_receiving_party <bride_maria> .
+
+OUTPUT (CIDOC-CRM compliant):
+<dowry_contract> cidoc:P70_documents <acquisition1> .
+<acquisition1> a cidoc:E8_Acquisition ;
+               cidoc:P22_transferred_title_to <bride_maria> .
+
+Note: This property works differently depending on the document type:
+- For cessions (E31_4): P70_documents > E7_Activity > P14_carried_out_by
+- For declarations (E31_5): P70_documents > E7_Activity > P01_has_domain
+- For donations (E31_7): P70_documents > E8_Acquisition > P22_transferred_title_to
+- For dowries (E31_8): P70_documents > E8_Acquisition > P22_transferred_title_to
+
+Example transformation for gmn:P70_34_indicates_object_of_dowry (NEW):
+
+INPUT (shortcut):
+<dowry_contract> gmn:P70_34_indicates_object_of_dowry <house_genoa> .
+
+OUTPUT (CIDOC-CRM compliant):
+<dowry_contract> cidoc:P70_documents <acquisition1> .
+<acquisition1> a cidoc:E8_Acquisition ;
+               cidoc:P24_transferred_title_of <house_genoa> .
+
+Note: Similar to P70.33 (object of donation) but specifically for dowry contracts.
+Can be used multiple times when a dowry includes multiple properties.
+
+COMPLETE DOWRY CONTRACT EXAMPLE:
+
+INPUT (shortcut):
+<dowry001> a gmn:E31_8_Dowry_Contract ;
+    gmn:P1_1_has_name "Dowry Contract of Maria Spinola"@en ;
+    gmn:P102_1_has_title "Instrumentum dotis Marie Spinole"@la ;
+    gmn:P70_32_indicates_donor <giacomo_spinola> ;
+    gmn:P70_22_indicates_receiving_party <maria_spinola> ;
+    gmn:P70_34_indicates_object_of_dowry <house_piazza> , <vineyard_albaro> ;
+    gmn:P70_16_documents_sale_price_amount "1500.00"^^xsd:decimal ;
+    gmn:P70_17_documents_sale_price_currency <http://example.com/currencies/lira> ;
+    gmn:P94i_1_was_created_by <http://example.com/notaries/antonio_basso> ;
+    gmn:P94i_2_has_enactment_date "1455-08-12"^^xsd:date ;
+    gmn:P94i_3_has_place_of_enactment <http://example.com/places/genoa> .
+
+OUTPUT (CIDOC-CRM compliant):
+<dowry001> a gmn:E31_8_Dowry_Contract ;
+    cidoc:P1_is_identified_by <appellation1> ;
+    cidoc:P102_has_title <title1> ;
+    cidoc:P70_documents <acquisition1> ;
+    cidoc:P94i_was_created_by <creation1> .
+
+<appellation1> a cidoc:E41_Appellation ;
+               cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300404650> ;
+               cidoc:P190_has_symbolic_content "Dowry Contract of Maria Spinola"@en .
+
+<title1> a cidoc:E35_Title ;
+         cidoc:P190_has_symbolic_content "Instrumentum dotis Marie Spinole"@la .
+
+<acquisition1> a cidoc:E8_Acquisition ;
+               cidoc:P23_transferred_title_from <giacomo_spinola> ;
+               cidoc:P22_transferred_title_to <maria_spinola> ;
+               cidoc:P24_transferred_title_of <house_piazza> , <vineyard_albaro> ;
+               cidoc:P177_assigned_property_of_type <monetary_amount1> .
+
+<monetary_amount1> a cidoc:E97_Monetary_Amount ;
+                   cidoc:P181_has_amount "1500.00"^^xsd:decimal ;
+                   cidoc:P180_has_currency <http://example.com/currencies/lira> .
+
+<creation1> a cidoc:E65_Creation ;
+            cidoc:P14_carried_out_by <http://example.com/notaries/antonio_basso> ;
+            cidoc:P4_has_time-span <timespan1> ;
+            cidoc:P7_took_place_at <http://example.com/places/genoa> .
+
+<timespan1> a cidoc:E52_Time-Span ;
+            cidoc:P82_at_some_time_within "1455-08-12"^^xsd:date .
+
+CLASS HIERARCHY (UPDATED):
+
+cidoc:E31_Document
+  └─ gmn:E31_1_Contract (general notarial contracts)
+      ├─ gmn:E31_2_Sales_Contract (specialized for sales)
+      ├─ gmn:E31_3_Arbitration_Agreement (specialized for arbitration)
+      ├─ gmn:E31_4_Cession_of_Rights_Contract (specialized for rights transfers)
+      ├─ gmn:E31_7_Donation_Contract (specialized for donations)
+      └─ gmn:E31_8_Dowry_Contract (specialized for dowries)
+
+cidoc:E31_Document (not subclass of E31_1)
+  ├─ gmn:E31_5_Declaration (unilateral statements)
+  └─ gmn:E31_6_Correspondence (letters)
+
+cidoc:E22_Human-Made_Object
+  ├─ gmn:E22_1_Building (immovable real estate)
+  └─ gmn:E22_2_Moveable_Property (transportable goods)
+
+cidoc:E74_Group
+  ├─ gmn:E74_1_Regional_Provenance (geographic origins)
+  ├─ gmn:E74_2_Social_Category (social classes)
+  └─ gmn:E74_3_Occupational_Group (professional affiliations)
+
+PROPERTY DOMAIN DISTRIBUTION (UPDATED):
+
+Properties shared across multiple contract types:
+- P70.32 documents donor (E31_7 Donation, E31_8 Dowry)
+- P70.22 indicates receiving party (E31_4 Cession, E31_5 Declaration, E31_7 Donation, E31_8 Dowry)
+- P70.16 documents sale price amount (E31_2 Sales - but can be used by others for value)
+- P70.17 documents sale price currency (E31_2 Sales - but can be used by others for value)
+
+Properties specific to contract types:
+- P70.1 documents seller (E31_2 Sales only)
+- P70.2 documents buyer (E31_2 Sales only)
+- P70.3 documents transfer of (E31_2 Sales only)
+- P70.33 indicates object of donation (E31_7 Donation only)
+- P70.34 indicates object of dowry (E31_8 Dowry only)
+
+This distribution allows different contract types to share common properties while 
+maintaining specific properties where the semantics differ.
+
+COMPARISON OF TRANSFER CONTRACT TYPES:
+
+| Property | Sales (E31_2) | Donation (E31_7) | Dowry (E31_8) |
+|----------|---------------|------------------|---------------|
+| Transferring Party | P70.1 (seller) | P70.32 (donor) | P70.32 (donor) |
+| Receiving Party | P70.2 (buyer) | P70.22 (donee) | P70.22 (recipient) |
+| Object | P70.3 (property) | P70.33 (donation) | P70.34 (dowry) |
+| Payment | Required (P70.16-17) | Not expected | Often specified (P70.16-17) |
+| Context | Commercial | Voluntary gift | Marriage arrangement |
+| Event Type | E8_Acquisition | E8_Acquisition | E8_Acquisition |
+
+IMPLEMENTATION NOTES:
+
+1. Dowry contracts reuse P70.32 and P70.22 from other contract types, requiring updates 
+   to the domain definitions of these properties in the ontology.
+
+2. The transformation functions for P70.32 (donor) and P70.22 (receiving party) already 
+   exist and will automatically handle dowry contracts once the ontology domains are updated.
+
+3. A new transformation function is required only for P70.34 (object of dowry).
+
+4. Like donations and sales, dowry contracts use E8_Acquisition to model the transfer, 
+   maintaining consistency across property transfer contract types.
+
+5. Dowry contracts can include monetary amounts (P70.16-17) to document the declared 
+   value of the dowry, even though no purchase is involved.
