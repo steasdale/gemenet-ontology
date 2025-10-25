@@ -1,0 +1,67 @@
+# =============================================================================
+# E31.5 Declaration - Ontology Additions
+# Add these definitions to gmn_ontology.ttl
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# CLASS DEFINITION
+# -----------------------------------------------------------------------------
+
+# Class: E31.5 Declaration
+gmn:E31_5_Declaration
+    a owl:Class ;
+    rdfs:subClassOf cidoc:E31_Document ;
+    rdfs:label "E31.5 Declaration"@en ;
+    rdfs:comment "Specialized class that describes declaration documents. This is a specialized type of cidoc:E31_Document used to represent legal documents where one party (the declarant) makes a formal statement, acknowledgment, or assertion to another party (the recipient) regarding a specific subject matter. Declarations can be either notarial documents (recorded by a notary) or governmental documents (issued by official authorities without notarial involvement). Common types include declarations of debt, acknowledgments of obligations, statements of fact, official pronouncements, formal notifications, or governmental decrees. Unlike contracts (E31.1) which typically involve bilateral agreements, declarations are unilateral statements, though they have legal effect and may create or acknowledge obligations. Some declarations may be recorded in notarial registers alongside contracts, while others exist as independent governmental or administrative documents. Instances of this class represent the physical or conceptual document itself, while the actual declaration activity and its effects are modeled through E7_Activity that the document documents (via P70_documents)."@en ;
+    dcterms:created "2025-10-25"^^xsd:date ;
+    rdfs:seeAlso cidoc:E31_Document, cidoc:E7_Activity, cidoc:P70_documents .
+
+# -----------------------------------------------------------------------------
+# PROPERTY DEFINITIONS
+# -----------------------------------------------------------------------------
+
+# Property: P70.24 indicates declarant
+gmn:P70_24_indicates_declarant
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.24 indicates declarant"@en ;
+    rdfs:comment "Simplified property for associating a declaration document with the person or entity making the declaration. The declarant is the party who is formally stating, acknowledging, or asserting something. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E7_Activity > P14_carried_out_by > E39_Actor. The E7_Activity should be typed as a declaration (AAT 300027623). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_5_Declaration ;
+    rdfs:range cidoc:E39_Actor ;
+    dcterms:created "2025-10-25"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by .
+
+# Property: P70.22 indicates receiving party (UPDATED - replaces existing definition)
+gmn:P70_22_indicates_receiving_party
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.22 indicates receiving party"@en ;
+    rdfs:comment "Simplified property for associating a document with the person or entity receiving something in the documented activity. In cession of rights contracts, this is the party receiving the ceded rights. In declarations, this is the party to whom the declaration is addressed or directed. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E7_Activity > P01_has_domain > E39_Actor (using the inverse P01i_is_domain_of for declarations) OR E31_Document > P70_documents > E7_Activity > P14_carried_out_by > E39_Actor (for cessions, where both parties carry out the activity). The E7_Activity should be typed appropriately (AAT 300417639 for cessions, AAT 300027623 for declarations). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain [
+        a owl:Class ;
+        owl:unionOf (
+            gmn:E31_4_Cession_of_Rights_Contract
+            gmn:E31_5_Declaration
+        )
+    ] ;
+    rdfs:range cidoc:E39_Actor ;
+    dcterms:created "2025-10-25"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by, cidoc:P01_has_domain .
+
+# Property: P70.25 indicates declaration subject
+gmn:P70_25_indicates_declaration_subject
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.25 indicates declaration subject"@en ;
+    rdfs:comment "Simplified property for associating a declaration document with the subject matter being declared, acknowledged, or asserted. This can include debts being acknowledged, facts being stated, obligations being recognized, properties being claimed, rights being asserted, or any other matter that is the content of the declaration. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E7_Activity > P16_used_specific_object > E1_CRM_Entity. The E7_Activity should be typed as a declaration (AAT 300027623). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_5_Declaration ;
+    rdfs:range cidoc:E1_CRM_Entity ;
+    dcterms:created "2025-10-25"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P16_used_specific_object .
+
+# =============================================================================
+# END OF DECLARATION ADDITIONS
+# =============================================================================
