@@ -11,33 +11,33 @@ This package contains everything needed to implement the gmn:E31_7_Donation_Cont
    - Summary of all deliverables
    - Implementation checklist
 
-2. **donation_contract_implementation_guide.md**
+2. **donation-implementation-guide.md**
    - Complete step-by-step instructions
    - Design decisions and rationale
    - Testing procedures
    - Code snippets for all changes
 
-3. **donation_contract_ontology.md**
+3. **donation-documentation.md**
    - Full ontology documentation
    - Class and property definitions
    - Transformation examples
    - Comparison tables
    - Best practices
 
-4. **donation_contract_ontology_additions.ttl**
+4. **donation-ontology.ttl**
    - Ready-to-copy TTL snippets
    - 1 class definition
    - 2 new properties
    - 1 updated property
 
-5. **donation_contract_transform_additions.py**
+5. **donation-transform.py**
    - Ready-to-copy Python code
    - 2 new transformation functions
    - 2 function updates
    - Help text update
 
-6. **donation_contract_documentation_additions.txt**
-   - Examples for documentation
+6. **donation-doc-note.txt**
+   - Examples for documentation within code
    - Updated tables and hierarchies
    - Usage notes
 
