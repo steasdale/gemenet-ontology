@@ -1,4 +1,4 @@
-# Dowry Contract Ontology Addition - Deliverables Summary
+# Dowry Contract Ontology - Deliverables Summary
 
 ## Overview
 
