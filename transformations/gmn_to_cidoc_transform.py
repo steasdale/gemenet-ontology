@@ -35,6 +35,7 @@ AAT_TRANSFER_OF_RIGHTS = "http://vocab.getty.edu/page/aat/300417639"
 AAT_FINANCIAL_TRANSACTION = "http://vocab.getty.edu/page/aat/300055984"
 AAT_WITNESS = "http://vocab.getty.edu/page/aat/300028910"
 AAT_DECLARATION = "http://vocab.getty.edu/page/aat/300027623"
+AAT_TRANSFER_OF_RIGHTS = "http://vocab.getty.edu/page/aat/300417639"
 AAT_CORRESPONDENCE = "http://vocab.getty.edu/page/aat/300026877"
 
 
@@ -1233,13 +1234,15 @@ def transform_p70_21_indicates_conceding_party(data):
     del data['gmn:P70_21_indicates_conceding_party']
     return data
 
-
 def transform_p70_22_indicates_receiving_party(data):
     """
     Transform gmn:P70_22_indicates_receiving_party to full CIDOC-CRM structure.
-    For cessions: P70_documents > E7_Activity > P14_carried_out_by > E39_Actor
-    For declarations: P70_documents > E7_Activity > P01_has_domain > E39_Actor
-    For donations: P70_documents > E8_Acquisition > P22_transferred_title_to > E39_Actor
+    
+    Handles different document types:
+    - For cessions (E31_4): P70_documents > E7_Activity > P14_carried_out_by > E39_Actor
+    - For declarations (E31_5): P70_documents > E7_Activity > P01_has_domain > E39_Actor
+    - For donations (E31_7): P70_documents > E8_Acquisition > P22_transferred_title_to > E39_Actor
+    - For dowries (E31_8): P70_documents > E8_Acquisition > P22_transferred_title_to > E39_Actor
     """
     if 'gmn:P70_22_indicates_receiving_party' not in data:
         return data
@@ -1252,9 +1255,10 @@ def transform_p70_22_indicates_receiving_party(data):
     is_cession = 'gmn:E31_4_Cession_of_Rights_Contract' in item_type if isinstance(item_type, list) else item_type == 'gmn:E31_4_Cession_of_Rights_Contract'
     is_declaration = 'gmn:E31_5_Declaration' in item_type if isinstance(item_type, list) else item_type == 'gmn:E31_5_Declaration'
     is_donation = 'gmn:E31_7_Donation_Contract' in item_type if isinstance(item_type, list) else item_type == 'gmn:E31_7_Donation_Contract'
+    is_dowry = 'gmn:E31_8_Dowry_Contract' in item_type if isinstance(item_type, list) else item_type == 'gmn:E31_8_Dowry_Contract'
     
-    if is_donation:
-        # For donations, use E8_Acquisition
+    if is_donation or is_dowry:
+        # For donations and dowries, use E8_Acquisition
         if 'cidoc:P70_documents' not in data or len(data['cidoc:P70_documents']) == 0:
             acquisition_uri = f"{subject_uri}/acquisition"
             data['cidoc:P70_documents'] = [{
@@ -1347,7 +1351,6 @@ def transform_p70_22_indicates_receiving_party(data):
     
     del data['gmn:P70_22_indicates_receiving_party']
     return data
-
 
 def transform_p70_23_indicates_object_of_cession(data):
     """
@@ -2047,6 +2050,164 @@ def transform_p53_1_has_occupant(data):
     del data['gmn:P53_1_has_occupant']
     return data
 
+def transform_p70_34_indicates_object_of_dowry(data):
+    """
+    Transform gmn:P70_34_indicates_object_of_dowry to full CIDOC-CRM structure:
+    P70_documents > E8_Acquisition > P24_transferred_title_of > E18_Physical_Thing
+    """
+    if 'gmn:P70_34_indicates_object_of_dowry' not in data:
+        return data
+    
+    objects = data['gmn:P70_34_indicates_object_of_dowry']
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    
+    if 'cidoc:P70_documents' not in data or len(data['cidoc:P70_documents']) == 0:
+        acquisition_uri = f"{subject_uri}/acquisition"
+        data['cidoc:P70_documents'] = [{
+            '@id': acquisition_uri,
+            '@type': 'cidoc:E8_Acquisition'
+        }]
+    
+    acquisition = data['cidoc:P70_documents'][0]
+    
+    if 'cidoc:P24_transferred_title_of' not in acquisition:
+        acquisition['cidoc:P24_transferred_title_of'] = []
+    
+    for obj_obj in objects:
+        if isinstance(obj_obj, dict):
+            obj_data = obj_obj.copy()
+            if '@type' not in obj_data:
+                obj_data['@type'] = 'cidoc:E18_Physical_Thing'
+        else:
+            obj_uri = str(obj_obj)
+            obj_data = {
+                '@id': obj_uri,
+                '@type': 'cidoc:E18_Physical_Thing'
+            }
+        
+        acquisition['cidoc:P24_transferred_title_of'].append(obj_data)
+    
+    del data['gmn:P70_34_indicates_object_of_dowry']
+    return data
+
+
+def transform_p70_22_indicates_receiving_party(data):
+    """
+    Transform gmn:P70_22_indicates_receiving_party to full CIDOC-CRM structure.
+    For cessions: P70_documents > E7_Activity > P14_carried_out_by > E39_Actor
+    For declarations: P70_documents > E7_Activity > P01_has_domain > E39_Actor
+    For donations: P70_documents > E8_Acquisition > P22_transferred_title_to > E39_Actor
+    For dowries: P70_documents > E8_Acquisition > P22_transferred_title_to > E39_Actor
+    
+    UPDATED VERSION - replaces existing function in gmn_to_cidoc_transform.py
+    """
+    if 'gmn:P70_22_indicates_receiving_party' not in data:
+        return data
+    
+    receiving_parties = data['gmn:P70_22_indicates_receiving_party']
+    subject_uri = data.get('@id', f"urn:uuid:{uuid4()}")
+    item_type = data.get('@type', '')
+    
+    # Determine document type
+    is_cession = 'gmn:E31_4_Cession_of_Rights_Contract' in item_type if isinstance(item_type, list) else item_type == 'gmn:E31_4_Cession_of_Rights_Contract'
+    is_declaration = 'gmn:E31_5_Declaration' in item_type if isinstance(item_type, list) else item_type == 'gmn:E31_5_Declaration'
+    is_donation = 'gmn:E31_7_Donation_Contract' in item_type if isinstance(item_type, list) else item_type == 'gmn:E31_7_Donation_Contract'
+    is_dowry = 'gmn:E31_8_Dowry_Contract' in item_type if isinstance(item_type, list) else item_type == 'gmn:E31_8_Dowry_Contract'
+    
+    if is_donation or is_dowry:
+        # For donations and dowries, use E8_Acquisition
+        if 'cidoc:P70_documents' not in data or len(data['cidoc:P70_documents']) == 0:
+            acquisition_uri = f"{subject_uri}/acquisition"
+            data['cidoc:P70_documents'] = [{
+                '@id': acquisition_uri,
+                '@type': 'cidoc:E8_Acquisition'
+            }]
+        
+        acquisition = data['cidoc:P70_documents'][0]
+        
+        if 'cidoc:P22_transferred_title_to' not in acquisition:
+            acquisition['cidoc:P22_transferred_title_to'] = []
+        
+        for party_obj in receiving_parties:
+            if isinstance(party_obj, dict):
+                party_data = party_obj.copy()
+                if '@type' not in party_data:
+                    party_data['@type'] = 'cidoc:E39_Actor'
+            else:
+                party_uri = str(party_obj)
+                party_data = {
+                    '@id': party_uri,
+                    '@type': 'cidoc:E39_Actor'
+                }
+            
+            acquisition['cidoc:P22_transferred_title_to'].append(party_data)
+    
+    elif is_declaration:
+        # For declarations, use P01_has_domain
+        if 'cidoc:P70_documents' not in data or len(data['cidoc:P70_documents']) == 0:
+            activity_uri = f"{subject_uri}/declaration"
+            data['cidoc:P70_documents'] = [{
+                '@id': activity_uri,
+                '@type': 'cidoc:E7_Activity',
+                'cidoc:P2_has_type': {
+                    '@id': AAT_DECLARATION,
+                    '@type': 'cidoc:E55_Type'
+                }
+            }]
+        
+        activity = data['cidoc:P70_documents'][0]
+        
+        if 'cidoc:P01_has_domain' not in activity:
+            activity['cidoc:P01_has_domain'] = []
+        
+        for party_obj in receiving_parties:
+            if isinstance(party_obj, dict):
+                party_data = party_obj.copy()
+                if '@type' not in party_data:
+                    party_data['@type'] = 'cidoc:E39_Actor'
+            else:
+                party_uri = str(party_obj)
+                party_data = {
+                    '@id': party_uri,
+                    '@type': 'cidoc:E39_Actor'
+                }
+            
+            activity['cidoc:P01_has_domain'].append(party_data)
+    
+    elif is_cession:
+        # For cessions, use P14_carried_out_by
+        if 'cidoc:P70_documents' not in data or len(data['cidoc:P70_documents']) == 0:
+            activity_uri = f"{subject_uri}/cession"
+            data['cidoc:P70_documents'] = [{
+                '@id': activity_uri,
+                '@type': 'cidoc:E7_Activity',
+                'cidoc:P2_has_type': {
+                    '@id': AAT_TRANSFER_OF_RIGHTS,
+                    '@type': 'cidoc:E55_Type'
+                }
+            }]
+        
+        activity = data['cidoc:P70_documents'][0]
+        
+        if 'cidoc:P14_carried_out_by' not in activity:
+            activity['cidoc:P14_carried_out_by'] = []
+        
+        for party_obj in receiving_parties:
+            if isinstance(party_obj, dict):
+                party_data = party_obj.copy()
+                if '@type' not in party_data:
+                    party_data['@type'] = 'cidoc:E39_Actor'
+            else:
+                party_uri = str(party_obj)
+                party_data = {
+                    '@id': party_uri,
+                    '@type': 'cidoc:E39_Actor'
+                }
+            
+            activity['cidoc:P14_carried_out_by'].append(party_data)
+    
+    del data['gmn:P70_22_indicates_receiving_party']
+    return data
 
 def transform_p96_1_has_mother(data):
     """
@@ -2299,7 +2460,10 @@ def transform_item(item, include_internal=False):
     # Donation properties (P70.32-P70.33)
     item = transform_p70_32_indicates_donor(item)
     item = transform_p70_33_indicates_object_of_donation(item)
-    
+
+    # Dowry properties (P70.34)
+    item = transform_p70_34_indicates_object_of_dowry(item)
+
     # Visual representation
     item = transform_p138i_1_has_representation(item)
     
@@ -2389,6 +2553,7 @@ def main():
         print("  - gmn:E31_5_Declaration")
         print("  - gmn:E31_6_Correspondence")
         print("  - gmn:E31_7_Donation_Contract")
+        print("  - gmn:E31_8_Dowry_Contract")
         sys.exit(1)
     
     input_file = sys.argv[1]
