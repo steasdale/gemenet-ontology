@@ -48,9 +48,13 @@ This package contains all necessary documentation and code to add the gmn:E31_7_
 ## Key Design Features
 
 ✓ **Creates new P70.32 property** (indicates donor) for donors
+
 ✓ **Reuses existing P70.22 property** (indicates receiving party) as requested
+
 ✓ **Creates new P70.33 property** (indicates object of donation) for donated property
+
 ✓ **Uses E8_Acquisition** like sales for consistency in property transfers
+
 ✓ **Maintains full CIDOC-CRM compliance** in transformation
 
 ## 🎯 Quick Start Checklist
