@@ -1,4 +1,4 @@
-# Donation Contract Ontology Addition - Deliverables Summary
+# Donation Contract Ontology - Deliverables Summary
 
 ## 📦 Complete Package Contents
 
