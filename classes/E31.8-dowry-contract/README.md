@@ -7,9 +7,13 @@ This package contains all necessary documentation and code to add the gmn:E31_8_
 ## Key Design Features
 
 ✓ **Reuses existing P70.32 property** (indicates donor) as requested
+
 ✓ **Shares P70.22 property** (indicates receiving party) with other contract types
+
 ✓ **Creates new P70.34 property** (indicates object of dowry) for clarity
+
 ✓ **Uses E8_Acquisition** like sales and donations for consistency
+
 ✓ **Maintains full CIDOC-CRM compliance** in transformation
 
 ## Files Included
