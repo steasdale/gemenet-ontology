@@ -1,7 +1,7 @@
 # GMN P1.1 has_name Property - Deliverables Package
 
 **Property:** `gmn:P1_1_has_name`  
-**Version:** 1.0  
+**Version:** 1.1  
 **Date:** October 26, 2025  
 **Property Type:** Simplified Datatype Property  
 **Status:** Ready for Implementation
@@ -150,9 +150,8 @@ To full CIDOC-CRM structure:
 ### When NOT to Use P1.1 has_name
 
 ❌ **Don't use for:**
-- Names from historical sources (use `gmn:P1_2_has_name_from_source`)
+- Names copied verbatim from historical sources (use `gmn:P1_2_has_name_from_source`)
 - Patrilineal names with patronymic (use `gmn:P1_3_has_patrilineal_name`)
-- Place-based names/loconyms (use `gmn:P1_4_has_loconym`)
 - Formal document titles (use `gmn:P102_1_has_title`)
 - Editorial notes (use `gmn:P3_1_has_editorial_note`)
 
@@ -161,7 +160,6 @@ To full CIDOC-CRM structure:
 **Specialized Name Properties:**
 - `gmn:P1_2_has_name_from_source` - Historical source names (AAT 300456607)
 - `gmn:P1_3_has_patrilineal_name` - Patronymic names (AAT 300404651)
-- `gmn:P1_4_has_loconym` - Place-based names (Wikidata Q17143070)
 
 **Related Properties:**
 - `gmn:P102_1_has_title` - For formal document titles
@@ -192,7 +190,7 @@ To full CIDOC-CRM structure:
 {
   "@id": "http://example.org/contracts/c001",
   "@type": "gmn:E31_2_Sales_Contract",
-  "gmn:P1_1_has_name": [{"@value": "Sale of Property in Via San Lorenzo"}]
+  "gmn:P1_1_has_name": [{"@value": "Tommaso Duracino, filza 1, series I, nr. 202"}]
 }
 ```
 
@@ -252,9 +250,10 @@ Where `{hash}` is the last 8 digits of the hash of the name value and property n
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1 | 2025-10-26 | Minor changes to wording |
 | 1.0 | 2025-10-26 | Initial deliverables package created |
-| - | 2025-10-17 | Property modified in ontology |
-| - | 2025-10-16 | Property created in ontology |
+| 0.2 | 2025-10-17 | Property modified in ontology |
+| 0.1 | 2025-10-16 | Property created in ontology |
 
 ## Related Documentation
 
