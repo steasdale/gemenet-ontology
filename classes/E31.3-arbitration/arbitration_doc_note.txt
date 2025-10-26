@@ -1,0 +1,559 @@
+================================================================================
+ARBITRATION AGREEMENT DOCUMENTATION ADDITIONS
+Version: 1.0
+Date: 2025-10-26
+
+This file contains text, tables, and examples to add to your main 
+project documentation file.
+================================================================================
+
+--------------------------------------------------------------------------------
+SECTION 1: CLASS HIERARCHY UPDATE
+Location: In the section describing contract classes
+Action: UPDATE the existing hierarchy diagram
+--------------------------------------------------------------------------------
+
+CONTRACT CLASS HIERARCHY:
+
+E31_1_Contract (General contract class)
+├── E31_2_Sales_Contract (Sales and acquisition contracts)
+└── E31_3_Arbitration_Agreement (Arbitration agreements)
+
+All contract types inherit standard contract properties and can use:
+- Document creation properties (P94i.1, P94i.2, P94i.3)
+- Identification properties (P1.1, P102.1)
+- Reference properties (P67_refers_to, P46i.1)
+
+
+--------------------------------------------------------------------------------
+SECTION 2: NEW CLASS DESCRIPTION
+Location: Add after E31_2_Sales_Contract description
+Action: ADD this complete section
+--------------------------------------------------------------------------------
+
+### E31_3_Arbitration_Agreement
+
+**Full URI:** http://www.genoesemerchantnetworks.com/ontology#E31_3_Arbitration_Agreement
+
+**Label:** E31.3 Arbitration Agreement
+
+**Superclass:** gmn:E31_1_Contract
+
+**Purpose:** Represents arbitration agreement documents that record the 
+agreement between disputing parties to transfer the obligation to resolve their 
+dispute to one or more arbitrators. In medieval and early modern commerce, 
+arbitration was a common alternative to formal court proceedings, particularly 
+for merchant disputes.
+
+**Semantic Structure:**
+The arbitration agreement documents an E7_Activity (the arbitration process) 
+where both disputing parties and arbitrators are active principals carrying out 
+the agreement together. The dispute subject is linked as the object being 
+arbitrated.
+
+**Historical Context:**
+Medieval Italian merchants preferred arbitration because:
+- Arbitrators had specialized commercial knowledge
+- Proceedings were faster than formal courts
+- Decisions were binding and enforceable
+- The process could be conducted privately
+
+**Example Usage:**
+An arbitration agreement between two merchants over a disputed property sale 
+would be typed as E31_3_Arbitration_Agreement, with properties linking to the 
+disputing merchants, the appointed arbitrator, and the property in dispute.
+
+
+--------------------------------------------------------------------------------
+SECTION 3: PROPERTY DESCRIPTIONS
+Location: In the properties reference section
+Action: ADD these three property descriptions
+--------------------------------------------------------------------------------
+
+### P70.18 documents disputing party
+
+**Full URI:** http://www.genoesemerchantnetworks.com/ontology#P70_18_documents_disputing_party
+
+**Label:** P70.18 documents disputing party
+
+**Domain:** gmn:E31_3_Arbitration_Agreement
+
+**Range:** cidoc:E39_Actor
+
+**Full CIDOC-CRM Path:**
+E31_Document → P70_documents → E7_Activity → P14_carried_out_by → E39_Actor
+
+**Description:**
+Links an arbitration agreement to a party involved in the dispute. Disputing 
+parties are the individuals or groups who have a conflict and agree to submit 
+it to arbitration. They are active principals in the arbitration agreement.
+
+**Cardinality:** One or many (typically two or more disputing parties)
+
+**Usage Notes:**
+- All parties to the dispute use this same property
+- Both/all disputing parties share the same E7_Activity node
+- Disputing parties are active principals, not passive participants
+- Use P14_carried_out_by in transformed output to indicate active agency
+
+**Example:**
+```turtle
+<contract_123> gmn:P70_18_documents_disputing_party <merchant_giovanni> .
+<contract_123> gmn:P70_18_documents_disputing_party <merchant_marco> .
+```
+
+---
+
+### P70.19 documents arbitrator
+
+**Full URI:** http://www.genoesemerchantnetworks.com/ontology#P70_19_documents_arbitrator
+
+**Label:** P70.19 documents arbitrator
+
+**Domain:** gmn:E31_3_Arbitration_Agreement
+
+**Range:** cidoc:E39_Actor
+
+**Full CIDOC-CRM Path:**
+E31_Document → P70_documents → E7_Activity → P14_carried_out_by → E39_Actor
+
+**Description:**
+Links an arbitration agreement to the person or persons appointed to resolve 
+the dispute. Arbitrators are neutral third parties who hear the dispute and 
+render a binding decision.
+
+**Cardinality:** One or many (one or more arbitrators)
+
+**Usage Notes:**
+- Multiple arbitrators can be appointed (panels of arbitrators)
+- Arbitrators and disputing parties share the same E7_Activity node
+- Arbitrators use the same CIDOC-CRM property (P14) as disputing parties
+- Both are active principals carrying out the arbitration agreement
+
+**Example:**
+```turtle
+<contract_123> gmn:P70_19_documents_arbitrator <judge_antonio> .
+```
+
+---
+
+### P70.20 documents dispute subject
+
+**Full URI:** http://www.genoesemerchantnetworks.com/ontology#P70_20_documents_dispute_subject
+
+**Label:** P70.20 documents dispute subject
+
+**Domain:** gmn:E31_3_Arbitration_Agreement
+
+**Range:** cidoc:E1_CRM_Entity
+
+**Full CIDOC-CRM Path:**
+E31_Document → P70_documents → E7_Activity → P16_used_specific_object → E1_CRM_Entity
+
+**Description:**
+Links an arbitration agreement to the subject matter of the dispute being 
+arbitrated. The dispute subject can be any entity: property, rights, debts, 
+contracts, or other matters in contention.
+
+**Cardinality:** One or many
+
+**Usage Notes:**
+- Range is E1_CRM_Entity (any entity type)
+- Common subjects include:
+  * Buildings or land (E22_1_Building)
+  * Moveable property (E22_2_Moveable_Property)
+  * Legal rights (E72_Legal_Object)
+  * Debts or monetary amounts (E97_Monetary_Amount)
+  * Prior contracts (E31_Document)
+- Multiple subjects can be referenced
+
+**Example:**
+```turtle
+<contract_123> gmn:P70_20_documents_dispute_subject <palazzo_spinola> .
+```
+
+
+--------------------------------------------------------------------------------
+SECTION 4: COMPARISON TABLE
+Location: Add near the contract type comparisons section
+Action: ADD this table
+--------------------------------------------------------------------------------
+
+COMPARISON: SALES CONTRACTS VS ARBITRATION AGREEMENTS
+
++---------------------------+-------------------------+---------------------------+
+| Aspect                    | Sales Contract          | Arbitration Agreement     |
++---------------------------+-------------------------+---------------------------+
+| Document Class            | E31_2_Sales_Contract    | E31_3_Arbitration_        |
+|                           |                         | Agreement                 |
++---------------------------+-------------------------+---------------------------+
+| Documented Event          | E8_Acquisition          | E7_Activity               |
+|                           |                         | (typed as arbitration)    |
++---------------------------+-------------------------+---------------------------+
+| Event Type (AAT)          | N/A (acquisition is     | AAT 300417271             |
+|                           | built into E8)          | (arbitration process)     |
++---------------------------+-------------------------+---------------------------+
+| Main Actor Properties     | P70.1 (seller)          | P70.18 (disputing party)  |
+|                           | P70.2 (buyer)           | P70.19 (arbitrator)       |
++---------------------------+-------------------------+---------------------------+
+| Main Actor Linking        | P23 (seller)            | P14 (all parties and      |
+| (in transformed output)   | P22 (buyer)             | arbitrators)              |
++---------------------------+-------------------------+---------------------------+
+| Object Property           | P70.3 (transfer of)     | P70.20 (dispute subject)  |
++---------------------------+-------------------------+---------------------------+
+| Object Linking            | P24 (transferred        | P16 (used specific        |
+| (in transformed output)   | title of)               | object)                   |
++---------------------------+-------------------------+---------------------------+
+| Transaction Type          | Transfer of ownership   | Transfer of obligation    |
++---------------------------+-------------------------+---------------------------+
+| Multiple Principals       | Can have multiple       | Typically multiple        |
+|                           | buyers/sellers          | disputing parties         |
++---------------------------+-------------------------+---------------------------+
+| Auxiliary Roles           | Procurators, guarantors,| N/A (future enhancement)  |
+|                           | brokers, witnesses      |                           |
++---------------------------+-------------------------+---------------------------+
+
+Both contract types follow the pattern:
+Document → P70_documents → Event → Actors & Objects
+
+
+--------------------------------------------------------------------------------
+SECTION 5: USAGE EXAMPLES
+Location: Add in the examples section
+Action: ADD these examples
+--------------------------------------------------------------------------------
+
+EXAMPLE 1: BASIC ARBITRATION AGREEMENT
+
+Scenario: Two merchants dispute ownership of a building and agree to have a 
+judge arbitrate.
+
+Input (Omeka-S):
+```json
+{
+  "@type": "gmn:E31_3_Arbitration_Agreement",
+  "gmn:P1_1_has_name": [
+    {"@value": "Arbitration - Palazzo Dispute"}
+  ],
+  "gmn:P70_18_documents_disputing_party": [
+    {"@id": "http://example.org/persons/giovanni_merchant"},
+    {"@id": "http://example.org/persons/marco_merchant"}
+  ],
+  "gmn:P70_19_documents_arbitrator": [
+    {"@id": "http://example.org/persons/judge_antonio"}
+  ],
+  "gmn:P70_20_documents_dispute_subject": [
+    {"@id": "http://example.org/buildings/palazzo_123"}
+  ],
+  "gmn:P94i_2_has_enactment_date": [
+    {"@value": "1450-06-15", "@type": "xsd:date"}
+  ]
+}
+```
+
+Output (Transformed CIDOC-CRM):
+```json
+{
+  "@type": "gmn:E31_3_Arbitration_Agreement",
+  "cidoc:P1_is_identified_by": [
+    {
+      "@type": "cidoc:E41_Appellation",
+      "cidoc:P190_has_symbolic_content": [
+        {"@value": "Arbitration - Palazzo Dispute"}
+      ]
+    }
+  ],
+  "cidoc:P70_documents": [
+    {
+      "@id": "...arbitration",
+      "@type": "cidoc:E7_Activity",
+      "cidoc:P2_has_type": {
+        "@id": "http://vocab.getty.edu/page/aat/300417271"
+      },
+      "cidoc:P14_carried_out_by": [
+        {"@id": "http://example.org/persons/giovanni_merchant"},
+        {"@id": "http://example.org/persons/marco_merchant"},
+        {"@id": "http://example.org/persons/judge_antonio"}
+      ],
+      "cidoc:P16_used_specific_object": [
+        {"@id": "http://example.org/buildings/palazzo_123"}
+      ]
+    }
+  ]
+}
+```
+
+Key Points:
+- All three actors (two merchants + judge) use P14_carried_out_by
+- Single E7_Activity node represents the arbitration process
+- Activity typed as AAT 300417271 (arbitration)
+- Building linked via P16_used_specific_object
+
+---
+
+EXAMPLE 2: COMPLEX ARBITRATION WITH MULTIPLE SUBJECTS
+
+Scenario: Three merchants dispute over a debt, a ship, and a partnership 
+contract. They appoint two arbitrators.
+
+Input:
+```json
+{
+  "@type": "gmn:E31_3_Arbitration_Agreement",
+  "gmn:P70_18_documents_disputing_party": [
+    {"@id": "http://example.org/persons/merchant_a"},
+    {"@id": "http://example.org/persons/merchant_b"},
+    {"@id": "http://example.org/persons/merchant_c"}
+  ],
+  "gmn:P70_19_documents_arbitrator": [
+    {"@id": "http://example.org/persons/arbitrator_1"},
+    {"@id": "http://example.org/persons/arbitrator_2"}
+  ],
+  "gmn:P70_20_documents_dispute_subject": [
+    {"@id": "http://example.org/debts/debt_500_lire"},
+    {"@id": "http://example.org/ships/ship_santa_maria"},
+    {"@id": "http://example.org/contracts/partnership_xyz"}
+  ]
+}
+```
+
+Result:
+- 5 actors total (3 disputing parties + 2 arbitrators) all linked via P14
+- 3 dispute subjects all linked via P16
+- All connected to single E7_Activity node
+
+
+--------------------------------------------------------------------------------
+SECTION 6: WORKFLOW GUIDANCE
+Location: Add in data entry or workflow section
+Action: ADD this guidance
+--------------------------------------------------------------------------------
+
+ARBITRATION AGREEMENT DATA ENTRY WORKFLOW
+
+Step 1: Create Contract Item
+- In Omeka-S, create new item
+- Select item type: gmn:E31_3_Arbitration_Agreement
+
+Step 2: Add Basic Information
+- gmn:P1_1_has_name: Descriptive name for the agreement
+- gmn:P94i_1_was_created_by: Link to notary
+- gmn:P94i_2_has_enactment_date: Date of agreement
+- gmn:P94i_3_has_place_of_enactment: Location where agreement was made
+
+Step 3: Add Disputing Parties
+- gmn:P70_18_documents_disputing_party: Link to first disputing party
+- gmn:P70_18_documents_disputing_party: Link to second disputing party
+- (Add more if needed - typically 2+ parties)
+
+Step 4: Add Arbitrator(s)
+- gmn:P70_19_documents_arbitrator: Link to arbitrator
+- (Add more if multiple arbitrators appointed)
+
+Step 5: Add Dispute Subject(s)
+- gmn:P70_20_documents_dispute_subject: Link to disputed property/right/debt
+- (Add more if dispute involves multiple subjects)
+
+Step 6: Add Optional Information
+- gmn:P46i_1_is_contained_in: Link to archival location
+- gmn:P138i_1_has_representation: Link to digital images
+- cidoc:P67_refers_to: Any other entities mentioned
+
+Step 7: Save and Export
+- Save the item in Omeka-S
+- Export as JSON-LD when ready to transform
+
+
+--------------------------------------------------------------------------------
+SECTION 7: PROPERTY REFERENCE SUMMARY TABLE
+Location: Add in quick reference section
+Action: ADD this table
+--------------------------------------------------------------------------------
+
+ARBITRATION AGREEMENT PROPERTIES QUICK REFERENCE
+
++----------+----------------------------------+-------------+-------------------+
+| Property | Label                            | Range       | Transforms To     |
++----------+----------------------------------+-------------+-------------------+
+| P70.18   | documents disputing party        | E39_Actor   | E7 → P14 → Actor  |
++----------+----------------------------------+-------------+-------------------+
+| P70.19   | documents arbitrator             | E39_Actor   | E7 → P14 → Actor  |
++----------+----------------------------------+-------------+-------------------+
+| P70.20   | documents dispute subject        | E1_CRM_     | E7 → P16 → Entity |
+|          |                                  | Entity      |                   |
++----------+----------------------------------+-------------+-------------------+
+
+Legend:
+- E7 = E7_Activity (typed as arbitration, AAT 300417271)
+- P14 = P14_carried_out_by
+- P16 = P16_used_specific_object
+
+Note: All three properties share the same E7_Activity node in the transformed 
+output. This represents the arbitration agreement as a unified process carried 
+out by all parties together.
+
+
+--------------------------------------------------------------------------------
+SECTION 8: SPARQL QUERY EXAMPLES
+Location: Add in SPARQL or querying section
+Action: ADD these example queries
+--------------------------------------------------------------------------------
+
+SPARQL QUERIES FOR ARBITRATION AGREEMENTS
+
+Query 1: Find all arbitration agreements
+```sparql
+PREFIX gmn: <http://www.genoesemerchantnetworks.com/ontology#>
+
+SELECT ?agreement ?name ?date
+WHERE {
+  ?agreement a gmn:E31_3_Arbitration_Agreement .
+  OPTIONAL { ?agreement gmn:P1_1_has_name ?name . }
+  OPTIONAL { ?agreement gmn:P94i_2_has_enactment_date ?date . }
+}
+ORDER BY ?date
+```
+
+Query 2: Find arbitrations involving a specific person (as party or arbitrator)
+```sparql
+PREFIX gmn: <http://www.genoesemerchantnetworks.com/ontology#>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT DISTINCT ?agreement ?person_name
+WHERE {
+  ?agreement a gmn:E31_3_Arbitration_Agreement ;
+             cidoc:P70_documents ?activity .
+  ?activity cidoc:P14_carried_out_by <http://example.org/persons/giovanni> .
+  
+  OPTIONAL {
+    <http://example.org/persons/giovanni> gmn:P1_1_has_name ?person_name .
+  }
+}
+```
+
+Query 3: Find arbitrations about buildings
+```sparql
+PREFIX gmn: <http://www.genoesemerchantnetworks.com/ontology#>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?agreement ?building
+WHERE {
+  ?agreement a gmn:E31_3_Arbitration_Agreement ;
+             cidoc:P70_documents ?activity .
+  ?activity cidoc:P16_used_specific_object ?building .
+  ?building a gmn:E22_1_Building .
+}
+```
+
+Query 4: Count arbitrations by year
+```sparql
+PREFIX gmn: <http://www.genoesemerchantnetworks.com/ontology#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT (YEAR(?date) AS ?year) (COUNT(?agreement) AS ?count)
+WHERE {
+  ?agreement a gmn:E31_3_Arbitration_Agreement ;
+             gmn:P94i_2_has_enactment_date ?date .
+}
+GROUP BY (YEAR(?date))
+ORDER BY ?year
+```
+
+
+--------------------------------------------------------------------------------
+SECTION 9: TROUBLESHOOTING
+Location: Add in troubleshooting section
+Action: ADD these common issues
+--------------------------------------------------------------------------------
+
+COMMON ISSUES WITH ARBITRATION AGREEMENTS
+
+Issue: Multiple E7_Activity nodes created instead of one shared node
+Symptom: Each property creates its own activity in transformed output
+Solution: 
+- Verify transformation functions check for existing cidoc:P70_documents
+- Ensure activity URI is consistently generated: {contract_uri}/arbitration
+- Check that functions are using existing_activity variable correctly
+
+Issue: Disputing parties not appearing in transformed output
+Symptom: P70.18 values disappear after transformation
+Solution:
+- Verify transform_p70_18_documents_disputing_party is called in transform_item()
+- Check that property name matches exactly: gmn:P70_18_documents_disputing_party
+- Ensure function is defined before transform_item()
+
+Issue: Arbitrators and disputing parties not distinguished
+Symptom: Can't tell which actors are parties vs arbitrators
+Solution:
+- This is expected behavior in current version (all use P14)
+- Can be distinguished by:
+  * Order in data entry
+  * Context/documentation
+  * Future enhancement: add role typing via P14.1_in_the_role_of
+
+Issue: Wrong CIDOC-CRM property used
+Symptom: Disputing parties linked via P11 instead of P14
+Solution:
+- Verify using latest version of transformation functions
+- Check that P14_carried_out_by is used, not P11_had_participant
+- Confirm ontology definition specifies P14 in rdfs:seeAlso
+
+
+--------------------------------------------------------------------------------
+SECTION 10: DESIGN DECISIONS
+Location: Add in design rationale or architecture section
+Action: ADD this explanation
+--------------------------------------------------------------------------------
+
+KEY DESIGN DECISIONS FOR ARBITRATION AGREEMENTS
+
+Decision 1: Use E7_Activity instead of E8_Acquisition
+Rationale:
+- Arbitration is not a property acquisition but a legal process/agreement
+- E7_Activity allows modeling various dispute resolution processes
+- Proper typing via AAT 300417271 specifies it as arbitration
+- More semantically accurate than forcing into acquisition model
+
+Decision 2: Use P14_carried_out_by for both parties and arbitrators
+Rationale:
+- Both are active principals in the arbitration agreement
+- Disputing parties actively agree to submit to arbitration
+- Arbitrators actively agree to conduct the arbitration
+- P11_had_participant would imply passive presence
+- Reflects the contractual nature of the agreement
+- Aligns with medieval practice where all parties gave active consent
+
+Decision 3: Use single shared E7_Activity node
+Rationale:
+- One arbitration agreement = one arbitration activity
+- Prevents data fragmentation
+- Easier to query and retrieve related information
+- Matches sales contract pattern (single E8_Acquisition)
+- Maintains logical coherence of the arbitration process
+
+Decision 4: Use P16_used_specific_object for dispute subject
+Rationale:
+- Activity operates on/uses knowledge of the disputed object
+- Standard CIDOC-CRM pattern for activities involving objects
+- Range of E1_CRM_Entity provides maximum flexibility
+- Distinguishes subject from participants more clearly than P67
+
+
+--------------------------------------------------------------------------------
+END OF DOCUMENTATION ADDITIONS
+--------------------------------------------------------------------------------
+
+INTEGRATION INSTRUCTIONS:
+
+1. Copy relevant sections into your main documentation file
+2. Update section numbering to match your documentation structure
+3. Adjust formatting to match your documentation style
+4. Add cross-references to related sections
+5. Update table of contents if applicable
+6. Review examples and adjust URIs to match your project conventions
+
+RELATED FILES:
+- arbitration-agreement-ontology.ttl: TTL additions for RDF file
+- arbitration-agreement-transform.py: Python transformation functions
+- arbitration-agreement-documentation.md: Complete semantic documentation
+- arbitration-agreement-implementation-guide.md: Step-by-step guide

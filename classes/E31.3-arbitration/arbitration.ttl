@@ -1,0 +1,118 @@
+# ============================================================================
+# ARBITRATION AGREEMENT ONTOLOGY ADDITIONS
+# Version: 1.0
+# Date: 2025-10-26
+# 
+# This file contains TTL snippets to add to gmn_ontology.rdf
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# SECTION 1: ONTOLOGY METADATA UPDATE
+# Location: Near top of file, in ontology declaration
+# Action: UPDATE the existing ontology metadata
+# ----------------------------------------------------------------------------
+
+<http://www.genoesemerchantnetworks.com/ontology> 
+    a owl:Ontology ;
+    rdfs:label "Genoese Merchant Networks CIDOC-CRM Extension"@en ;
+    rdfs:comment "Custom vocabulary extending CIDOC-CRM for the Genoese Merchant Networks project. Provides simplified shortcut properties and classes that represent more complex CIDOC-CRM paths."@en ;
+    dcterms:title "GMN CIDOC-CRM Extension Ontology"@en ;
+    dcterms:creator "Genoese Merchant Networks Project" ;
+    dcterms:created "2025-10-16"^^xsd:date ;
+    dcterms:modified "2025-10-26"^^xsd:date ;  # UPDATE THIS LINE
+    owl:versionInfo "1.4" ;                      # UPDATE THIS LINE
+    owl:imports <http://www.cidoc-crm.org/cidoc-crm/> .
+
+
+# ----------------------------------------------------------------------------
+# SECTION 2: CLASS ADDITION
+# Location: In Classes section, after E31.2 Sales Contract
+# Action: ADD this complete class definition
+# ----------------------------------------------------------------------------
+
+# Class: E31.3 Arbitration Agreement
+gmn:E31_3_Arbitration_Agreement
+    a owl:Class ;
+    rdfs:subClassOf gmn:E31_1_Contract ;
+    rdfs:label "E31.3 Arbitration Agreement"@en ;
+    rdfs:comment "Specialized class that describes arbitration agreement documents. This is a specialized type of gmn:E31_1_Contract used to represent legal documents that record the agreement between disputing parties to transfer the obligation to resolve their dispute to one or more arbitrators. In this transaction, two or more parties involved in a conflict agree to relinquish their right to pursue other forms of dispute resolution and instead accept the binding decision of the appointed arbitrator(s). The contract documents both the transfer of the dispute resolution obligation from the parties to the arbitrator(s) and the agreement by the parties to be bound by the arbitrator's decision. This represents a transfer of legal obligations similar to how sales contracts represent transfers of ownership rights. Instances of this class represent the physical or conceptual document itself, while the actual arbitration activity is modeled through E7_Activity that the document documents (via P70_documents)."@en ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    dcterms:modified "2025-10-26"^^xsd:date ;
+    rdfs:seeAlso gmn:E31_1_Contract, cidoc:E7_Activity, cidoc:P70_documents .
+
+
+# ----------------------------------------------------------------------------
+# SECTION 3: PROPERTY ADDITIONS
+# Location: In Properties section, after P70.17 and before P94i.1
+# Action: ADD these three property definitions
+# ----------------------------------------------------------------------------
+
+# Property: P70.18 documents disputing party
+gmn:P70_18_documents_disputing_party
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.18 documents disputing party"@en ;
+    rdfs:comment "Simplified property for associating an arbitration agreement with a party involved in the dispute. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E7_Activity > P14_carried_out_by > E39_Actor. The E7_Activity should be typed as an arbitration agreement (AAT 300417271). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. Disputing parties are the active principals who have agreed to submit their dispute to arbitration and are carrying out the arbitration agreement alongside the arbitrator(s)."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_3_Arbitration_Agreement ;
+    rdfs:range cidoc:E39_Actor ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    dcterms:modified "2025-10-26"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by .
+
+# Property: P70.19 documents arbitrator
+gmn:P70_19_documents_arbitrator
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.19 documents arbitrator"@en ;
+    rdfs:comment "Simplified property for associating an arbitration agreement with the person or persons appointed to resolve the dispute. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E7_Activity > P14_carried_out_by > E39_Actor. The E7_Activity should be typed as an arbitration agreement (AAT 300417271). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. Arbitrators are the neutral third parties who will hear the dispute and render a binding decision."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_3_Arbitration_Agreement ;
+    rdfs:range cidoc:E39_Actor ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    dcterms:modified "2025-10-26"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by .
+
+# Property: P70.20 documents dispute subject
+gmn:P70_20_documents_dispute_subject
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.20 documents dispute subject"@en ;
+    rdfs:comment "Simplified property for associating an arbitration agreement with the subject matter of the dispute being arbitrated. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E7_Activity > P16_used_specific_object > E1_CRM_Entity. The E7_Activity should be typed as an arbitration agreement (AAT 300417271). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The dispute subject can be any entity - a property (E18_Physical_Thing), a legal right (E72_Legal_Object), a debt, a contract claim, or any other matter in contention."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_3_Arbitration_Agreement ;
+    rdfs:range cidoc:E1_CRM_Entity ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    dcterms:modified "2025-10-26"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P16_used_specific_object .
+
+
+# ============================================================================
+# END OF ADDITIONS
+# ============================================================================
+
+# INTEGRATION NOTES:
+# 
+# 1. Update ontology metadata (Section 1)
+#    - Change dcterms:modified to current date
+#    - Increment owl:versionInfo to "1.4"
+#
+# 2. Add class definition (Section 2)
+#    - Insert after gmn:E31_2_Sales_Contract
+#    - Maintain alphabetical order in Classes section
+#
+# 3. Add property definitions (Section 3)
+#    - Insert after gmn:P70_17_documents_sale_price_currency
+#    - Insert before gmn:P94i_1_was_created_by
+#    - Maintain alphabetical order in Properties section
+#
+# 4. Validate the updated ontology file using an RDF validator
+#
+# 5. The AAT URI used (300417271) points to "arbitration (process)"
+#    Verify this is accessible at: 
+#    http://vocab.getty.edu/page/aat/300417271
+#
+# RELATED FILES:
+# - arbitration-agreement-transform.py: Python transformation functions
+# - arbitration-agreement-documentation.md: Complete semantic documentation
+# - arbitration-agreement-implementation-guide.md: Step-by-step instructions
