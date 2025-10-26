@@ -1,0 +1,463 @@
+has_name_from_source Property - Documentation Additions
+========================================================
+
+This file contains tables, examples, and text blocks to add to the main
+project documentation file.
+
+Version: 1.0
+Date: 2025-10-26
+
+================================================================================
+SECTION 1: Property Overview Table
+================================================================================
+
+Add this table to the "Simplified Name Properties" section:
+
+┌──────────────────────────────┬─────────────┬─────────────────────────────┐
+│ Property                     │ AAT Type    │ Purpose                     │
+├──────────────────────────────┼─────────────┼─────────────────────────────┤
+│ gmn:P1_1_has_name            │ 300404650   │ Normalized modern name form │
+│ gmn:P1_2_has_name_from_source│ 300456607   │ Name as documented in       │
+│                              │             │ historical sources          │
+│ gmn:P1_3_has_patrilineal_name│ 300404651   │ Patrilineal name with       │
+│                              │             │ ancestry chain              │
+│ gmn:P1_4_has_loconym         │ 300404651   │ Place-based identifier      │
+└──────────────────────────────┴─────────────┴─────────────────────────────┘
+
+
+================================================================================
+SECTION 2: Property Definition Text Block
+================================================================================
+
+Add this to the property definitions section:
+
+P1_2_has_name_from_source
+-------------------------
+
+URI: gmn:P1_2_has_name_from_source
+Type: owl:DatatypeProperty
+Domain: cidoc:E21_Person
+Range: cidoc:E62_String
+AAT Type: 300456607 (names found in historical sources)
+
+Description:
+Simplified property for expressing the name of a person as found in historical
+sources. This property records names exactly as they appear in documents, 
+preserving historical spellings, abbreviations, and orthographic variations.
+
+The property represents the full CIDOC-CRM path:
+  E21_Person → P1_is_identified_by → E41_Appellation
+    → P2_has_type → E55_Type (aat:300456607)
+    → P190_has_symbolic_content → E62_String
+
+This property is provided as a convenience for data entry and is automatically
+transformed to the full CIDOC-CRM structure during processing.
+
+
+================================================================================
+SECTION 3: Usage Examples
+================================================================================
+
+Add these examples to the usage examples section:
+
+Example 1: Recording Name Variants from Multiple Documents
+-----------------------------------------------------------
+
+A merchant appears in three different notarial contracts from the 1340s-1360s
+with different name spellings. We can record all variants while maintaining
+a normalized modern reference:
+
+  <person/spinola_giacomo_045> a cidoc:E21_Person ;
+      gmn:P1_1_has_name "Giacomo Spinola" ;
+      gmn:P1_2_has_name_from_source "Iacobus Spinula" ;     # 1345 contract
+      gmn:P1_2_has_name_from_source "Giacomo de Spinola" ;  # 1352 letter
+      gmn:P1_2_has_name_from_source "Jacobus de Spinulis" . # 1368 will
+
+
+Example 2: Latin vs Vernacular Name Forms
+------------------------------------------
+
+Historical documents frequently alternate between Latin and vernacular Italian
+forms. Both can be recorded:
+
+  <person/doria_antonio_089> a cidoc:E21_Person ;
+      gmn:P1_1_has_name "Antonio Doria" ;
+      gmn:P1_2_has_name_from_source "Antonius de Auria" ;  # Latin notarial
+      gmn:P1_2_has_name_from_source "Antonio d'Oria" .     # Vernacular
+
+
+Example 3: Abbreviated Forms
+-----------------------------
+
+Scribes often abbreviated common names. These abbreviations should be recorded
+as they appear:
+
+  <person/grimaldi_luca_123> a cidoc:E21_Person ;
+      gmn:P1_1_has_name "Luca Grimaldi" ;
+      gmn:P1_2_has_name_from_source "Lucas Grimaldus" ;     # Full form
+      gmn:P1_2_has_name_from_source "Luc. Grimaldi" ;       # Abbreviated
+      gmn:P1_2_has_name_from_source "L. de Grimaldis" .     # Highly abbreviated
+
+
+Example 4: Names with Patronymic Indicators
+--------------------------------------------
+
+When sources include patronymic indicators (q. = quondam = "the late"), 
+record them as part of the name string:
+
+  <person/negro_giovanni_067> a cidoc:E21_Person ;
+      gmn:P1_1_has_name "Giovanni de Nigro" ;
+      gmn:P1_2_has_name_from_source "Iohannes q. Petri de Nigro" ;
+      gmn:P1_2_has_name_from_source "Iohanes quondam Petri Nigro" .
+
+
+Example 5: Complete Person Record with Multiple Name Types
+-----------------------------------------------------------
+
+A comprehensive person record showing how different name properties work
+together:
+
+  <person/spinola_opicino_234> a cidoc:E21_Person ;
+      # Modern normalized form
+      gmn:P1_1_has_name "Opicino Spinola" ;
+      
+      # Historical variants from sources
+      gmn:P1_2_has_name_from_source "Opicinus Spinula" ;
+      gmn:P1_2_has_name_from_source "Opizinus de Spinola" ;
+      gmn:P1_2_has_name_from_source "Opicino Spinole" ;
+      
+      # Patrilineal name with ancestry
+      gmn:P1_3_has_patrilineal_name "Opicino Spinola q. Lucae q. Opicini" ;
+      
+      # Place-based identifier
+      gmn:P1_4_has_loconym "Opicino da Genova" .
+
+
+================================================================================
+SECTION 4: Transformation Example
+================================================================================
+
+Add this example showing the transformation process:
+
+CIDOC-CRM Transformation Example
+---------------------------------
+
+Input (Simplified GMN Format):
+  {
+    "@id": "http://example.org/person/doria_123",
+    "@type": "cidoc:E21_Person",
+    "gmn:P1_2_has_name_from_source": [
+      {"@value": "Branca de Auria"},
+      {"@value": "Blancha Doria"}
+    ]
+  }
+
+Output (Full CIDOC-CRM Structure):
+  {
+    "@id": "http://example.org/person/doria_123",
+    "@type": "cidoc:E21_Person",
+    "cidoc:P1_is_identified_by": [
+      {
+        "@id": "http://example.org/appellation/doria_001",
+        "@type": "cidoc:E41_Appellation",
+        "cidoc:P2_has_type": {
+          "@id": "http://vocab.getty.edu/page/aat/300456607",
+          "@type": "cidoc:E55_Type"
+        },
+        "cidoc:P190_has_symbolic_content": "Branca de Auria"
+      },
+      {
+        "@id": "http://example.org/appellation/doria_002",
+        "@type": "cidoc:E41_Appellation",
+        "cidoc:P2_has_type": {
+          "@id": "http://vocab.getty.edu/page/aat/300456607",
+          "@type": "cidoc:E55_Type"
+        },
+        "cidoc:P190_has_symbolic_content": "Blancha Doria"
+      }
+    ]
+  }
+
+
+================================================================================
+SECTION 5: AAT Term Documentation
+================================================================================
+
+Add this to the AAT terms section:
+
+AAT 300456607: names found in historical sources
+-------------------------------------------------
+
+Preferred Label: names found in historical sources
+Term Type: Guide term
+Getty URI: http://vocab.getty.edu/page/aat/300456607
+
+Scope Note:
+Names for people, places, and entities documented in historical records,
+manuscripts, and archival materials, particularly when those names differ
+from modern standardized forms or currently accepted designations. Used to
+distinguish historical attestations from contemporary or normalized name forms.
+
+Hierarchical Position:
+  Objects Facet (300264092)
+    → Object Genres (300431405)
+      → information forms (300378935)
+        → names (300404658)
+          → names found in historical sources (300456607)
+
+Used with Property: gmn:P1_2_has_name_from_source
+
+Application in GMN:
+This AAT term is automatically applied when P1_2_has_name_from_source is
+transformed to the full CIDOC-CRM structure. It explicitly marks the name
+as one documented in a historical source rather than a modern normalized form.
+
+
+================================================================================
+SECTION 6: Data Entry Guidelines
+================================================================================
+
+Add this section to data entry documentation:
+
+Guidelines for Recording Names from Sources
+--------------------------------------------
+
+1. TRANSCRIBE EXACTLY
+   Record names precisely as they appear in the source document. Do not
+   modernize spelling or standardize orthography.
+   
+   ✓ Correct: "Iacobus Spinula"
+   ✗ Incorrect: "Giacomo Spinola" (modernized)
+
+2. PRESERVE ALL CHARACTERS
+   Include all diacritical marks, special characters, and punctuation.
+   
+   ✓ Correct: "Iohannes q. Petri"
+   ✗ Incorrect: "Iohannes q Petri" (missing period)
+
+3. RECORD ABBREVIATIONS AS WRITTEN
+   Use periods to indicate abbreviations as they appear in the source.
+   
+   ✓ Correct: "Ant. de Grimaldis"
+   ✓ Correct: "Io. Doria"
+
+4. HANDLE UNCERTAIN READINGS
+   Use standard editorial notation for damaged or uncertain text:
+   - [text] for certain reconstructions
+   - [text?] for uncertain reconstructions
+   - [...] for illegible portions
+   
+   Example: "Iaco[bus?] de [...]"
+
+5. DISTINGUISH FROM NORMALIZED NAMES
+   Use P1_2_has_name_from_source for historical forms and P1_1_has_name
+   for modern normalized forms.
+   
+   P1_1: "Giovanni Spinola"
+   P1_2: "Iohannes Spinula", "Io. de Spinola"
+
+6. RECORD MULTIPLE VARIANTS
+   When a person's name appears differently in various documents, record
+   all significant variants.
+   
+   Example: Record both "Iacobus de Auria" and "Giacomo d'Oria" if they
+   appear in different sources.
+
+7. DOCUMENT SOURCE CONTEXT
+   Maintain links between names and their source documents to track which
+   spelling appears in which document.
+
+
+================================================================================
+SECTION 7: Comparison with Other Properties
+================================================================================
+
+Add this comparison table:
+
+Choosing the Right Name Property
+---------------------------------
+
+┌─────────────────┬─────────────────┬─────────────────┬─────────────────┐
+│                 │ P1_1_has_name   │ P1_2_has_name_  │ P1_3_has_       │
+│                 │                 │ from_source     │ patrilineal_name│
+├─────────────────┼─────────────────┼─────────────────┼─────────────────┤
+│ Purpose         │ Modern standard │ Historical form │ Ancestry chain  │
+├─────────────────┼─────────────────┼─────────────────┼─────────────────┤
+│ Form            │ Normalized      │ As documented   │ With patronym   │
+├─────────────────┼─────────────────┼─────────────────┼─────────────────┤
+│ Example         │ "Luca Grimaldi" │ "Lucas          │ "Luca Grimaldi  │
+│                 │                 │  Grimaldus"     │  q. Nicolai"    │
+├─────────────────┼─────────────────┼─────────────────┼─────────────────┤
+│ Multiplicity    │ Usually single  │ Multiple        │ Usually single  │
+│                 │                 │ variants        │                 │
+├─────────────────┼─────────────────┼─────────────────┼─────────────────┤
+│ Spelling        │ Modern standard │ Historical      │ Historical      │
+├─────────────────┼─────────────────┼─────────────────┼─────────────────┤
+│ Language        │ Italian/English │ Latin/Italian   │ Latin/Italian   │
+├─────────────────┼─────────────────┼─────────────────┼─────────────────┤
+│ Source fidelity │ Low             │ High            │ High            │
+├─────────────────┼─────────────────┼─────────────────┼─────────────────┤
+│ AAT Type        │ 300404650       │ 300456607       │ 300404651       │
+└─────────────────┴─────────────────┴─────────────────┴─────────────────┘
+
+
+================================================================================
+SECTION 8: Best Practices Summary
+================================================================================
+
+Add this best practices box:
+
+┌────────────────────────────────────────────────────────────────────────┐
+│                   BEST PRACTICES FOR P1_2_has_name_from_source         │
+├────────────────────────────────────────────────────────────────────────┤
+│                                                                        │
+│  ✓ Always transcribe names exactly as they appear in sources          │
+│  ✓ Use P1_1_has_name for normalized modern forms                      │
+│  ✓ Use P1_2_has_name_from_source for historical attestations          │
+│  ✓ Record all significant spelling variants across documents          │
+│  ✓ Preserve abbreviations and special characters                      │
+│  ✓ Use editorial brackets for uncertain or reconstructed text         │
+│  ✓ Link names to their source documents when possible                 │
+│  ✓ Follow project-wide transcription guidelines                       │
+│  ✓ Maintain consistency in how you handle similar cases               │
+│                                                                        │
+│  ✗ Don't modernize spelling in P1_2 entries                           │
+│  ✗ Don't standardize orthography                                      │
+│  ✗ Don't expand abbreviations unless using brackets                   │
+│  ✗ Don't conflate different name properties                           │
+│                                                                        │
+└────────────────────────────────────────────────────────────────────────┘
+
+
+================================================================================
+SECTION 9: Frequently Asked Questions
+================================================================================
+
+Add these FAQs to the FAQ section:
+
+Q: When should I use P1_2_has_name_from_source instead of P1_1_has_name?
+A: Use P1_1 for normalized modern reference forms (e.g., "Giovanni Spinola").
+   Use P1_2 for recording how the name actually appears in historical
+   documents (e.g., "Iohannes Spinula", "Io. de Spinola").
+
+Q: Can I record the same spelling multiple times if it appears in different
+   documents?
+A: You can, but it's usually sufficient to record each unique spelling once
+   and use separate relationships to track which documents mention the person.
+
+Q: Should I include titles or honorifics in the name?
+A: Only if they appear as part of the name string itself. Separate titles
+   (like "Ser", "Dominus", etc.) should typically be recorded using
+   appropriate role or title properties, not as part of the name.
+
+Q: How do I handle damaged or illegible text?
+A: Use standard editorial notation:
+   - [text] for certain reconstructions
+   - [text?] for uncertain reconstructions  
+   - [...] for illegible portions
+   Example: "Iaco[bus] de [...]"
+
+Q: What about names in non-Latin scripts?
+A: The property supports all Unicode characters, so names in Greek, Arabic,
+   Hebrew, or other scripts can be recorded. However, follow your project's
+   guidelines for handling multilingual content.
+
+Q: Can I use this property for place names?
+A: No, P1_2_has_name_from_source is specifically for personal names (domain
+   is E21_Person). Place names should use appropriate place identification
+   properties.
+
+Q: How many name variants should I record?
+A: Record all variants that represent significant differences in spelling,
+   form, or language. Don't record minor scribal variations unless they're
+   relevant to your research questions.
+
+Q: What if the source uses both abbreviated and full forms on the same page?
+A: Record both if they're meaningfully different. For example, "Ant." and
+   "Antonius" can both be recorded to document the abbreviation practice.
+
+
+================================================================================
+SECTION 10: Related Documentation References
+================================================================================
+
+Add these cross-references:
+
+Related Documentation
+---------------------
+
+For more information about name properties in the GMN ontology:
+
+- P1_1_has_name: See "Normalized Name Properties" section
+- P1_3_has_patrilineal_name: See "Patronymic Names" section  
+- P1_4_has_loconym: See "Place-Based Identifiers" section
+- CIDOC-CRM P1_is_identified_by: See CIDOC-CRM documentation
+- AAT 300456607: http://vocab.getty.edu/page/aat/300456607
+- Transformation process: See "GMN to CIDOC-CRM Transformation Guide"
+
+For implementation details:
+- Ontology definition: gmn_ontology.ttl, line ~166
+- Transformation code: gmn_to_cidoc_transform.py, line ~101
+- Implementation guide: has-name-from-source-implementation-guide.md
+- Full documentation: has-name-from-source-documentation.md
+
+
+================================================================================
+SECTION 11: Property Statistics (Optional)
+================================================================================
+
+If you maintain statistics, add this template:
+
+P1_2_has_name_from_source Usage Statistics
+-------------------------------------------
+
+[Update these with actual project data]
+
+Total persons with source names: [NUMBER]
+Average names per person: [NUMBER]
+Most common name variants: [LIST]
+Languages represented: Latin ([%]), Italian ([%]), Other ([%])
+Most variant-rich persons: [EXAMPLES]
+
+Top 5 Most Common Historical Name Forms:
+1. [Name] - [COUNT] occurrences
+2. [Name] - [COUNT] occurrences
+3. [Name] - [COUNT] occurrences
+4. [Name] - [COUNT] occurrences
+5. [Name] - [COUNT] occurrences
+
+
+================================================================================
+END OF DOCUMENTATION ADDITIONS
+================================================================================
+
+USAGE INSTRUCTIONS:
+-------------------
+
+1. Review each section and determine where it fits in your main documentation
+2. Copy the relevant sections to appropriate places in your documentation file
+3. Adjust formatting to match your document's style
+4. Update examples with your actual data where applicable
+5. Add cross-references to other sections as needed
+6. Maintain consistent terminology throughout
+
+FORMATTING NOTES:
+-----------------
+
+- Tables use Unicode box-drawing characters for clarity
+- Code blocks use standard indentation
+- Examples use turtle/JSON-LD syntax as appropriate
+- Section headers use consistent underlining
+- Lists use checkmarks (✓) and crosses (✗) for visual clarity
+
+CUSTOMIZATION:
+--------------
+
+Feel free to:
+- Adjust examples to match your specific data
+- Expand or condense sections based on your needs
+- Reorder sections to fit your documentation structure
+- Add project-specific guidelines or examples
+- Update terminology to match your project conventions
+
+================================================================================

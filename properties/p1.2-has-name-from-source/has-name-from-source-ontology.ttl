@@ -1,0 +1,65 @@
+# has_name_from_source Property - Ontology Addition
+# Ready-to-copy TTL snippet for gmn_ontology.ttl
+# 
+# INSTRUCTIONS:
+# 1. Open gmn_ontology.ttl in a text editor
+# 2. Locate the section with P1.1 has name (around line 145-163)
+# 3. Insert this block immediately after P1_1_has_name definition
+# 4. Ensure proper spacing and formatting is maintained
+# 5. Validate TTL syntax after insertion
+#
+# Location: Insert between P1_1_has_name and P1_3_has_patrilineal_name
+#
+# Version: 1.0
+# Date: 2025-10-26
+
+# Property: P1.2 has name from source
+gmn:P1_2_has_name_from_source 
+    a owl:DatatypeProperty ;
+    a rdf:Property ;
+    rdfs:label "P1.2 has name from source"@en ;
+    rdfs:comment "Simplified property for expressing the name of a person as found in historical sources. Represents the full CIDOC-CRM path: P1_is_identified_by > E41_Appellation > P2_has_type <http://vocab.getty.edu/aat/300456607> > P190_has_symbolic_content. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The appellation type is automatically set to AAT 300456607 (names found in historical sources)."@en ;
+    rdfs:subPropertyOf cidoc:P1_is_identified_by ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range cidoc:E62_String ;
+    dcterms:created "2025-10-26"^^xsd:date ;
+    rdfs:seeAlso cidoc:P1_is_identified_by, cidoc:P190_has_symbolic_content, aat:300456607 ;
+    owl:equivalentProperty [
+        a owl:Restriction ;
+        owl:onProperty cidoc:P1_is_identified_by ;
+        owl:allValuesFrom [
+            a owl:Restriction ;
+            owl:onProperty cidoc:P190_has_symbolic_content ;
+            owl:hasValue cidoc:E62_String
+        ]
+    ] ;
+    gmn:hasImplicitType aat:300456607 .
+
+# END OF PROPERTY DEFINITION
+# 
+# NOTES:
+# - This property creates a simplified interface for recording personal names
+#   as they appear in historical source documents
+# - The AAT type 300456607 represents "names found in historical sources"
+# - The property automatically transforms to full CIDOC-CRM structure during processing
+# - Domain is restricted to cidoc:E21_Person
+# - Range is cidoc:E62_String (text values)
+# - Multiple values can be assigned to record different name variants from various sources
+# 
+# VALIDATION:
+# After adding this property, validate the ontology file:
+#   rapper -i turtle -o ntriples gmn_ontology.ttl > /dev/null
+# Or use Python with rdflib:
+#   python -c "from rdflib import Graph; g = Graph(); g.parse('gmn_ontology.ttl', format='turtle'); print('Valid!')"
+#
+# RELATED PROPERTIES:
+# - gmn:P1_1_has_name (AAT 300404650) - Normalized modern name form
+# - gmn:P1_3_has_patrilineal_name (AAT 300404651) - Patronymic name with ancestry
+# - gmn:P1_4_has_loconym (AAT 300404651) - Place-based identifier
+#
+# AAT REFERENCE:
+# http://vocab.getty.edu/page/aat/300456607
+# Preferred Label: "names found in historical sources"
+# Scope: Names for people, places, and entities documented in historical records,
+#        manuscripts, and archival materials, particularly when those names differ
+#        from modern standardized forms or currently accepted designations.
