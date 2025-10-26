@@ -1,0 +1,371 @@
+# E31.1 General Contract - TTL Reference
+
+## Overview
+
+This file provides the TTL definition for gmn:E31_1_Contract, the general contract class in the Genoese Merchant Networks ontology.
+
+**IMPORTANT**: Unlike TTL additions files for specialized contract types (such as dowry or donation contracts), this file does NOT contain new ontology definitions to add. The E31_1_Contract class is ALREADY DEFINED in the gmn_ontology.ttl file and has been since ontology version 1.0.
+
+This file serves as a **reference** showing the existing class definition and explaining its role in the ontology hierarchy.
+
+## Status: Already Implemented ✓
+
+- **Location**: gmn_ontology.ttl, lines 42-49
+- **Version**: Included since ontology v1.0
+- **Status**: Complete and functional
+- **Action Required**: None - no additions needed
+
+## Current TTL Definition
+
+The following is the existing definition from gmn_ontology.ttl:
+
+```turtle
+##########################
+# Classes (Alphabetical) #
+##########################
+
+# Class: E31.1 Contract
+gmn:E31_1_Contract
+    a owl:Class ;
+    rdfs:subClassOf cidoc:E31_Document ;
+    rdfs:label "E31.1 Contract"@en ;
+    rdfs:comment "General class that describes notarial contract documents. This is a specialized type of E31_Document used to represent legal documents recorded by notaries that formalize agreements, transactions, and legal acts between parties. Contracts are the primary documentary evidence for social, economic, and legal relationships in medieval and early modern societies. Instances of this class represent the physical or conceptual document itself, while the actual events documented (acquisitions, agreements, etc.) are modeled through appropriate event classes that the document documents (via P70_documents). This serves as a parent class for more specific contract types."@en ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:E31_Document, cidoc:P70_documents .
+```
+
+## Class Hierarchy Context
+
+The E31_1_Contract is part of the following hierarchy in gmn_ontology.ttl:
+
+```turtle
+# CIDOC-CRM Foundation (external)
+cidoc:E31_Document
+
+# GMN Extensions
+  gmn:E31_1_Contract (General Contract - Parent class)
+    gmn:E31_2_Sales_Contract (Specialized subclass)
+    gmn:E31_3_Arbitration_Agreement (Specialized subclass)
+    gmn:E31_4_Cession_of_Rights_Contract (Specialized subclass)
+    gmn:E31_7_Donation_Contract (Specialized subclass)
+    gmn:E31_8_Dowry_Contract (Specialized subclass)
+  
+  gmn:E31_5_Declaration (Separate document type - not a contract)
+  gmn:E31_6_Correspondence (Separate document type - not a contract)
+```
+
+## Required Namespaces
+
+When working with E31_1_Contract, ensure these namespaces are declared:
+
+```turtle
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix gmn: <http://www.genoesemerchantnetworks.com/ontology#> .
+```
+
+## Properties Used by E31_1_Contract
+
+E31_1_Contract does NOT have specialized properties unique to it. It uses standard document properties inherited from cidoc:E31_Document.
+
+### Standard Document Properties
+
+These properties are already defined in gmn_ontology.ttl and apply to E31_1_Contract:
+
+```turtle
+# Identification
+gmn:P1_1_has_name          # Give the contract a name
+gmn:P102_1_has_title       # Give the contract a formal title
+
+# Creation
+gmn:P94i_1_was_created_by      # Link to notary
+gmn:P94i_2_has_enactment_date  # Date of enactment
+gmn:P94i_3_has_place_of_enactment  # Place of enactment
+
+# Context
+gmn:P46i_1_is_contained_in  # Link to notarial register
+cidoc:P70_documents          # Link to documented transaction
+
+# Annotation
+gmn:P3_1_has_editorial_note  # Internal notes
+```
+
+**No new properties need to be added for E31_1_Contract.**
+
+## Specialized Contract Types
+
+Each specialized contract type IS defined in gmn_ontology.ttl and HAS specialized properties:
+
+### E31.2 Sales Contract (Already in ontology)
+
+```turtle
+gmn:E31_2_Sales_Contract
+    a owl:Class ;
+    rdfs:subClassOf gmn:E31_1_Contract ;
+    rdfs:label "E31.2 Sales Contract"@en ;
+    rdfs:comment "..." ;
+    dcterms:created "2025-10-17"^^xsd:date .
+
+# Specialized properties for sales:
+gmn:P70_14_indicates_seller
+gmn:P70_15_indicates_buyer
+gmn:P70_16_documents_sale_price_amount
+gmn:P70_17_documents_sale_price_currency
+```
+
+### E31.3 Arbitration Agreement (Already in ontology)
+
+```turtle
+gmn:E31_3_Arbitration_Agreement
+    a owl:Class ;
+    rdfs:subClassOf gmn:E31_1_Contract ;
+    rdfs:label "E31.3 Arbitration Agreement"@en ;
+    rdfs:comment "..." ;
+    dcterms:created "2025-10-17"^^xsd:date .
+
+# Specialized properties for arbitration:
+gmn:P70_18_documents_disputing_party
+gmn:P70_19_documents_arbitrator
+gmn:P70_20_documents_dispute_subject
+```
+
+### E31.4 Cession Contract (Already in ontology)
+
+```turtle
+gmn:E31_4_Cession_of_Rights_Contract
+    a owl:Class ;
+    rdfs:subClassOf gmn:E31_1_Contract ;
+    rdfs:label "E31.4 Cession of Rights Contract"@en ;
+    rdfs:comment "..." ;
+    dcterms:created "2025-10-18"^^xsd:date .
+
+# Specialized properties for cession:
+gmn:P70_21_indicates_conceding_party
+gmn:P70_22_indicates_receiving_party
+gmn:P70_23_indicates_object_of_cession
+```
+
+### E31.7 Donation Contract (Already in ontology)
+
+```turtle
+gmn:E31_7_Donation_Contract
+    a owl:Class ;
+    rdfs:subClassOf gmn:E31_1_Contract ;
+    rdfs:label "E31.7 Donation Contract"@en ;
+    rdfs:comment "..." ;
+    dcterms:created "2025-10-19"^^xsd:date .
+
+# Specialized properties for donations:
+gmn:P70_32_indicates_donor
+gmn:P70_22_indicates_receiving_party (shared)
+gmn:P70_33_indicates_object_of_donation
+```
+
+### E31.8 Dowry Contract (Already in ontology)
+
+```turtle
+gmn:E31_8_Dowry_Contract
+    a owl:Class ;
+    rdfs:subClassOf gmn:E31_1_Contract ;
+    rdfs:label "E31.8 Dowry Contract"@en ;
+    rdfs:comment "..." ;
+    dcterms:created "2025-10-25"^^xsd:date .
+
+# Specialized properties for dowries:
+gmn:P70_32_indicates_donor (shared with donations)
+gmn:P70_22_indicates_receiving_party (shared)
+gmn:P70_34_indicates_object_of_dowry
+```
+
+## Example Usage
+
+### Example 1: General Contract Instance (Rare)
+
+When a contract type is unknown or doesn't fit existing categories:
+
+```turtle
+@prefix gmn: <http://www.genoesemerchantnetworks.com/ontology#> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://example.org/contract/misc001> a gmn:E31_1_Contract ;
+    gmn:P1_1_has_name "Unclassified contract, Register Basso 1455" ;
+    gmn:P94i_1_was_created_by <http://example.org/person/notary_basso> ;
+    gmn:P94i_2_has_enactment_date "1455-08-12"^^xsd:date ;
+    gmn:P94i_3_has_place_of_enactment <http://example.org/place/genoa> ;
+    gmn:P46i_1_is_contained_in <http://example.org/register/basso_1455> ;
+    gmn:P3_1_has_editorial_note "Contract type unclear; requires expert analysis." .
+```
+
+### Example 2: Specialized Contract Instance (Common)
+
+Most contracts should use specialized types:
+
+```turtle
+<http://example.org/contract/sale001> a gmn:E31_2_Sales_Contract ;
+    gmn:P1_1_has_name "Sale of house on Via San Lorenzo" ;
+    gmn:P70_14_indicates_seller <http://example.org/person/maria_doria> ;
+    gmn:P70_15_indicates_buyer <http://example.org/person/giovanni_spinola> ;
+    gmn:P70_16_documents_sale_price_amount "500.00"^^xsd:decimal ;
+    gmn:P94i_1_was_created_by <http://example.org/person/notary_basso> ;
+    gmn:P94i_2_has_enactment_date "1455-08-12"^^xsd:date .
+```
+
+## Query Examples
+
+### Query 1: Find All Contracts (Any Type)
+
+```sparql
+PREFIX gmn: <http://www.genoesemerchantnetworks.com/ontology#>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?contract ?type WHERE {
+    ?contract a ?type .
+    ?type rdfs:subClassOf* gmn:E31_1_Contract .
+}
+```
+
+### Query 2: Count Contracts by Type
+
+```sparql
+PREFIX gmn: <http://www.genoesemerchantnetworks.com/ontology#>
+
+SELECT ?type (COUNT(?contract) as ?count) WHERE {
+    ?contract a ?type .
+    ?type rdfs:subClassOf+ gmn:E31_1_Contract .
+}
+GROUP BY ?type
+ORDER BY DESC(?count)
+```
+
+### Query 3: Find General Contracts Only (Not Specialized)
+
+```sparql
+PREFIX gmn: <http://www.genoesemerchantnetworks.com/ontology#>
+
+SELECT ?contract WHERE {
+    ?contract a gmn:E31_1_Contract .
+    
+    # Exclude instances that are also specialized types
+    FILTER NOT EXISTS {
+        ?contract a ?specialized .
+        ?specialized rdfs:subClassOf gmn:E31_1_Contract .
+        FILTER(?specialized != gmn:E31_1_Contract)
+    }
+}
+```
+
+## Implementation Notes
+
+### No TTL Additions Needed
+
+Unlike specialized contract types, E31_1_Contract requires:
+
+- ✓ No new class definitions (already exists)
+- ✓ No new property definitions (uses inherited properties)
+- ✓ No modifications to existing definitions
+
+### When to Extend
+
+If you need to create a NEW specialized contract type:
+
+1. **Create subclass of E31_1_Contract**:
+```turtle
+gmn:E31_X_YourNewContract
+    a owl:Class ;
+    rdfs:subClassOf gmn:E31_1_Contract ;
+    rdfs:label "E31.X Your New Contract"@en ;
+    rdfs:comment "Description of your new contract type..." ;
+    dcterms:created "YYYY-MM-DD"^^xsd:date .
+```
+
+2. **Add specialized properties**:
+```turtle
+gmn:P70_XX_your_property
+    a owl:ObjectProperty ;
+    rdfs:label "P70.XX your property"@en ;
+    rdfs:comment "Description..." ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_X_YourNewContract ;
+    rdfs:range cidoc:E39_Actor .
+```
+
+3. **Follow existing patterns** from Sales, Donation, Dowry, etc.
+
+## Validation
+
+### Verify Class Exists
+
+Check that E31_1_Contract is properly defined:
+
+```sparql
+PREFIX gmn: <http://www.genoesemerchantnetworks.com/ontology#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?class ?label ?comment ?parent WHERE {
+    VALUES ?class { gmn:E31_1_Contract }
+    ?class rdfs:label ?label .
+    ?class rdfs:comment ?comment .
+    ?class rdfs:subClassOf ?parent .
+}
+```
+
+Expected result:
+- Label: "E31.1 Contract"@en
+- Parent: cidoc:E31_Document
+- Comment: (full description)
+
+### Verify Subclasses Exist
+
+Check that specialized contracts properly inherit:
+
+```sparql
+PREFIX gmn: <http://www.genoesemerchantnetworks.com/ontology#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?subclass ?label WHERE {
+    ?subclass rdfs:subClassOf gmn:E31_1_Contract .
+    ?subclass rdfs:label ?label .
+}
+ORDER BY ?label
+```
+
+Expected results should include:
+- E31.2 Sales Contract
+- E31.3 Arbitration Agreement
+- E31.4 Cession of Rights Contract
+- E31.7 Donation Contract
+- E31.8 Dowry Contract
+
+## Summary
+
+**Key Points**:
+
+1. ✓ E31_1_Contract is **already defined** in gmn_ontology.ttl
+2. ✓ **No new TTL needs to be added** for the general contract class
+3. ✓ This file is a **reference**, not an additions file
+4. ✓ Use **specialized contract types** for most instances
+5. ✓ E31_1_Contract serves as the **parent class** for all contract types
+
+**For specialized contract types**, see their respective TTL additions files:
+- Sales Contract: In main ontology (already defined)
+- Donation Contract: donation-ontology.ttl additions
+- Dowry Contract: dowry-ontology.ttl additions
+- Arbitration Agreement: arbitration-ontology.ttl additions
+- Cession Contract: In main ontology (already defined)
+
+## References
+
+- **Main Ontology**: gmn_ontology.ttl
+- **Documentation**: contract-documentation.md
+- **Implementation Guide**: contract-implementation-guide.md
+- **CIDOC-CRM**: http://www.cidoc-crm.org/
+
+---
+
+**Note**: This is a reference file, not an additions file. E31_1_Contract is already complete in the ontology and requires no modifications.
