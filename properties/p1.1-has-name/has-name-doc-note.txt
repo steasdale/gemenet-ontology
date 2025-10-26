@@ -1,0 +1,581 @@
+# GMN P1.1 has_name Property - Documentation Additions
+
+This file contains text, examples, and tables to add to your main documentation.
+Copy the relevant sections into your project documentation as needed.
+
+================================================================================
+PROPERTY OVERVIEW TABLE
+================================================================================
+
+Add this table to your property reference section:
+
+| Property | Label | Domain | Range | AAT Type | Created | Modified | Use Case |
+|----------|-------|--------|-------|----------|---------|----------|----------|
+| gmn:P1_1_has_name | P1.1 has name | E1_CRM_Entity | String | 300404650 | 2025-10-16 | 2025-10-17 | General names for any entity |
+
+================================================================================
+NAME PROPERTY COMPARISON TABLE
+================================================================================
+
+Add this table to explain the different name properties:
+
+| Property | AAT Concept | Appellation Type | Example Use Case |
+|----------|-------------|------------------|------------------|
+| **gmn:P1_1_has_name** | 300404650 (names) | General name | "Giovanni Spinola" - modern cataloging name |
+| **gmn:P1_2_has_name_from_source** | 300456607 (names found in sources) | Historical source name | "Johaninus Spinula" - as written in 1450 contract |
+| **gmn:P1_3_has_patrilineal_name** | 300404651 (patronymics) | Patronymic name | "Giovanni Spinola q. Antonio" - includes patronymic |
+| **gmn:P1_4_has_loconym** | Q17143070 (loconym) | Place-based name | "Giovanni of Genoa" - geographic identifier |
+| **gmn:P102_1_has_title** | (none) | Document title | "Instrumentum venditionis" - formal document title |
+
+================================================================================
+PROPERTY SELECTION DECISION TREE
+================================================================================
+
+Add this flowchart text to help users choose the right property:
+
+**Choosing the Right Name Property:**
+
+1. Are you naming a document?
+   → YES: Use gmn:P102_1_has_title
+   → NO: Continue to step 2
+
+2. Does the name include patronymic elements (q., son of, etc.)?
+   → YES: Use gmn:P1_3_has_patrilineal_name
+   → NO: Continue to step 3
+
+3. Is the name place-based (X of Y, X from Z)?
+   → YES: Use gmn:P1_4_has_loconym
+   → NO: Continue to step 4
+
+4. Are you transcribing exactly from a historical source?
+   → YES: Use gmn:P1_2_has_name_from_source
+   → NO: Continue to step 5
+
+5. Use gmn:P1_1_has_name for general, modern names
+
+================================================================================
+USAGE EXAMPLES SECTION
+================================================================================
+
+Add this section to your documentation:
+
+## Examples of gmn:P1_1_has_name Usage
+
+### Example 1: Naming a Person
+
+A simple, modern name for a historical person:
+
+**Input (JSON-LD):**
+```json
+{
+  "@id": "http://gmn.org/persons/spinola_giacomo_001",
+  "@type": "cidoc:E21_Person",
+  "gmn:P1_1_has_name": [
+    {"@value": "Giacomo Spinola"}
+  ]
+}
+```
+
+**Transformed Output:**
+```json
+{
+  "@id": "http://gmn.org/persons/spinola_giacomo_001",
+  "@type": "cidoc:E21_Person",
+  "cidoc:P1_is_identified_by": [
+    {
+      "@id": "http://gmn.org/persons/spinola_giacomo_001/appellation/f89a7b3c",
+      "@type": "cidoc:E41_Appellation",
+      "cidoc:P2_has_type": {
+        "@id": "http://vocab.getty.edu/aat/300404650",
+        "@type": "cidoc:E55_Type"
+      },
+      "cidoc:P190_has_symbolic_content": "Giacomo Spinola"
+    }
+  ]
+}
+```
+
+### Example 2: Naming a Place
+
+A geographic location name:
+
+**Input:**
+```json
+{
+  "@id": "http://gmn.org/places/genoa",
+  "@type": "cidoc:E53_Place",
+  "gmn:P1_1_has_name": [{"@value": "Genoa"}]
+}
+```
+
+### Example 3: Naming a Contract
+
+A descriptive cataloging name for a contract:
+
+**Input:**
+```json
+{
+  "@id": "http://gmn.org/contracts/asl1450_001",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "gmn:P1_1_has_name": [
+    {"@value": "Sale of Building in Via San Lorenzo, 1450"}
+  ]
+}
+```
+
+### Example 4: Naming a Building
+
+A building or property name:
+
+**Input:**
+```json
+{
+  "@id": "http://gmn.org/buildings/palazzo_spinola",
+  "@type": "gmn:E22_1_Building",
+  "gmn:P1_1_has_name": [{"@value": "Palazzo Spinola"}]
+}
+```
+
+### Example 5: Multiple Names for One Entity
+
+When an entity is known by multiple names:
+
+**Input:**
+```json
+{
+  "@id": "http://gmn.org/persons/doria_antonio_001",
+  "@type": "cidoc:E21_Person",
+  "gmn:P1_1_has_name": [
+    {"@value": "Antonio Doria"},
+    {"@value": "Antonius de Auria"}
+  ]
+}
+```
+
+This creates two separate E41_Appellation resources, each linked to the person.
+
+================================================================================
+TRANSFORMATION EXPLANATION
+================================================================================
+
+Add this section to explain the transformation process:
+
+## How gmn:P1_1_has_name Transforms to CIDOC-CRM
+
+The `gmn:P1_1_has_name` property is a simplified shortcut that automatically 
+transforms into the full CIDOC-CRM structure for appellations.
+
+**Before Transformation (Input):**
+```
+Entity --gmn:P1_1_has_name--> "Name String"
+```
+
+**After Transformation (Output):**
+```
+Entity --cidoc:P1_is_identified_by--> E41_Appellation
+                                      |
+                                      +--cidoc:P2_has_type--> E55_Type (AAT 300404650)
+                                      |
+                                      +--cidoc:P190_has_symbolic_content--> "Name String"
+```
+
+**Transformation Steps:**
+
+1. **Detection**: Script identifies gmn:P1_1_has_name in the data
+2. **URI Generation**: Creates a unique URI for the appellation resource
+3. **Appellation Creation**: Builds an E41_Appellation with:
+   - A unique @id (URI)
+   - Type: cidoc:E41_Appellation
+   - Type classification: AAT 300404650 (names)
+   - Symbolic content: the name string
+4. **Linking**: Connects the entity to the appellation via P1_is_identified_by
+5. **Cleanup**: Removes the original gmn:P1_1_has_name property
+
+**Result**: Full CIDOC-CRM compliance while maintaining simple data entry
+
+================================================================================
+SPARQL QUERY EXAMPLES
+================================================================================
+
+Add these queries to your SPARQL examples section:
+
+## SPARQL Queries for gmn:P1_1_has_name
+
+### Query 1: Find All Named Entities
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX aat: <http://vocab.getty.edu/aat/>
+
+SELECT ?entity ?name ?entityType
+WHERE {
+  ?entity a ?entityType ;
+          cidoc:P1_is_identified_by ?appellation .
+  ?appellation a cidoc:E41_Appellation ;
+               cidoc:P2_has_type aat:300404650 ;
+               cidoc:P190_has_symbolic_content ?name .
+}
+ORDER BY ?name
+```
+
+### Query 2: Search for Entities by Name
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX aat: <http://vocab.getty.edu/aat/>
+
+SELECT ?entity ?name
+WHERE {
+  ?entity cidoc:P1_is_identified_by ?appellation .
+  ?appellation cidoc:P2_has_type aat:300404650 ;
+               cidoc:P190_has_symbolic_content ?name .
+  FILTER(CONTAINS(LCASE(?name), "spinola"))
+}
+```
+
+### Query 3: Count Entities by Type with Names
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX aat: <http://vocab.getty.edu/aat/>
+
+SELECT ?entityType (COUNT(DISTINCT ?entity) AS ?count)
+WHERE {
+  ?entity a ?entityType ;
+          cidoc:P1_is_identified_by ?appellation .
+  ?appellation cidoc:P2_has_type aat:300404650 .
+}
+GROUP BY ?entityType
+ORDER BY DESC(?count)
+```
+
+### Query 4: Find Entities with Multiple Names
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX aat: <http://vocab.getty.edu/aat/>
+
+SELECT ?entity (COUNT(?appellation) AS ?nameCount)
+WHERE {
+  ?entity cidoc:P1_is_identified_by ?appellation .
+  ?appellation cidoc:P2_has_type aat:300404650 .
+}
+GROUP BY ?entity
+HAVING (COUNT(?appellation) > 1)
+ORDER BY DESC(?nameCount)
+```
+
+### Query 5: List All Names for a Specific Person
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX aat: <http://vocab.getty.edu/aat/>
+
+SELECT ?name ?nameType
+WHERE {
+  <http://gmn.org/persons/spinola_giacomo_001> 
+    cidoc:P1_is_identified_by ?appellation .
+  ?appellation cidoc:P2_has_type ?nameType ;
+               cidoc:P190_has_symbolic_content ?name .
+}
+```
+
+================================================================================
+BEST PRACTICES SECTION
+================================================================================
+
+Add this section to your usage guidelines:
+
+## Best Practices for Using gmn:P1_1_has_name
+
+### When to Use This Property
+
+**✅ Use gmn:P1_1_has_name for:**
+- Modern cataloging names assigned by researchers
+- Display names in user interfaces
+- Primary identifiers for entities
+- Names without specialized type requirements
+- General names that don't fit other categories
+
+**❌ Don't use gmn:P1_1_has_name for:**
+- Historical source transcriptions (use gmn:P1_2_has_name_from_source)
+- Names with patronymic elements (use gmn:P1_3_has_patrilineal_name)
+- Place-based identifiers (use gmn:P1_4_has_loconym)
+- Document titles (use gmn:P102_1_has_title)
+- Editorial notes or comments (use gmn:P3_1_has_editorial_note)
+
+### Naming Conventions
+
+**For Persons:**
+- Use standardized form: "Given Name Family Name"
+- Example: "Giovanni Spinola"
+- Alternative: "Family Name, Given Name" (be consistent)
+- Include middle names if known: "Giovanni Maria Spinola"
+
+**For Places:**
+- Use modern English name or original language name (be consistent)
+- Examples: "Genoa" or "Genova"
+- Include country for disambiguation: "Genoa, Italy"
+
+**For Buildings:**
+- Include building type when relevant: "Palazzo Spinola"
+- Include location if helpful: "House on Via San Lorenzo"
+
+**For Contracts:**
+- Use descriptive name: "Sale of Building in Via San Lorenzo"
+- Include date if helpful: "Marriage Contract, 1450"
+- Include key parties if relevant: "Contract between Spinola and Doria"
+
+### Data Quality Guidelines
+
+1. **Consistency**: Choose a naming format and use it throughout your dataset
+2. **Completeness**: Don't leave name fields empty unless truly unknown
+3. **Accuracy**: Verify spelling and capitalization
+4. **Clarity**: Use clear, descriptive names for contracts and documents
+5. **Standardization**: Reference authority files when available (VIAF, LCNAF)
+
+================================================================================
+COMMON MISTAKES SECTION
+================================================================================
+
+Add this section to help users avoid errors:
+
+## Common Mistakes and How to Avoid Them
+
+### Mistake 1: Using Wrong Property for Historical Names
+
+**❌ Incorrect:**
+```json
+{
+  "gmn:P1_1_has_name": [{"@value": "Johaninus Spinula"}]
+}
+```
+
+**✅ Correct:**
+```json
+{
+  "gmn:P1_2_has_name_from_source": [{"@value": "Johaninus Spinula"}],
+  "gmn:P1_1_has_name": [{"@value": "Giovanni Spinola"}]
+}
+```
+
+**Explanation**: Use P1_2 for historical spellings, P1_1 for modern names.
+
+### Mistake 2: Including Extra Information in Name
+
+**❌ Incorrect:**
+```json
+{
+  "gmn:P1_1_has_name": [{"@value": "Giovanni Spinola (d. 1460, merchant)"}]
+}
+```
+
+**✅ Correct:**
+```json
+{
+  "gmn:P1_1_has_name": [{"@value": "Giovanni Spinola"}],
+  "cidoc:P100i_died_in": [{"@id": "http://example.org/events/death_1460"}],
+  "gmn:P107i_3_has_occupation": [{"@id": "http://example.org/occupations/merchant"}]
+}
+```
+
+**Explanation**: Use separate properties for different types of information.
+
+### Mistake 3: Using for Document Titles
+
+**❌ Incorrect:**
+```json
+{
+  "@type": "gmn:E31_2_Sales_Contract",
+  "gmn:P1_1_has_name": [{"@value": "Instrumentum venditionis"}]
+}
+```
+
+**✅ Correct:**
+```json
+{
+  "@type": "gmn:E31_2_Sales_Contract",
+  "gmn:P102_1_has_title": [{"@value": "Instrumentum venditionis"}],
+  "gmn:P1_1_has_name": [{"@value": "Sales Contract, Via San Lorenzo, 1450"}]
+}
+```
+
+**Explanation**: Use P102_1 for formal document titles, P1_1 for cataloging names.
+
+### Mistake 4: Empty or Whitespace-Only Values
+
+**❌ Incorrect:**
+```json
+{
+  "gmn:P1_1_has_name": [{"@value": ""}]
+}
+```
+
+**❌ Incorrect:**
+```json
+{
+  "gmn:P1_1_has_name": [{"@value": "   "}]
+}
+```
+
+**✅ Correct:**
+```json
+{
+  "gmn:P1_1_has_name": [{"@value": "Unknown Person"}]
+}
+```
+
+**Explanation**: Provide a placeholder or omit the property entirely if name is unknown.
+
+### Mistake 5: Inconsistent Capitalization
+
+**❌ Incorrect:**
+```json
+{
+  "gmn:P1_1_has_name": [{"@value": "giovanni spinola"}]
+}
+```
+
+**✅ Correct:**
+```json
+{
+  "gmn:P1_1_has_name": [{"@value": "Giovanni Spinola"}]
+}
+```
+
+**Explanation**: Use proper capitalization for names (title case for persons/places).
+
+================================================================================
+TECHNICAL SPECIFICATIONS TABLE
+================================================================================
+
+Add this table to your technical documentation:
+
+| Specification | Value |
+|--------------|-------|
+| **Property URI** | http://www.genoesemerchantnetworks.com/ontology#P1_1_has_name |
+| **Property Type** | owl:DatatypeProperty, rdf:Property |
+| **RDF Label** | "P1.1 has name"@en |
+| **Domain** | cidoc:E1_CRM_Entity |
+| **Range** | cidoc:E62_String |
+| **SubPropertyOf** | cidoc:P1_is_identified_by |
+| **AAT Concept** | 300404650 (names) |
+| **AAT URI** | http://vocab.getty.edu/aat/300404650 |
+| **Created** | 2025-10-16 |
+| **Modified** | 2025-10-17 |
+| **Status** | Active |
+| **Cardinality** | 0..* (zero or more) |
+| **Transformation** | Automatic via gmn_to_cidoc_transform.py |
+
+================================================================================
+TRANSFORMATION SPECIFICATIONS TABLE
+================================================================================
+
+Add this table to document the transformation:
+
+| Aspect | Details |
+|--------|---------|
+| **Input Property** | gmn:P1_1_has_name |
+| **Output Property** | cidoc:P1_is_identified_by |
+| **Intermediate Class** | cidoc:E41_Appellation |
+| **Type Property** | cidoc:P2_has_type |
+| **Type Value** | http://vocab.getty.edu/aat/300404650 |
+| **Content Property** | cidoc:P190_has_symbolic_content |
+| **URI Pattern** | {entity_uri}/appellation/{8-char-hash} |
+| **Hash Algorithm** | Python hash() function, last 8 digits |
+| **Transformation Function** | transform_p1_1_has_name() |
+| **Generic Function** | transform_name_property() |
+| **Script Location** | gmn_to_cidoc_transform.py, line 49 |
+
+================================================================================
+COMPATIBILITY MATRIX
+================================================================================
+
+Add this table showing which entity types can use the property:
+
+| Entity Type | Can Use P1_1_has_name? | Common Use Case |
+|-------------|------------------------|-----------------|
+| E21_Person | ✅ Yes | Person names |
+| E53_Place | ✅ Yes | Place names |
+| E22_Human-Made_Object | ✅ Yes | Object names |
+| E22_1_Building | ✅ Yes | Building names |
+| E31_Document | ✅ Yes | Document catalog names |
+| E31_1_Contract | ✅ Yes | Contract catalog names |
+| E31_2_Sales_Contract | ✅ Yes | Sales contract catalog names |
+| E74_Group | ✅ Yes | Group/organization names |
+| E55_Type | ✅ Yes | Type concept names |
+| E7_Activity | ✅ Yes | Activity/event names |
+| Any E1_CRM_Entity | ✅ Yes | Universal application |
+
+================================================================================
+VALIDATION CHECKLIST
+================================================================================
+
+Add this checklist to your quality control procedures:
+
+## Validation Checklist for gmn:P1_1_has_name
+
+**Pre-Transformation Validation:**
+- [ ] Property name is exactly "gmn:P1_1_has_name" (case-sensitive)
+- [ ] Values are in JSON-LD format with @value key
+- [ ] No empty string values ("")
+- [ ] No null values
+- [ ] Proper capitalization used
+- [ ] No extra whitespace at beginning or end
+- [ ] No special characters that would break URIs
+- [ ] Appropriate entity type for the name
+
+**Post-Transformation Validation:**
+- [ ] gmn:P1_1_has_name property has been removed
+- [ ] cidoc:P1_is_identified_by property exists
+- [ ] E41_Appellation resource created
+- [ ] Appellation has unique @id URI
+- [ ] Appellation type is cidoc:E41_Appellation
+- [ ] P2_has_type points to AAT 300404650
+- [ ] P190_has_symbolic_content contains the name string
+- [ ] URI follows pattern: {entity}/appellation/{hash}
+
+================================================================================
+FREQUENTLY ASKED QUESTIONS
+================================================================================
+
+Add these FAQs to your documentation:
+
+## Frequently Asked Questions: gmn:P1_1_has_name
+
+**Q: Can I use this property for any entity type?**
+A: Yes! The domain is E1_CRM_Entity, meaning it works with any CIDOC-CRM entity class.
+
+**Q: What's the difference between P1_1_has_name and P1_2_has_name_from_source?**
+A: P1_1 is for modern, cataloging names. P1_2 is for historical names exactly as they appear in sources.
+
+**Q: Can an entity have multiple names?**
+A: Yes! You can provide multiple values, and each will create a separate appellation.
+
+**Q: Do I need to specify the AAT type when entering data?**
+A: No, the AAT type (300404650) is automatically assigned during transformation.
+
+**Q: What happens to the original property after transformation?**
+A: It's removed from the output. Only the CIDOC-CRM structure remains.
+
+**Q: Can I query using the shortcut property?**
+A: Only before transformation. After transformation, use P1_is_identified_by in SPARQL queries.
+
+**Q: How do I name a document versus naming an entity?**
+A: Use gmn:P102_1_has_title for document titles, gmn:P1_1_has_name for entity names.
+
+**Q: What if I don't know the name?**
+A: Omit the property or use a placeholder like "Unknown Person" or "Unnamed Building".
+
+**Q: Are there length limits for names?**
+A: No hard limit, but keep names concise and descriptive for practical use.
+
+**Q: Can I use abbreviations in names?**
+A: Yes, if they're part of the standard name (e.g., "St. Peter's Church"), but avoid unnecessary abbreviations.
+
+================================================================================
+END OF DOCUMENT ADDITIONS
+================================================================================
+
+Copy relevant sections from this file into your main documentation as needed.
+Adapt the examples and formatting to match your documentation style.
