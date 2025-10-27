@@ -1,0 +1,357 @@
+# TTL Additions for gmn:P2_1_gender Property
+
+## Status: ✅ Already Defined
+
+The **gmn:P2_1_gender** property is already fully defined in the GMN ontology file (`gmn_ontology.ttl`, line 223). This file provides the complete definition for reference purposes.
+
+**No modifications to the ontology file are needed** - the property is complete and ready to use.
+
+---
+
+## Complete Property Definition
+
+```turtle
+# Property: P2.1 has sex/gender
+gmn:P2_1_gender
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P2.1 has sex/gender"@en ;
+    rdfs:comment "Simplified property for expressing biological characteristics and physiological traits that distinguish the males and females of a species. This is an extension of the CIDOC-CRM path: E21_Person > P2_has_type > E55_Type. The range is restricted to a controlled vocabulary of three Getty AAT terms: male (300189559), female (300189557), and intersex (300417544)."@en ;
+    rdfs:subPropertyOf cidoc:P2_has_type ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range [
+        a owl:Class ;
+        owl:oneOf (
+            aat:300189559  # male
+            aat:300189557  # female
+            aat:300417544  # intersex
+        )
+    ] ;
+    dcterms:created "2025-10-16"^^xsd:date ;
+    rdfs:seeAlso cidoc:P2_has_type, aat:300189559, aat:300189557, aat:300417544 .
+```
+
+---
+
+## Property Components Explained
+
+### Basic Declarations
+
+```turtle
+gmn:P2_1_gender
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+```
+
+**Explanation**: Declares the property as both an OWL Object Property and an RDF Property, ensuring compatibility with both OWL reasoners and RDF processors.
+
+### Label and Description
+
+```turtle
+    rdfs:label "P2.1 has sex/gender"@en ;
+    rdfs:comment "Simplified property for expressing biological characteristics and physiological traits that distinguish the males and females of a species. This is an extension of the CIDOC-CRM path: E21_Person > P2_has_type > E55_Type. The range is restricted to a controlled vocabulary of three Getty AAT terms: male (300189559), female (300189557), and intersex (300417544)."@en ;
+```
+
+**Explanation**: 
+- Human-readable label in English
+- Detailed comment explaining purpose, scope, and constraints
+- References the controlled vocabulary terms
+
+### CIDOC-CRM Alignment
+
+```turtle
+    rdfs:subPropertyOf cidoc:P2_has_type ;
+```
+
+**Explanation**: Declares that `gmn:P2_1_gender` is a specialized subproperty of CIDOC-CRM's `P2_has_type`. This means:
+- All instances of `gmn:P2_1_gender` are also instances of `P2_has_type`
+- The property inherits characteristics from `P2_has_type`
+- Ensures CIDOC-CRM compatibility
+
+### Domain and Range
+
+```turtle
+    rdfs:domain cidoc:E21_Person ;
+```
+
+**Domain Explanation**: The property can only be used on instances of `E21_Person` (persons). Using it on any other class would be invalid.
+
+```turtle
+    rdfs:range [
+        a owl:Class ;
+        owl:oneOf (
+            aat:300189559  # male
+            aat:300189557  # female
+            aat:300417544  # intersex
+        )
+    ] ;
+```
+
+**Range Explanation**: The property value must be exactly one of the three specified Getty AAT terms. This OWL enumeration:
+- Creates an anonymous class containing only these three individuals
+- Restricts property values to this closed set
+- Enables validation at the ontology level
+- Rejects any other values as invalid
+
+### Metadata
+
+```turtle
+    dcterms:created "2025-10-16"^^xsd:date ;
+```
+
+**Creation Date**: Records when the property was added to the ontology (October 16, 2025).
+
+```turtle
+    rdfs:seeAlso cidoc:P2_has_type, aat:300189559, aat:300189557, aat:300417544 .
+```
+
+**See Also**: Provides links to:
+- The parent CIDOC-CRM property
+- All three controlled vocabulary terms
+
+---
+
+## Controlled Vocabulary Terms
+
+### Male (aat:300189559)
+
+```turtle
+aat:300189559
+    a cidoc:E55_Type ;
+    rdfs:label "male"@en .
+```
+
+**Full URI**: `http://vocab.getty.edu/page/aat/300189559`
+
+**Note**: The actual Getty AAT entry contains much more information. This is a minimal representation.
+
+### Female (aat:300189557)
+
+```turtle
+aat:300189557
+    a cidoc:E55_Type ;
+    rdfs:label "female"@en .
+```
+
+**Full URI**: `http://vocab.getty.edu/page/aat/300189557`
+
+### Intersex (aat:300417544)
+
+```turtle
+aat:300417544
+    a cidoc:E55_Type ;
+    rdfs:label "intersex"@en .
+```
+
+**Full URI**: `http://vocab.getty.edu/page/aat/300417544`
+
+---
+
+## Namespace Declarations
+
+Ensure these namespace prefixes are declared in your ontology file:
+
+```turtle
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix gmn: <https://data.geniza.org/ontology/> .
+@prefix aat: <http://vocab.getty.edu/page/aat/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+```
+
+---
+
+## Location in Ontology
+
+The property is defined in `gmn_ontology.ttl` at **line 223**, following the P1.4 has loconym property and preceding other person-related properties.
+
+**Context in file**:
+```turtle
+# Property: P1.4 has loconym
+gmn:P1_4_has_loconym
+    a owl:ObjectProperty ;
+    # ... [definition] ...
+    rdfs:seeAlso cidoc:P1_is_identified_by, cidoc:P67_refers_to, <https://www.wikidata.org/wiki/Q17143070> ;
+    gmn:hasImplicitType <https://www.wikidata.org/wiki/Q17143070> .
+
+# Property: P2.1 has sex/gender
+gmn:P2_1_gender
+    a owl:ObjectProperty ;
+    # ... [definition shown above] ...
+    rdfs:seeAlso cidoc:P2_has_type, aat:300189559, aat:300189557, aat:300417544 .
+
+# [Next property follows]
+```
+
+---
+
+## Verification Commands
+
+### Check if property exists in ontology:
+
+```bash
+grep -n "gmn:P2_1_gender" gmn_ontology.ttl
+```
+
+**Expected output**: `223:gmn:P2_1_gender`
+
+### View complete definition:
+
+```bash
+grep -A 17 "gmn:P2_1_gender" gmn_ontology.ttl
+```
+
+### Verify controlled vocabulary terms:
+
+```bash
+grep -E "aat:300189559|aat:300189557|aat:300417544" gmn_ontology.ttl
+```
+
+**Expected**: Should find all three terms in the property definition.
+
+---
+
+## Validation
+
+### OWL Validation
+
+The property definition is valid OWL 2 DL. Key validation points:
+
+✅ **Property Type**: Declared as both `owl:ObjectProperty` and `rdf:Property`  
+✅ **Domain**: Restricted to `cidoc:E21_Person`  
+✅ **Range**: Properly restricted using `owl:oneOf` enumeration  
+✅ **Subproperty**: Correctly declares subproperty relationship  
+✅ **Metadata**: Includes creation date and see-also links
+
+### CIDOC-CRM Compliance
+
+✅ **Alignment**: Properly aligned with `cidoc:P2_has_type`  
+✅ **Range**: Uses `E55_Type` instances (Getty AAT terms)  
+✅ **Pattern**: Follows standard CRM typing pattern
+
+### Best Practices
+
+✅ **Documentation**: Comprehensive comment explains purpose and usage  
+✅ **Controlled Vocabulary**: Uses authoritative Getty AAT terms  
+✅ **Validation**: Ontology-level constraint prevents invalid values  
+✅ **Interoperability**: Compatible with Linked Open Data standards
+
+---
+
+## Example Usage in RDF/Turtle
+
+### Minimal Example
+
+```turtle
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix gmn: <https://data.geniza.org/ontology/> .
+@prefix aat: <http://vocab.getty.edu/page/aat/> .
+
+<person/p123>
+    a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Abraham ben Moses" ;
+    gmn:P2_1_gender aat:300189559 .
+```
+
+### Full Example with Context
+
+```turtle
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix gmn: <https://data.geniza.org/ontology/> .
+@prefix aat: <http://vocab.getty.edu/page/aat/> .
+
+<person/p123>
+    a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Abraham ben Moses" ;
+    gmn:P1_3_has_patrilineal_name "ben Moses" ;
+    gmn:P2_1_gender aat:300189559 ;
+    gmn:P107i_3_has_occupation "merchant" ;
+    gmn:P11i_1_earliest_attestation_date "1150" .
+```
+
+### Multiple Persons Example
+
+```turtle
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix gmn: <https://data.geniza.org/ontology/> .
+@prefix aat: <http://vocab.getty.edu/page/aat/> .
+
+<person/husband>
+    a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Abraham ben Moses" ;
+    gmn:P2_1_gender aat:300189559 ;
+    gmn:P11i_3_has_spouse <person/wife> .
+
+<person/wife>
+    a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Esther bat David" ;
+    gmn:P2_1_gender aat:300189557 ;
+    gmn:P11i_3_has_spouse <person/husband> .
+```
+
+---
+
+## Summary
+
+### Property Status: ✅ Complete
+
+- **Definition**: Already present in ontology (line 223)
+- **Controlled Vocabulary**: Three Getty AAT terms defined
+- **CIDOC-CRM Alignment**: Subproperty of P2_has_type
+- **Validation**: OWL enumeration enforces constraints
+
+### No Action Required
+
+The ontology definition is complete. The only remaining implementation task is to add the transformation logic to the Python script (see `has-gender-transform.py`).
+
+### Next Steps
+
+1. ✅ Ontology complete (no changes needed)
+2. ⚠️ Add transformation function to Python script
+3. ⚠️ Test transformation with sample data
+4. ⚠️ Update project documentation
+
+---
+
+## Additional Information
+
+### Getty AAT Integration
+
+The three AAT terms used as controlled vocabulary are maintained by the Getty Research Institute:
+
+- **AAT Homepage**: http://vocab.getty.edu/
+- **Term Browser**: http://vocab.getty.edu/aat/
+- **API Access**: Available for programmatic lookup
+
+### CIDOC-CRM P2_has_type
+
+Full CIDOC-CRM documentation for the parent property:
+
+- **Property**: P2_has_type
+- **Domain**: E1_CRM_Entity
+- **Range**: E55_Type
+- **Documentation**: http://www.cidoc-crm.org/Property/P2-has-type/version-7.1.3
+
+### Property Numbering
+
+The property uses the numbering scheme **P2.1** which indicates:
+- **P2**: Related to CIDOC-CRM P2_has_type
+- **.1**: First GMN extension/specialization of P2
+
+This follows the GMN convention of using decimal numbering for property extensions.
+
+---
+
+## Change History
+
+| Date | Version | Change |
+|------|---------|--------|
+| 2025-10-16 | 1.0 | Initial property definition added to ontology |
+| 2025-10-26 | 1.0 | Transformation logic documentation created |
+
+---
+
+*This TTL reference file documents the existing gmn:P2_1_gender property definition. No modifications to the ontology are required - the property is complete and ready to use. Implementation work focuses on the transformation script.*

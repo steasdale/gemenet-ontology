@@ -1,0 +1,748 @@
+# Documentation Additions for gmn:P2_1_gender Property
+
+## Instructions
+
+This file contains ready-to-copy text, examples, and tables to add to your main project documentation. Copy the relevant sections into your documentation files as indicated.
+
+---
+
+## Section 1: Property Overview (Add to Property Reference)
+
+### Recording Person Gender
+
+The GMN ontology provides a standardized way to record biological sex characteristics of persons using the **gmn:P2_1_gender** property.
+
+#### Property Details
+
+- **Property URI**: `gmn:P2_1_gender`
+- **Label**: "P2.1 has sex/gender"
+- **Domain**: `cidoc:E21_Person`
+- **Range**: Controlled vocabulary (three Getty AAT terms)
+- **Superproperty**: `cidoc:P2_has_type`
+- **Cardinality**: 0..1 (optional, single value)
+- **Created**: 2025-10-16
+
+#### Purpose
+
+This property records the biological sex of persons as documented in historical sources. It uses a controlled vocabulary of three Getty Art & Architecture Thesaurus (AAT) terms to ensure consistency and interoperability.
+
+#### Allowed Values
+
+| Term | AAT URI | Full URI | Usage |
+|------|---------|----------|-------|
+| Male | aat:300189559 | http://vocab.getty.edu/page/aat/300189559 | Use when documents indicate male biological sex |
+| Female | aat:300189557 | http://vocab.getty.edu/page/aat/300189557 | Use when documents indicate female biological sex |
+| Intersex | aat:300417544 | http://vocab.getty.edu/page/aat/300417544 | Use when documents indicate intersex characteristics |
+
+**Important**: Only these three AAT URIs are valid. The ontology enforces this restriction through OWL enumeration.
+
+---
+
+## Section 2: Usage Examples (Add to Examples Section)
+
+### Basic Usage
+
+**Example 1: Male Person**
+
+```json
+{
+  "@context": {
+    "cidoc": "http://www.cidoc-crm.org/cidoc-crm/",
+    "gmn": "https://data.geniza.org/ontology/",
+    "aat": "http://vocab.getty.edu/page/aat/"
+  },
+  "@id": "person/p123",
+  "@type": "cidoc:E21_Person",
+  "gmn:P1_1_has_name": "Abraham ben Moses",
+  "gmn:P2_1_gender": {
+    "@id": "aat:300189559"
+  }
+}
+```
+
+**Example 2: Female Person**
+
+```json
+{
+  "@id": "person/p456",
+  "@type": "cidoc:E21_Person",
+  "gmn:P1_1_has_name": "Esther bat David",
+  "gmn:P2_1_gender": {
+    "@id": "aat:300189557"
+  }
+}
+```
+
+**Example 3: Person with Family Context**
+
+```json
+{
+  "@id": "person/daughter",
+  "@type": "cidoc:E21_Person",
+  "gmn:P1_1_has_name": "Sarah bat Isaac",
+  "gmn:P2_1_gender": {
+    "@id": "aat:300189557"
+  },
+  "gmn:P97_1_has_father": {
+    "@id": "person/father_isaac"
+  },
+  "gmn:P96_1_has_mother": {
+    "@id": "person/mother_rebecca"
+  }
+}
+```
+
+**Example 4: Person with Occupation and Gender**
+
+```json
+{
+  "@id": "person/merchant",
+  "@type": "cidoc:E21_Person",
+  "gmn:P1_1_has_name": "Jacob ibn David",
+  "gmn:P2_1_gender": {
+    "@id": "aat:300189559"
+  },
+  "gmn:P107i_3_has_occupation": "merchant",
+  "gmn:P107i_2_has_social_category": "Jewish"
+}
+```
+
+---
+
+## Section 3: Best Practices (Add to Guidelines Section)
+
+### Data Entry Guidelines for Gender
+
+#### When to Record Gender
+
+✅ **Record gender when**:
+- Historical documents explicitly state the person's biological sex
+- Gender is clearly indicated through documentary evidence
+- Source provides unambiguous information about sex characteristics
+
+❌ **Do NOT record gender when**:
+- Inferring from name conventions alone
+- Making assumptions based on social roles
+- Source document is ambiguous or unclear
+- No documentary evidence exists
+
+#### Using the Controlled Vocabulary
+
+**Correct Usage**:
+
+1. Always use the full AAT URI format:
+   ```json
+   "gmn:P2_1_gender": {"@id": "aat:300189559"}
+   ```
+
+2. Valid object format:
+   ```json
+   "gmn:P2_1_gender": {"@id": "aat:300189557"}
+   ```
+
+3. Valid string format (also acceptable):
+   ```json
+   "gmn:P2_1_gender": "aat:300189559"
+   ```
+
+**Incorrect Usage**:
+
+1. ❌ Text labels instead of URIs:
+   ```json
+   "gmn:P2_1_gender": "male"  // INVALID
+   ```
+
+2. ❌ Wrong namespace:
+   ```json
+   "gmn:P2_1_gender": {"@id": "gmn:male"}  // INVALID
+   ```
+
+3. ❌ Non-standard vocabulary:
+   ```json
+   "gmn:P2_1_gender": {"@id": "custom:gender_term"}  // INVALID
+   ```
+
+#### Documentation Requirements
+
+When recording gender information:
+
+1. **Cite the source**: Include an editorial note referencing the specific document
+2. **Be explicit**: Note where in the document gender is indicated
+3. **Avoid assumptions**: Only record what is explicitly stated
+4. **Consider context**: Be sensitive to historical and cultural contexts
+
+**Example with Source Citation**:
+
+```json
+{
+  "@id": "person/p789",
+  "@type": "cidoc:E21_Person",
+  "gmn:P1_1_has_name": "Person Name",
+  "gmn:P2_1_gender": {
+    "@id": "aat:300189559"
+  },
+  "gmn:P3_1_has_editorial_note": "Gender recorded as male in marriage contract T-S 8.245, line 3"
+}
+```
+
+#### Handling Uncertainty
+
+If gender information is uncertain or ambiguous:
+
+1. **Omit the property**: Leave `gmn:P2_1_gender` absent
+2. **Add a note**: Use editorial notes to explain uncertainty
+3. **Don't guess**: Never record gender based on speculation
+
+**Example**:
+
+```json
+{
+  "@id": "person/uncertain",
+  "@type": "cidoc:E21_Person",
+  "gmn:P1_1_has_name": "Unknown Person",
+  "gmn:P3_1_has_editorial_note": "Gender not specified in available documents"
+}
+```
+
+---
+
+## Section 4: CIDOC-CRM Transformation (Add to Technical Documentation)
+
+### How Gender Transforms to CIDOC-CRM
+
+The transformation converts the simplified `gmn:P2_1_gender` property to the standard CIDOC-CRM `P2_has_type` pattern.
+
+#### Transformation Process
+
+**Input (GMN Simplified)**:
+```json
+{
+  "@id": "person/p123",
+  "@type": "cidoc:E21_Person",
+  "gmn:P2_1_gender": {
+    "@id": "aat:300189559"
+  }
+}
+```
+
+**Output (CIDOC-CRM Compliant)**:
+```json
+{
+  "@id": "person/p123",
+  "@type": "cidoc:E21_Person",
+  "cidoc:P2_has_type": [
+    {
+      "@id": "aat:300189559",
+      "@type": "cidoc:E55_Type"
+    }
+  ]
+}
+```
+
+#### Transformation Steps
+
+1. **Extract gender URI** from `gmn:P2_1_gender`
+2. **Create E55_Type instance** with the gender URI
+3. **Add to P2_has_type** array (creating it if necessary)
+4. **Remove** the simplified `gmn:P2_1_gender` property
+
+#### Integration with Other Types
+
+When a person has multiple types (e.g., gender and occupation), they are combined in the `cidoc:P2_has_type` array:
+
+**Input**:
+```json
+{
+  "@id": "person/p123",
+  "gmn:P2_1_gender": {"@id": "aat:300189559"},
+  "gmn:P107i_3_has_occupation": "scholar"
+}
+```
+
+**Output**:
+```json
+{
+  "@id": "person/p123",
+  "cidoc:P2_has_type": [
+    {
+      "@id": "aat:300025565",
+      "@type": "cidoc:E55_Type"
+    },
+    {
+      "@id": "aat:300189559",
+      "@type": "cidoc:E55_Type"
+    }
+  ]
+}
+```
+
+---
+
+## Section 5: Property Reference Table (Add to Quick Reference)
+
+### Person Properties - Quick Reference
+
+| Property | Label | Domain | Range | Purpose | Example |
+|----------|-------|--------|-------|---------|---------|
+| gmn:P1_1_has_name | "P1.1 has name" | E21_Person | String | Person's primary name | "Abraham ben Moses" |
+| gmn:P1_2_has_name_from_source | "P1.2 has name from source" | E21_Person | String | Name as recorded in source | "Abrhm b. Mšh" |
+| gmn:P1_3_has_patrilineal_name | "P1.3 has patrilineal name" | E21_Person | String | Patronymic or family name | "ben Moses" |
+| gmn:P2_1_gender | "P2.1 has sex/gender" | E21_Person | AAT Term | Biological sex | aat:300189559 |
+| gmn:P11i_1_earliest_attestation_date | "P11i.1 earliest attestation date" | E21_Person | String | First historical appearance | "1150" |
+| gmn:P11i_2_latest_attestation_date | "P11i.2 latest attestation date" | E21_Person | String | Last historical appearance | "1175" |
+| gmn:P11i_3_has_spouse | "P11i.3 has spouse" | E21_Person | E21_Person | Marital relationship | person/spouse |
+
+---
+
+## Section 6: Common Patterns (Add to Patterns Section)
+
+### Common Data Entry Patterns
+
+#### Pattern 1: Basic Person Record
+
+Use this pattern for simple person records with name and gender:
+
+```json
+{
+  "@id": "person/IDENTIFIER",
+  "@type": "cidoc:E21_Person",
+  "gmn:P1_1_has_name": "FULL NAME",
+  "gmn:P2_1_gender": {
+    "@id": "aat:TERM_ID"
+  }
+}
+```
+
+**Example**:
+```json
+{
+  "@id": "person/p001",
+  "@type": "cidoc:E21_Person",
+  "gmn:P1_1_has_name": "Abraham ben Moses",
+  "gmn:P2_1_gender": {
+    "@id": "aat:300189559"
+  }
+}
+```
+
+#### Pattern 2: Person with Family Relationships
+
+Use this pattern when recording family relationships:
+
+```json
+{
+  "@id": "person/IDENTIFIER",
+  "@type": "cidoc:E21_Person",
+  "gmn:P1_1_has_name": "FULL NAME",
+  "gmn:P2_1_gender": {
+    "@id": "aat:TERM_ID"
+  },
+  "gmn:P97_1_has_father": {
+    "@id": "person/FATHER_ID"
+  },
+  "gmn:P96_1_has_mother": {
+    "@id": "person/MOTHER_ID"
+  },
+  "gmn:P11i_3_has_spouse": {
+    "@id": "person/SPOUSE_ID"
+  }
+}
+```
+
+#### Pattern 3: Person with Social Context
+
+Use this pattern for persons with occupational and social information:
+
+```json
+{
+  "@id": "person/IDENTIFIER",
+  "@type": "cidoc:E21_Person",
+  "gmn:P1_1_has_name": "FULL NAME",
+  "gmn:P2_1_gender": {
+    "@id": "aat:TERM_ID"
+  },
+  "gmn:P107i_3_has_occupation": "OCCUPATION",
+  "gmn:P107i_2_has_social_category": "SOCIAL_GROUP",
+  "gmn:P107i_1_has_regional_provenance": "REGION"
+}
+```
+
+**Example**:
+```json
+{
+  "@id": "person/merchant_jacob",
+  "@type": "cidoc:E21_Person",
+  "gmn:P1_1_has_name": "Jacob ibn David",
+  "gmn:P2_1_gender": {
+    "@id": "aat:300189559"
+  },
+  "gmn:P107i_3_has_occupation": "merchant",
+  "gmn:P107i_2_has_social_category": "Jewish",
+  "gmn:P107i_1_has_regional_provenance": "Fustat"
+}
+```
+
+---
+
+## Section 7: SPARQL Query Examples (Add to Query Section)
+
+### Querying Gender Information
+
+#### Query 1: Find All Male Persons
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX aat: <http://vocab.getty.edu/page/aat/>
+
+SELECT ?person ?name
+WHERE {
+  ?person a cidoc:E21_Person ;
+          cidoc:P2_has_type aat:300189559 ;
+          cidoc:P1_is_identified_by/cidoc:P190_has_symbolic_content ?name .
+}
+```
+
+#### Query 2: Find All Female Persons
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX aat: <http://vocab.getty.edu/page/aat/>
+
+SELECT ?person ?name
+WHERE {
+  ?person a cidoc:E21_Person ;
+          cidoc:P2_has_type aat:300189557 ;
+          cidoc:P1_is_identified_by/cidoc:P190_has_symbolic_content ?name .
+}
+```
+
+#### Query 3: Count Persons by Gender
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX aat: <http://vocab.getty.edu/page/aat/>
+
+SELECT ?genderLabel (COUNT(?person) AS ?count)
+WHERE {
+  ?person a cidoc:E21_Person ;
+          cidoc:P2_has_type ?gender .
+  
+  FILTER(?gender IN (aat:300189559, aat:300189557, aat:300417544))
+  
+  BIND(
+    IF(?gender = aat:300189559, "Male",
+    IF(?gender = aat:300189557, "Female",
+    IF(?gender = aat:300417544, "Intersex", "Unknown")))
+    AS ?genderLabel
+  )
+}
+GROUP BY ?genderLabel
+ORDER BY DESC(?count)
+```
+
+#### Query 4: Find Persons Without Recorded Gender
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX aat: <http://vocab.getty.edu/page/aat/>
+
+SELECT ?person ?name
+WHERE {
+  ?person a cidoc:E21_Person ;
+          cidoc:P1_is_identified_by/cidoc:P190_has_symbolic_content ?name .
+  
+  FILTER NOT EXISTS {
+    ?person cidoc:P2_has_type ?gender .
+    FILTER(?gender IN (aat:300189559, aat:300189557, aat:300417544))
+  }
+}
+```
+
+#### Query 5: Find Married Couples with Gender
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX aat: <http://vocab.getty.edu/page/aat/>
+
+SELECT ?person1 ?name1 ?gender1 ?person2 ?name2 ?gender2
+WHERE {
+  ?person1 a cidoc:E21_Person ;
+           cidoc:P11i_participated_in ?marriage ;
+           cidoc:P1_is_identified_by/cidoc:P190_has_symbolic_content ?name1 ;
+           cidoc:P2_has_type ?gender1 .
+  
+  ?person2 a cidoc:E21_Person ;
+           cidoc:P11i_participated_in ?marriage ;
+           cidoc:P1_is_identified_by/cidoc:P190_has_symbolic_content ?name2 ;
+           cidoc:P2_has_type ?gender2 .
+  
+  ?marriage cidoc:P2_has_type aat:300055971 .
+  
+  FILTER(?person1 != ?person2)
+  FILTER(?gender1 IN (aat:300189559, aat:300189557, aat:300417544))
+  FILTER(?gender2 IN (aat:300189559, aat:300189557, aat:300417544))
+}
+```
+
+---
+
+## Section 8: Troubleshooting (Add to FAQ/Troubleshooting Section)
+
+### Common Issues with Gender Property
+
+#### Issue 1: Validation Error - Invalid Gender Value
+
+**Error Message**: "Property gmn:P2_1_gender has invalid range value"
+
+**Cause**: Using a value other than the three allowed AAT terms
+
+**Solution**: Use only these URIs:
+- `aat:300189559` (male)
+- `aat:300189557` (female)
+- `aat:300417544` (intersex)
+
+**Example Fix**:
+```json
+// ❌ Wrong
+"gmn:P2_1_gender": {"@id": "aat:300411835"}
+
+// ✅ Correct
+"gmn:P2_1_gender": {"@id": "aat:300189559"}
+```
+
+#### Issue 2: Property Not Showing in Output
+
+**Symptom**: Gender property doesn't appear in CIDOC-CRM output
+
+**Possible Causes**:
+1. Transformation script not updated
+2. Property name misspelled
+3. Value format incorrect
+
+**Solution**:
+1. Verify transformation function is implemented
+2. Check property spelling: `gmn:P2_1_gender` (case-sensitive)
+3. Ensure correct JSON format
+
+#### Issue 3: Multiple Gender Values
+
+**Error**: Trying to assign multiple gender values to one person
+
+**Problem**:
+```json
+{
+  "gmn:P2_1_gender": [
+    {"@id": "aat:300189559"},
+    {"@id": "aat:300189557"}
+  ]
+}
+```
+
+**Explanation**: The property is functional (one value per person)
+
+**Solution**: Use only one gender value per person
+
+#### Issue 4: Gender Inferred from Name
+
+**Problem**: Automatically setting gender based on name patterns
+
+**Example**:
+```
+Name: "Abraham" → automatically set to male
+```
+
+**Why This Is Wrong**:
+- Names don't always indicate biological sex
+- Conventions vary by culture and time period
+- May not reflect documentary evidence
+
+**Solution**: Only record gender when explicitly stated in source documents
+
+---
+
+## Section 9: Data Quality Checklist (Add to Quality Assurance Section)
+
+### Gender Data Quality Checklist
+
+Use this checklist when reviewing gender data:
+
+#### Before Data Entry
+
+- [ ] Source document explicitly states or clearly indicates biological sex
+- [ ] Gender term appears in controlled vocabulary (one of three AAT terms)
+- [ ] No inference from names, roles, or other indirect evidence
+- [ ] Cultural and historical context considered
+- [ ] Privacy and sensitivity guidelines followed
+
+#### During Data Entry
+
+- [ ] Correct AAT URI used (aat:300189559, aat:300189557, or aat:300417544)
+- [ ] URI format is correct (includes namespace prefix)
+- [ ] Only one gender value per person
+- [ ] Editorial note cites source document
+- [ ] No text labels used (must be URIs)
+
+#### After Data Entry
+
+- [ ] Property validates against ontology
+- [ ] Transformation produces correct CIDOC-CRM output
+- [ ] Gender appears as E55_Type in output
+- [ ] Original gmn:P2_1_gender removed from output
+- [ ] Multiple types handled correctly if present
+
+#### Data Review
+
+- [ ] Spot check random records
+- [ ] Verify source citations are present
+- [ ] Check for consistency across similar records
+- [ ] Review any uncertain or ambiguous cases
+- [ ] Validate against AAT vocabulary
+
+---
+
+## Section 10: Historical Context Notes (Add to Background Section)
+
+### Understanding Gender in Historical Documents
+
+#### Historical Documentation Practices
+
+Historical documents from the Geniza and similar sources often:
+
+1. **Use gendered language**: Hebrew and Arabic use grammatical gender
+2. **Reference social roles**: Describe persons by occupation or family role
+3. **Follow naming conventions**: Patronymics and other naming patterns
+4. **Reflect legal contexts**: Marriage contracts, inheritance, business dealings
+
+#### Interpretation Guidelines
+
+When interpreting historical documents for gender information:
+
+**Consider**:
+- Explicit statements about biological sex
+- Legal contexts requiring sex specification
+- Family relationships that indicate sex
+- Documentary formulas that specify sex
+
+**Avoid**:
+- Assumptions based on names alone
+- Inference from occupational roles
+- Modern categories applied anachronistically
+- Speculation without documentary evidence
+
+#### Cultural Sensitivity
+
+Recording gender information requires:
+
+1. **Historical accuracy**: Record what documents state
+2. **Cultural awareness**: Respect historical contexts
+3. **Privacy considerations**: Be sensitive to personal information
+4. **Scholarly rigor**: Cite sources and evidence
+
+#### Research Applications
+
+Gender information in the database supports:
+
+- **Prosopographical research**: Identifying specific individuals
+- **Family reconstitution**: Understanding kinship networks
+- **Social history**: Analyzing gender roles and patterns
+- **Legal studies**: Understanding gender in legal contexts
+- **Demographic analysis**: Population structure and characteristics
+
+---
+
+## Section 11: Related Resources (Add to References Section)
+
+### Getty AAT Gender Terms
+
+**Male (aat:300189559)**
+- Full URI: http://vocab.getty.edu/page/aat/300189559
+- Getty Page: http://vocab.getty.edu/page/aat/300189559
+- Scope: Biological sex characteristic of producing small, typically mobile gametes
+
+**Female (aat:300189557)**
+- Full URI: http://vocab.getty.edu/page/aat/300189557
+- Getty Page: http://vocab.getty.edu/page/aat/300189557
+- Scope: Biological sex characteristic of producing large, typically immobile gametes
+
+**Intersex (aat:300417544)**
+- Full URI: http://vocab.getty.edu/page/aat/300417544
+- Getty Page: http://vocab.getty.edu/page/aat/300417544
+- Scope: People born with reproductive or sexual anatomy that doesn't fit typical definitions
+
+### CIDOC-CRM Resources
+
+**P2_has_type**
+- CIDOC-CRM Documentation: http://www.cidoc-crm.org/Property/P2-has-type/version-7.1.3
+- Domain: E1_CRM_Entity
+- Range: E55_Type
+- Purpose: Allows sub-typing of CRM entities through terminological hierarchies
+
+**E55_Type**
+- CIDOC-CRM Documentation: http://www.cidoc-crm.org/Entity/E55-Type/version-7.1.3
+- Subclass of: E28_Conceptual_Object
+- Purpose: Comprises concepts denoted by terms from thesauri and controlled vocabularies
+
+### External Standards
+
+- Getty Art & Architecture Thesaurus: http://vocab.getty.edu/
+- CIDOC Conceptual Reference Model: http://www.cidoc-crm.org/
+- W3C RDF Specification: https://www.w3.org/RDF/
+- JSON-LD Specification: https://json-ld.org/
+
+---
+
+## Section 12: Implementation Summary (Add to Technical Notes)
+
+### Gender Property Implementation
+
+**Ontology Status**: ✅ Complete
+- Property defined in gmn_ontology.ttl (line 223)
+- Controlled vocabulary specified
+- CIDOC-CRM alignment established
+- Created: 2025-10-16
+
+**Transformation Status**: ⚠️ Requires Implementation
+- Transformation function: `transform_p2_1_gender()`
+- Location: After line 2486 in gmn_to_cidoc_transform.py
+- Integration: Add function call in `transform_item()`
+- Testing: Comprehensive test suite available
+
+**Transformation Pattern**:
+```
+gmn:P2_1_gender (AAT URI) → cidoc:P2_has_type (E55_Type instance)
+```
+
+**Files Modified**:
+1. ❌ gmn_ontology.ttl - No changes needed (already complete)
+2. ✅ gmn_to_cidoc_transform.py - Add transformation function
+3. ✅ Project documentation - Add usage examples and guidelines
+
+**Testing Checklist**:
+- [ ] Male gender (aat:300189559)
+- [ ] Female gender (aat:300189557)
+- [ ] Intersex (aat:300417544)
+- [ ] Missing gender (property absent)
+- [ ] Multiple types (gender + occupation)
+- [ ] String format URIs
+- [ ] Object format URIs
+
+---
+
+## Copy Instructions
+
+1. **For Property Reference**: Copy Section 1 to your main property documentation
+2. **For Examples**: Copy Section 2 to your examples documentation
+3. **For Guidelines**: Copy Section 3 to your data entry guidelines
+4. **For Technical Docs**: Copy Section 4 to transformation documentation
+5. **For Quick Reference**: Add Section 5 table to quick reference guides
+6. **For Patterns**: Copy Section 6 to common patterns documentation
+7. **For Queries**: Copy Section 7 to SPARQL query examples
+8. **For Troubleshooting**: Copy Section 8 to FAQ or troubleshooting guide
+9. **For Quality**: Copy Section 9 to quality assurance procedures
+10. **For Background**: Copy Section 10 to historical context documentation
+11. **For References**: Copy Section 11 to external resources section
+12. **For Technical Notes**: Copy Section 12 to implementation tracking
+
+---
+
+*These documentation additions follow GMN project standards and provide comprehensive guidance for using the gmn:P2_1_gender property.*
