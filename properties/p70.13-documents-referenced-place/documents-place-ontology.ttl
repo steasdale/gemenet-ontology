@@ -1,0 +1,101 @@
+# GMN Ontology: P70.13 Documents Referenced Place
+# TTL Additions for gmn_ontology.ttl
+#
+# INSTRUCTIONS:
+# 1. Open gmn_ontology.ttl
+# 2. Locate the P70.12 property definition
+# 3. Copy the entire block below (between the cut lines)
+# 4. Paste immediately after P70.12 definition
+# 5. Validate TTL syntax
+# 6. Save and commit
+
+# ==================== CUT HERE - START ====================
+
+# Property: P70.13 documents referenced place
+gmn:P70_13_documents_referenced_place
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.13 documents referenced place"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with any place referenced or mentioned in the document text. This captures places that appear in the contract narrative such as neighboring properties used for boundary descriptions, landmarks referenced for location, districts or parishes mentioned, or any other geographic locations named in the contract text. Unlike P94i_3_has_place_of_enactment which indicates where the contract was created, this property represents places mentioned within the contract content. Represents the direct CIDOC-CRM relationship: E31_Document > P67_refers_to > E53_Place. This acknowledges that the place is textually present in the document without implying it is the location of the transaction or the contract's creation."@en ;
+    rdfs:subPropertyOf cidoc:P67_refers_to ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E53_Place ;
+    dcterms:created "2025-10-27"^^xsd:date ;
+    rdfs:seeAlso cidoc:P67_refers_to .
+
+# ==================== CUT HERE - END ====================
+
+
+# ALTERNATIVE FORMAT: Compact Turtle (if you prefer minimal formatting)
+# Use this version if your ontology uses more compact style
+
+# ==================== ALTERNATIVE - START ====================
+
+gmn:P70_13_documents_referenced_place a owl:ObjectProperty , rdf:Property ;
+    rdfs:label "P70.13 documents referenced place"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with any place referenced or mentioned in the document text. This captures places that appear in the contract narrative such as neighboring properties used for boundary descriptions, landmarks referenced for location, districts or parishes mentioned, or any other geographic locations named in the contract text. Unlike P94i_3_has_place_of_enactment which indicates where the contract was created, this property represents places mentioned within the contract content. Represents the direct CIDOC-CRM relationship: E31_Document > P67_refers_to > E53_Place. This acknowledges that the place is textually present in the document without implying it is the location of the transaction or the contract's creation."@en ;
+    rdfs:subPropertyOf cidoc:P67_refers_to ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E53_Place ;
+    dcterms:created "2025-10-27"^^xsd:date ;
+    rdfs:seeAlso cidoc:P67_refers_to .
+
+# ==================== ALTERNATIVE - END ====================
+
+
+# VALIDATION CHECKLIST:
+# [ ] Property URI is gmn:P70_13_documents_referenced_place
+# [ ] Label is "P70.13 documents referenced place"@en
+# [ ] rdfs:comment is in English and ends with @en
+# [ ] rdfs:subPropertyOf is cidoc:P67_refers_to
+# [ ] rdfs:domain is gmn:E31_2_Sales_Contract
+# [ ] rdfs:range is cidoc:E53_Place
+# [ ] dcterms:created has correct date and ^^xsd:date type
+# [ ] rdfs:seeAlso references cidoc:P67_refers_to
+# [ ] All lines end with semicolon except last (period)
+# [ ] No syntax errors when parsed
+
+
+# PLACEMENT CONTEXT:
+# This property should appear after P70.12 and before P70.14 in your ontology file.
+#
+# Before:
+# gmn:P70_12_documents_payment_through_organization
+#     ...properties...
+#     rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by .
+#
+# [INSERT P70.13 HERE]
+#
+# After:
+# gmn:P70_14_documents_referenced_object
+#     ...properties...
+
+
+# RELATED PREFIXES (ensure these are declared in your ontology header):
+# @prefix gmn: <http://www.genoamemerchants.net/ontology#> .
+# @prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+# @prefix owl: <http://www.w3.org/2002/07/owl#> .
+# @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+# @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+# @prefix dcterms: <http://purl.org/dc/terms/> .
+
+
+# TESTING THE ADDITION:
+# After adding, validate with:
+#   rapper -i turtle gmn_ontology.ttl -o ntriples > /dev/null
+# 
+# Or use online validator:
+#   http://ttl.summerofcode.be/
+
+
+# COMMIT MESSAGE TEMPLATE:
+# Add P70.13 documents_referenced_place property
+# 
+# - Captures places mentioned in contract text
+# - Uses P67_refers_to for direct reference relationship
+# - Distinct from P94i_3 place of contract creation
+# - Range: E53_Place
+# - Domain: E31_2_Sales_Contract
+
+
+# END OF FILE

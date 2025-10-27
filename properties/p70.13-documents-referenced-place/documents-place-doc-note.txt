@@ -1,0 +1,497 @@
+GMN ONTOLOGY DOCUMENTATION - ADDITIONS FOR P70.13
+================================================================
+
+INSTRUCTIONS:
+This file contains text, examples, and tables to add to your main
+documentation file. Copy sections as needed and adapt to your
+documentation style.
+
+================================================================
+SECTION 1: PROPERTY DEFINITION
+================================================================
+
+Add this section after P70.12 (documents payment through organization)
+
+---
+
+### P70.13 documents referenced place
+
+**Property URI**: `gmn:P70_13_documents_referenced_place`
+
+**Label**: "P70.13 documents referenced place" (English)
+
+**Domain**: `gmn:E31_2_Sales_Contract`
+
+**Range**: `cidoc:E53_Place`
+
+**Superproperty**: `cidoc:P67_refers_to`
+
+**Definition**: Simplified property for associating a sales contract with any place referenced or mentioned in the document text.
+
+**CIDOC-CRM Path**:
+```
+E31_Document > P67_refers_to > E53_Place
+```
+
+**Inverse**: N/A
+
+**Quantification**: Many to many (0,n:0,n)
+
+**Scope Note**: This property captures places that appear in the contract narrative such as neighboring properties used for boundary descriptions, landmarks referenced for location, districts or parishes mentioned, or any other geographic locations named in the contract text. Unlike P94i_3_has_place_of_enactment which indicates where the contract was created, this property represents places mentioned within the contract content. The relationship is direct via P67_refers_to, acknowledging that the place is textually present in the document without implying it is the location of the transaction or the contract's creation.
+
+**Examples**:
+- Parish of San Polo - mentioned as the location context
+- Rialto Bridge - referenced as a nearby landmark
+- Grand Canal - used in boundary description
+- Property of Giovanni Corner - neighboring property in boundaries
+- Campo Santa Maria - referenced for orientation
+
+---
+
+================================================================
+SECTION 2: TRANSFORMATION SPECIFICATION
+================================================================
+
+Add to transformation documentation section:
+
+**P70.13 documents referenced place → P67 refers to**
+
+Transformation type: Direct property mapping with type inference
+
+Input property: `gmn:P70_13_documents_referenced_place`
+Output property: `cidoc:P67_refers_to`
+Created nodes: E53_Place (type inferred if not present)
+
+**GMN Structure**:
+```json
+{
+  "gmn:P70_13_documents_referenced_place": [
+    "place:uri1",
+    "place:uri2"
+  ]
+}
+```
+
+**CIDOC-CRM Structure**:
+```json
+{
+  "cidoc:P67_refers_to": [
+    {"@id": "place:uri1", "@type": "cidoc:E53_Place"},
+    {"@id": "place:uri2", "@type": "cidoc:E53_Place"}
+  ]
+}
+```
+
+**Transformation Logic**:
+1. Extract place reference(s) from GMN property
+2. Initialize or locate existing P67_refers_to array
+3. For each place:
+   - If URI string: wrap in object with @id and E53_Place type
+   - If object: ensure it has E53_Place type
+4. Append to P67_refers_to array
+5. Remove GMN property
+
+---
+
+================================================================
+SECTION 3: USAGE EXAMPLES
+================================================================
+
+Add to examples section:
+
+**Example 1: House Sale with Boundary Description**
+
+A Venetian contract from 1458 describing a house bounded by neighboring properties:
+
+```json
+{
+  "@id": "contract:ASV_001_1458",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "gmn:P1_1_has_name": "Sale of house in San Polo, 1458",
+  "gmn:P70_13_documents_referenced_place": [
+    {
+      "@id": "place:property_giovanni_corner",
+      "rdfs:label": "Property of Giovanni de Corner"
+    },
+    {
+      "@id": "place:rio_canal",
+      "rdfs:label": "Rio Canal"
+    },
+    {
+      "@id": "place:calle_publica",
+      "rdfs:label": "Public Street"
+    },
+    {
+      "@id": "place:campo_santa_maria",
+      "rdfs:label": "Campo Santa Maria"
+    }
+  ]
+}
+```
+
+**Example 2: Commercial Property Near Landmark**
+
+A warehouse sale referencing the Rialto area:
+
+```json
+{
+  "@id": "contract:1460_warehouse",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "gmn:P1_1_has_name": "Sale of warehouse near Rialto, 1460",
+  "gmn:P70_13_documents_referenced_place": [
+    {
+      "@id": "place:rialto_bridge",
+      "rdfs:label": "Rialto Bridge",
+      "cidoc:P2_has_type": "http://vocab.getty.edu/aat/300008193"
+    },
+    {
+      "@id": "place:district_san_giovanni_grisostomo",
+      "rdfs:label": "District of San Giovanni Grisostomo",
+      "cidoc:P2_has_type": "http://vocab.getty.edu/aat/300000745"
+    }
+  ]
+}
+```
+
+**Example 3: Simple Parish Reference**
+
+A minimal example referencing only the parish:
+
+```json
+{
+  "@id": "contract:1462_simple",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "gmn:P70_13_documents_referenced_place": "place:parish_san_polo"
+}
+```
+
+---
+
+================================================================
+SECTION 4: COMPARISON TABLE
+================================================================
+
+Add to property comparison section:
+
+**Place-Related Properties Comparison**
+
+| Property | Domain | Purpose | CIDOC Path | Typical Values |
+|----------|--------|---------|------------|----------------|
+| **P70.13** documents_referenced_place | Sales Contract | Places mentioned in text | P67_refers_to → E53_Place | Landmarks, boundaries, districts |
+| **P94i.3** has_place_of_enactment | Any Document | Where contract created | P94i → E65_Creation → P7_took_place_at | Notary office, public building |
+| **P70.3** documents_transfer_of | Sales Contract | Property being sold | P70 → E8_Acquisition → P24_transferred | The transaction subject property |
+
+**When to Use Which Property:**
+
+- Use **P70.13** for places that appear in the contract narrative
+  - "bounded on the north by..."
+  - "near the Rialto bridge..."
+  - "in the parish of San Polo..."
+
+- Use **P94i.3** for where the contract was written
+  - "enacted in the notary office of Marco Bianchi"
+  - "drawn up at the Doge's Palace"
+
+- Use **P70.3** for the property being transferred
+  - The actual house, land, or commercial space being sold
+  - This property has its own location (separate from references)
+
+---
+
+================================================================
+SECTION 5: DATA ENTRY GUIDELINES
+================================================================
+
+Add to data entry manual:
+
+**Recording Referenced Places (P70.13)**
+
+**When to Use**: Record a place in P70.13 when it is explicitly mentioned in the contract text, typically in:
+- Boundary descriptions ("bounded by...")
+- Locational context ("situated near...")
+- Administrative divisions ("in the parish of...")
+- Landmark references ("facing the...")
+
+**How to Record**:
+
+1. **Simple Reference** (just URI):
+   ```
+   "gmn:P70_13_documents_referenced_place": "place:rialto"
+   ```
+
+2. **With Label** (recommended):
+   ```
+   "gmn:P70_13_documents_referenced_place": {
+     "@id": "place:rialto",
+     "rdfs:label": "Rialto Bridge"
+   }
+   ```
+
+3. **With Full Details** (best practice):
+   ```
+   "gmn:P70_13_documents_referenced_place": {
+     "@id": "place:church_san_giacomo",
+     "rdfs:label": "Church of San Giacomo di Rialto",
+     "cidoc:P2_has_type": "http://vocab.getty.edu/aat/300007466"
+   }
+   ```
+
+**Multiple Places**: Use array format:
+```
+"gmn:P70_13_documents_referenced_place": [
+  "place:first",
+  "place:second",
+  "place:third"
+]
+```
+
+**Do NOT Record**:
+- Places only implied but not explicitly named
+- The notary's office (use P94i.3 instead)
+- The sold property's location (that's within P70.3)
+- Places where parties reside (use person properties)
+
+**Quality Tips**:
+- Always provide a human-readable label
+- Use Getty AAT terms for place types when possible
+- Link to authority files (TGN, Wikidata) if known
+- Be consistent with place URI patterns
+- Record at the specificity used in the original text
+
+---
+
+================================================================
+SECTION 6: PROPERTY INDEX UPDATE
+================================================================
+
+Add this row to your property index table:
+
+| Property | Label | Domain | Range | Superproperty | CIDOC Path |
+|----------|-------|--------|-------|---------------|------------|
+| gmn:P70_13_documents_referenced_place | P70.13 documents referenced place | E31_2_Sales_Contract | E53_Place | P67_refers_to | E31 > P67 > E53 |
+
+---
+
+================================================================
+SECTION 7: SPARQL QUERY EXAMPLES
+================================================================
+
+Add to query cookbook:
+
+**Find contracts referencing a specific place:**
+```sparql
+PREFIX gmn: <http://www.genoamemerchants.net/ontology#>
+
+SELECT ?contract ?name
+WHERE {
+  ?contract a gmn:E31_2_Sales_Contract ;
+            gmn:P70_13_documents_referenced_place <place:rialto_bridge> ;
+            gmn:P1_1_has_name ?name .
+}
+```
+
+**Count referenced places per contract:**
+```sparql
+PREFIX gmn: <http://www.genoamemerchants.net/ontology#>
+
+SELECT ?contract (COUNT(?place) AS ?placeCount)
+WHERE {
+  ?contract a gmn:E31_2_Sales_Contract ;
+            gmn:P70_13_documents_referenced_place ?place .
+}
+GROUP BY ?contract
+ORDER BY DESC(?placeCount)
+```
+
+**Find most frequently referenced places:**
+```sparql
+PREFIX gmn: <http://www.genoamemerchants.net/ontology#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?place ?label (COUNT(?contract) AS ?refCount)
+WHERE {
+  ?contract a gmn:E31_2_Sales_Contract ;
+            gmn:P70_13_documents_referenced_place ?place .
+  OPTIONAL { ?place rdfs:label ?label }
+}
+GROUP BY ?place ?label
+ORDER BY DESC(?refCount)
+LIMIT 20
+```
+
+**Find contracts with boundary descriptions (4+ places):**
+```sparql
+PREFIX gmn: <http://www.genoamemerchants.net/ontology#>
+
+SELECT ?contract ?name (COUNT(?place) AS ?placeCount)
+WHERE {
+  ?contract a gmn:E31_2_Sales_Contract ;
+            gmn:P70_13_documents_referenced_place ?place ;
+            gmn:P1_1_has_name ?name .
+}
+GROUP BY ?contract ?name
+HAVING (COUNT(?place) >= 4)
+ORDER BY DESC(?placeCount)
+```
+
+---
+
+================================================================
+SECTION 8: HISTORICAL CONTEXT
+================================================================
+
+Add to domain knowledge section:
+
+**Place References in Medieval Contracts**
+
+Venetian notarial contracts typically referenced places in several ways:
+
+**1. Boundary Descriptions (Confronti)**
+The most common use of place references was in describing property boundaries using the formula "cui coherent" (which is bounded by):
+- "ab uno latere" - on one side
+- "ab alio latere" - on the other side  
+- "a tertio" - on the third
+- "a quarto" - on the fourth
+
+These boundaries typically referenced:
+- Adjacent properties (often named by owner)
+- Public ways (streets, canals, squares)
+- Landmarks (churches, bridges, towers)
+
+**2. Locational Context**
+Contracts placed properties within administrative divisions:
+- Confinio (parish/district) - "in confinio Sancti Pauli"
+- Sestiere (sixth) - one of Venice's six districts
+- Contrada - neighborhood or quarter
+
+**3. Landmarks and Orientation**
+Well-known locations provided orientation:
+- Markets (Rialto, Erberia)
+- Churches (San Marco, San Giacomo)
+- Bridges (Ponte di Rialto)
+- Canals (Grand Canal, Rio di...)
+
+**Recording Principle**: 
+Record place references exactly as they appear in the original text, preserving the medieval topographical perspective. Modern researchers can then analyze these references to understand historical geography and property networks.
+
+---
+
+================================================================
+SECTION 9: GETTY AAT TERMS FOR PLACES
+================================================================
+
+Add to controlled vocabulary section:
+
+**Recommended AAT Terms for Place Types**
+
+When recording place types using cidoc:P2_has_type, use these Getty AAT terms:
+
+| Place Type | AAT URI | AAT ID |
+|------------|---------|--------|
+| parishes | http://vocab.getty.edu/aat/300000745 | 300000745 |
+| churches | http://vocab.getty.edu/aat/300007466 | 300007466 |
+| bridges | http://vocab.getty.edu/aat/300008193 | 300008193 |
+| canals | http://vocab.getty.edu/aat/300006075 | 300006075 |
+| streets | http://vocab.getty.edu/aat/300008217 | 300008217 |
+| squares | http://vocab.getty.edu/aat/300008247 | 300008247 |
+| markets | http://vocab.getty.edu/aat/300112347 | 300112347 |
+| neighborhoods | http://vocab.getty.edu/aat/300131513 | 300131513 |
+| districts | http://vocab.getty.edu/aat/300000745 | 300000745 |
+| buildings | http://vocab.getty.edu/aat/300004789 | 300004789 |
+
+Example usage:
+```json
+{
+  "@id": "place:rialto_bridge",
+  "cidoc:P2_has_type": "http://vocab.getty.edu/aat/300008193",
+  "rdfs:label": "Rialto Bridge"
+}
+```
+
+---
+
+================================================================
+SECTION 10: QUICK REFERENCE CARD
+================================================================
+
+Add to quick reference section or as sidebar:
+
+**P70.13 QUICK REFERENCE**
+
+**What it is:**
+Places mentioned in contract text
+
+**What it's NOT:**
+- Where contract was created (use P94i.3)
+- The property being sold (use P70.3)
+- Where people live (use person properties)
+
+**CIDOC Mapping:**
+P67_refers_to → E53_Place
+
+**Typical Uses:**
+- Boundary descriptions
+- Landmark references
+- Districts/parishes
+- Geographic context
+
+**Data Entry:**
+```json
+"gmn:P70_13_documents_referenced_place": [
+  "place:uri"  // or
+  {"@id": "place:uri", "rdfs:label": "Name"}
+]
+```
+
+**Remember:**
+- Record only explicitly mentioned places
+- Use array for multiple places
+- Add labels for clarity
+- Link to AAT for place types
+
+---
+
+================================================================
+SECTION 11: TROUBLESHOOTING
+================================================================
+
+Add to FAQ or troubleshooting section:
+
+**Common Issues with P70.13**
+
+**Q: Should I record the notary's office here?**
+A: No, use P94i_3_has_place_of_enactment for where the contract was created.
+
+**Q: Should I record where the sold property is located?**
+A: No, the property location should be encoded within the property object (P70.3). Use P70.13 only for places mentioned as references, not the transaction subject itself.
+
+**Q: What if a place is mentioned multiple times in the contract?**
+A: Record it only once. P70.13 indicates the place is referenced, not how many times.
+
+**Q: Should I record neighboring properties?**
+A: Yes, if they're explicitly named in boundary descriptions. These are legitimate place references.
+
+**Q: What about places that are implied but not named?**
+A: Only record explicitly named places. If the text says "near the market" but doesn't name which market, don't create a place reference.
+
+**Q: Can I combine this with other P67 references (like persons)?**
+A: Yes, P67_refers_to can include multiple entity types. The transformation appends place references to any existing P67 array.
+
+**Q: What if I don't have a URI for a place yet?**
+A: Create one following your project's URI pattern. Consider linking to Getty TGN or Wikidata later.
+
+---
+
+================================================================
+END OF DOCUMENTATION ADDITIONS
+================================================================
+
+IMPLEMENTATION NOTES:
+- Review all sections for consistency with your documentation style
+- Adjust examples to match your project's data patterns
+- Update URIs to match your namespace conventions
+- Add cross-references to related documentation sections
+- Consider adding diagrams for complex relationships
+
+VERSION: 1.0
+DATE: 2025-10-27
