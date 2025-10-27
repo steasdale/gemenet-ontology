@@ -1,0 +1,238 @@
+# TTL Additions for P70.6 Documents Seller's Guarantor
+# Ready-to-copy snippets for gmn_ontology.ttl
+
+# =============================================================================
+# SECTION 1: MAIN PROPERTY DEFINITION
+# =============================================================================
+# Add this to the sales contract properties section (P70.x properties)
+# Location: After P70.5 (documents buyer's procurator) and before P70.7 (documents buyer's guarantor)
+
+# Property: P70.6 documents seller's guarantor
+gmn:P70_6_documents_sellers_guarantor
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.6 documents seller's guarantor"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with the person named as the guarantor for the seller. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P9_consists_of > E7_Activity > P14_carried_out_by > E21_Person (guarantor), with P17_was_motivated_by linking to the seller (E21_Person). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The transformation creates an E7_Activity node that explicitly links the guarantor to the seller they guarantee via P17_was_motivated_by. Guarantors provide security for the transaction by promising to fulfill obligations if the principal defaults."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by, cidoc:P17_was_motivated_by .
+
+# =============================================================================
+# SECTION 2: PROPERTY HIERARCHY (VERIFICATION)
+# =============================================================================
+# Verify that the super-property chain is properly defined in your ontology:
+
+# cidoc:P70_documents should be defined (usually imported from CIDOC-CRM)
+# If not imported, you may need to add:
+# 
+# cidoc:P70_documents
+#     a owl:ObjectProperty ;
+#     rdfs:domain cidoc:E31_Document ;
+#     rdfs:range cidoc:E1_CRM_Entity ;
+#     rdfs:label "documents"@en .
+
+# =============================================================================
+# SECTION 3: RELATED DOMAIN AND RANGE CLASSES (VERIFICATION)
+# =============================================================================
+# Ensure these classes are defined in your ontology:
+
+# Class: E31_2_Sales_Contract (should already exist)
+# gmn:E31_2_Sales_Contract
+#     a owl:Class ;
+#     rdfs:subClassOf cidoc:E31_Document ;
+#     rdfs:label "E31.2 Sales Contract"@en .
+
+# Class: E21_Person (imported from CIDOC-CRM)
+# cidoc:E21_Person
+#     a owl:Class ;
+#     rdfs:subClassOf cidoc:E39_Actor ;
+#     rdfs:label "E21 Person"@en .
+
+# =============================================================================
+# SECTION 4: TRANSFORMATION TARGET PROPERTIES (VERIFICATION)
+# =============================================================================
+# The transformation uses these CIDOC-CRM properties. Verify they are available:
+
+# cidoc:P9_consists_of
+#     a owl:ObjectProperty ;
+#     rdfs:domain cidoc:E4_Period ;
+#     rdfs:range cidoc:E4_Period ;
+#     rdfs:label "consists of"@en .
+
+# cidoc:P14_carried_out_by
+#     a owl:ObjectProperty ;
+#     rdfs:domain cidoc:E7_Activity ;
+#     rdfs:range cidoc:E39_Actor ;
+#     rdfs:label "carried out by"@en .
+
+# cidoc:P14.1_in_the_role_of
+#     a owl:ObjectProperty ;
+#     rdfs:domain cidoc:E7_Activity ;
+#     rdfs:range cidoc:E55_Type ;
+#     rdfs:label "in the role of"@en .
+
+# cidoc:P17_was_motivated_by
+#     a owl:ObjectProperty ;
+#     rdfs:domain cidoc:E7_Activity ;
+#     rdfs:range cidoc:E1_CRM_Entity ;
+#     rdfs:label "was motivated by"@en .
+
+# cidoc:P23_transferred_title_from
+#     a owl:ObjectProperty ;
+#     rdfs:domain cidoc:E8_Acquisition ;
+#     rdfs:range cidoc:E39_Actor ;
+#     rdfs:label "transferred title from"@en .
+
+# =============================================================================
+# SECTION 5: COMPLEMENTARY PERSON-TO-PERSON PROPERTY (OPTIONAL)
+# =============================================================================
+# If you want a direct person-to-person relationship for simpler queries:
+
+# Property: is guaranteed by
+# gmn:is_guaranteed_by
+#     a owl:ObjectProperty ;
+#     a rdf:Property ;
+#     rdfs:label "is guaranteed by"@en ;
+#     rdfs:comment "Direct relationship linking a person (principal) to another person (guarantor) who provides security for their obligations in a transaction. This property provides a simple semantic link between principals and their guarantors. When used in the context of sales contracts, this relationship is documented within the contract and elaborated through E7_Activity nodes in the acquisition event structure. This property enables Omeka-S annotations to directly connect principals with their guarantors."@en ;
+#     rdfs:domain cidoc:E21_Person ;
+#     rdfs:range cidoc:E21_Person ;
+#     dcterms:created "2025-10-17"^^xsd:date .
+
+# =============================================================================
+# SECTION 6: EXTERNAL VOCABULARY REFERENCES
+# =============================================================================
+# The transformation uses the Getty AAT concept for "guarantors":
+# URI: http://vocab.getty.edu/aat/300379835
+# 
+# This is referenced in P14.1_in_the_role_of but doesn't need to be 
+# defined in your ontology. It's an external reference.
+# 
+# If you want to document it:
+# <http://vocab.getty.edu/aat/300379835>
+#     a cidoc:E55_Type ;
+#     rdfs:label "guarantors"@en ;
+#     skos:inScheme <http://vocab.getty.edu/aat/> .
+
+# =============================================================================
+# SECTION 7: EXAMPLE USAGE IN DATA
+# =============================================================================
+# Example of how the property appears in your data before transformation:
+
+# @prefix ex: <http://example.org/> .
+# @prefix gmn: <http://w3id.org/gmn/> .
+# @prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+# 
+# ex:contract_1455_03_15 a gmn:E31_2_Sales_Contract ;
+#     gmn:P70_1_documents_seller ex:person/giovanni_rossi ;
+#     gmn:P70_2_documents_buyer ex:person/pietro_lombardi ;
+#     gmn:P70_6_documents_sellers_guarantor ex:person/marco_bianchi .
+# 
+# ex:person/giovanni_rossi a cidoc:E21_Person ;
+#     rdfs:label "Giovanni Rossi" .
+# 
+# ex:person/marco_bianchi a cidoc:E21_Person ;
+#     rdfs:label "Marco Bianchi" .
+
+# =============================================================================
+# SECTION 8: INTEGRATION WITH EXISTING PROPERTIES
+# =============================================================================
+# This property fits within the P70.x family of sales contract properties.
+# Ensure consistency with:
+#
+# - P70.1 documents seller (defines the seller)
+# - P70.2 documents buyer (defines the buyer)
+# - P70.4 documents seller's procurator (seller's legal representative)
+# - P70.5 documents buyer's procurator (buyer's legal representative)
+# - P70.6 documents seller's guarantor (THIS PROPERTY)
+# - P70.7 documents buyer's guarantor (buyer's guarantor)
+# - P70.8 documents broker (transaction facilitator)
+
+# =============================================================================
+# SECTION 9: PROPERTY METADATA (OPTIONAL ENHANCEMENTS)
+# =============================================================================
+# Additional metadata you might want to add:
+
+# gmn:P70_6_documents_sellers_guarantor
+#     dcterms:description "Links a sales contract to the guarantor of the seller"@en ;
+#     dcterms:modified "2025-10-27"^^xsd:date ;
+#     rdfs:isDefinedBy <http://w3id.org/gmn/> ;
+#     skos:example "ex:contract_001 gmn:P70_6_documents_sellers_guarantor ex:guarantor_001" ;
+#     skos:scopeNote "Use this property to record guarantors who provide security for the seller's obligations. The guarantor may be liable if the seller defaults on their contractual commitments."@en ;
+#     vs:term_status "stable" .
+
+# =============================================================================
+# SECTION 10: OWL AXIOMS (ADVANCED, OPTIONAL)
+# =============================================================================
+# If you want to add formal OWL axioms:
+
+# Property characteristics:
+# - Not functional (a seller can have multiple guarantors)
+# - Not inverse functional (a guarantor can guarantee multiple sellers)
+# - Not transitive
+# - Not symmetric
+# - Not reflexive
+
+# gmn:P70_6_documents_sellers_guarantor
+#     owl:propertyDisjointWith gmn:P70_7_documents_buyers_guarantor ;
+#     # A guarantor cannot guarantee both buyer and seller in same contract
+#     # (though this could be relaxed depending on your domain rules)
+
+# =============================================================================
+# SECTION 11: COMPATIBILITY NOTES
+# =============================================================================
+# Compatibility with other standards:
+#
+# - CIDOC-CRM 7.1.1: Fully compatible via P70/P9/P14/P17 chain
+# - RDF 1.1: Standard RDF property definition
+# - OWL 2: Valid OWL ObjectProperty
+# - SPARQL: Queryable via standard SPARQL patterns
+# - JSON-LD: Serializable in JSON-LD context
+#
+# Import requirements:
+# - CIDOC-CRM ontology (cidoc: namespace)
+# - Dublin Core Terms (dcterms: namespace)
+# - RDF/RDFS/OWL standards
+
+# =============================================================================
+# SECTION 12: VALIDATION RULES (SHACL, OPTIONAL)
+# =============================================================================
+# If using SHACL validation, you might add:
+
+# gmn:SellersGuarantorShape
+#     a sh:PropertyShape ;
+#     sh:path gmn:P70_6_documents_sellers_guarantor ;
+#     sh:class cidoc:E21_Person ;
+#     sh:nodeKind sh:IRI ;
+#     sh:name "Seller's Guarantor" ;
+#     sh:description "The person who guarantees the seller's obligations" .
+
+# =============================================================================
+# SECTION 13: IMPLEMENTATION CHECKLIST
+# =============================================================================
+# Before adding this property to production:
+# 
+# [ ] Verify namespace prefixes are defined
+# [ ] Check that super-properties exist (cidoc:P70_documents)
+# [ ] Ensure domain class exists (gmn:E31_2_Sales_Contract)
+# [ ] Ensure range class exists (cidoc:E21_Person)
+# [ ] Validate TTL syntax with rapper or similar tool
+# [ ] Update transformation script (see documents-sellers-guarantor-transform.py)
+# [ ] Add property to documentation
+# [ ] Create test data
+# [ ] Run integration tests
+# [ ] Update UI forms if needed
+# [ ] Train data entry staff
+
+# =============================================================================
+# END OF TTL ADDITIONS
+# =============================================================================
+
+# To add this property to your ontology:
+# 1. Copy Section 1 (main property definition) into gmn_ontology.ttl
+# 2. Place it with other P70.x properties (after P70.5, before P70.7)
+# 3. Verify all referenced classes and properties exist
+# 4. Validate syntax with: rapper -i turtle -o turtle gmn_ontology.ttl
+# 5. Commit changes to version control
+# 6. Update transformation script (see documents-sellers-guarantor-transform.py)

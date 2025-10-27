@@ -1,0 +1,482 @@
+# Document Additions for P70.6 Documents Seller's Guarantor
+# Examples and tables to add to your main documentation file
+
+# =============================================================================
+# SECTION 1: PROPERTY TABLE ENTRY
+# =============================================================================
+# Add this row to your property reference table:
+
+| Property ID | Label | Domain | Range | Description |
+|------------|-------|--------|-------|-------------|
+| P70.6 | documents seller's guarantor | E31_2_Sales_Contract | E21_Person | Links contract to person who guarantees seller's obligations |
+
+# Or in a more detailed format:
+
+| Property | Full Path | Role | Motivation Link |
+|----------|-----------|------|-----------------|
+| P70.4 | E31 > P70 > E8 > P9 > E7 > P14 > E21 | Seller's Procurator | P17 → Seller |
+| P70.5 | E31 > P70 > E8 > P9 > E7 > P14 > E21 | Buyer's Procurator | P17 → Buyer |
+| **P70.6** | **E31 > P70 > E8 > P9 > E7 > P14 > E21** | **Seller's Guarantor** | **P17 → Seller** |
+| P70.7 | E31 > P70 > E8 > P9 > E7 > P14 > E21 | Buyer's Guarantor | P17 → Buyer |
+
+# =============================================================================
+# SECTION 2: PROPERTY DESCRIPTION
+# =============================================================================
+# Add this section to your documentation:
+
+### P70.6 Documents Seller's Guarantor
+
+**Purpose:** Associates a sales contract with the person(s) who provide security or guarantee for the seller's obligations in the transaction.
+
+**Definition:** A guarantor is a third party who promises to fulfill the seller's contractual obligations if the seller defaults, thereby providing security to the buyer and reducing transaction risk.
+
+**Historical Context:** In medieval and early modern Mediterranean commerce, guarantors were commonly required for significant transactions, particularly when:
+- The seller's creditworthiness was uncertain
+- The transaction involved substantial value
+- Local customs or laws mandated additional security
+- The buyer required extra assurance of the seller's performance
+
+**Domain:** gmn:E31_2_Sales_Contract  
+**Range:** cidoc:E21_Person  
+**Cardinality:** 0..* (zero or more guarantors per seller)
+
+**Transformation Pattern:**
+```
+GMN Input:
+  Contract → P70.6 → Guarantor Person
+
+CIDOC-CRM Output:
+  Contract → P70_documents → Acquisition
+  Acquisition → P9_consists_of → Activity
+  Activity → P14_carried_out_by → Guarantor Person
+  Activity → P14.1_in_the_role_of → AAT:guarantor
+  Activity → P17_was_motivated_by → Seller Person
+```
+
+# =============================================================================
+# SECTION 3: USAGE EXAMPLES
+# =============================================================================
+
+### Examples
+
+#### Example 1: Single Guarantor
+
+**Scenario:** Marco Bianchi guarantees Giovanni Rossi's sale of a vineyard to Pietro Lombardi.
+
+**GMN Input:**
+```json
+{
+  "@id": "contract:1455_03_15",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "gmn:P70_1_documents_seller": {"@id": "person:giovanni_rossi"},
+  "gmn:P70_2_documents_buyer": {"@id": "person:pietro_lombardi"},
+  "gmn:P70_3_documents_transfer_of": {"@id": "property:vineyard_42"},
+  "gmn:P70_6_documents_sellers_guarantor": [
+    {"@id": "person:marco_bianchi"}
+  ]
+}
+```
+
+**CIDOC-CRM Output:**
+```json
+{
+  "@id": "contract:1455_03_15",
+  "cidoc:P70_documents": [{
+    "@id": "contract:1455_03_15/acquisition",
+    "@type": "cidoc:E8_Acquisition",
+    "cidoc:P23_transferred_title_from": {"@id": "person:giovanni_rossi"},
+    "cidoc:P22_transferred_title_to": {"@id": "person:pietro_lombardi"},
+    "cidoc:P24_transferred_title_of": {"@id": "property:vineyard_42"},
+    "cidoc:P9_consists_of": [{
+      "@id": "contract:1455_03_15/activity/guarantor_9a8b7c6d",
+      "@type": "cidoc:E7_Activity",
+      "cidoc:P14_carried_out_by": {"@id": "person:marco_bianchi"},
+      "cidoc:P14.1_in_the_role_of": {
+        "@id": "http://vocab.getty.edu/aat/300379835",
+        "@type": "cidoc:E55_Type"
+      },
+      "cidoc:P17_was_motivated_by": {"@id": "person:giovanni_rossi"}
+    }]
+  }]
+}
+```
+
+#### Example 2: Multiple Guarantors
+
+**Scenario:** Two brothers jointly guarantee their father's sale.
+
+**GMN Input:**
+```turtle
+@prefix gmn: <http://w3id.org/gmn/> .
+@prefix ex: <http://example.org/> .
+
+ex:contract_1456_07_20 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_1_documents_seller ex:father_antonio ;
+    gmn:P70_6_documents_sellers_guarantor ex:son_lorenzo, ex:son_francesco .
+```
+
+**Result:** Two separate E7_Activity nodes are created, each linking one guarantor to the seller via P17_was_motivated_by.
+
+#### Example 3: Contract Text Reference
+
+**Original Latin text (Genoa, 1455):**
+"Antonius de Ferrariis vendit... cum Marco de Blanchiis fideiussore et principali debitore..."
+
+**Translation:**
+"Antonio de Ferraris sells... with Marco de Bianchi as guarantor and principal debtor..."
+
+**Encoding:**
+```json
+{
+  "gmn:P70_1_documents_seller": {"@id": "person:antonius_ferrariis"},
+  "gmn:P70_6_documents_sellers_guarantor": [{"@id": "person:marcus_blanchis"}]
+}
+```
+
+# =============================================================================
+# SECTION 4: COMPARISON WITH RELATED ROLES
+# =============================================================================
+
+### Distinguishing Guarantors from Other Roles
+
+| Role | Property | Legal Function | Financial Liability | Representation Authority |
+|------|----------|----------------|--------------------|-----------------------|
+| **Seller** | P70.1 | Principal party | Primary obligation | Self |
+| **Seller's Procurator** | P70.4 | Legal representative | None | Full for principal |
+| **Seller's Guarantor** | P70.6 | Security provider | Conditional (if seller defaults) | None |
+| **Broker** | P70.8 | Transaction facilitator | None | None |
+
+**Key Distinctions:**
+
+1. **Procurator vs. Guarantor:**
+   - **Procurator:** Acts *for* the seller with legal authority
+   - **Guarantor:** Acts *about* the seller, providing security
+   - A procurator can sign contracts; a guarantor cannot (without separate authorization)
+
+2. **Guarantor vs. Payment Provider:**
+   - **Guarantor (P70.6):** Promises to pay *if seller defaults*
+   - **Payment Recipient (P70.10):** Actually receives payment *on seller's behalf*
+   - Guarantors provide security; payment recipients facilitate fund transfer
+
+3. **Seller's Guarantor vs. Buyer's Guarantor:**
+   - **P70.6:** Guarantees seller's obligations (title transfer, warranties)
+   - **P70.7:** Guarantees buyer's obligations (payment, acceptance)
+   - Different principals, different risks
+
+# =============================================================================
+# SECTION 5: SEMANTIC PATTERNS
+# =============================================================================
+
+### Common Semantic Patterns
+
+#### Pattern 1: Family Member as Guarantor
+**Typical Scenario:** Son guarantees father's sale
+
+```turtle
+:son a cidoc:E21_Person ;
+    gmn:is_guaranteed_by :father .
+
+:contract gmn:P70_1_documents_seller :father ;
+          gmn:P70_6_documents_sellers_guarantor :son .
+```
+
+#### Pattern 2: Business Partner as Guarantor
+**Typical Scenario:** Partner in trading company guarantees associate's sale
+
+```turtle
+:partner1 a cidoc:E21_Person ;
+    cidoc:P107i_is_current_or_former_member_of :trading_company .
+
+:partner2 a cidoc:E21_Person ;
+    cidoc:P107i_is_current_or_former_member_of :trading_company .
+
+:contract gmn:P70_1_documents_seller :partner1 ;
+          gmn:P70_6_documents_sellers_guarantor :partner2 .
+```
+
+#### Pattern 3: Multiple Guarantors with Joint Liability
+**Typical Scenario:** Two guarantors share responsibility
+
+```turtle
+:contract gmn:P70_1_documents_seller :seller ;
+          gmn:P70_6_documents_sellers_guarantor :guarantor1, :guarantor2 .
+
+# Each gets separate E7_Activity with P17 → :seller
+```
+
+# =============================================================================
+# SECTION 6: SPARQL QUERY EXAMPLES
+# =============================================================================
+
+### SPARQL Queries
+
+#### Query 1: Find All Seller's Guarantors in Dataset
+```sparql
+PREFIX gmn: <http://w3id.org/gmn/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?contract ?seller ?guarantor ?guarantorName WHERE {
+  ?contract cidoc:P70_documents ?acquisition .
+  ?acquisition cidoc:P23_transferred_title_from ?seller ;
+               cidoc:P9_consists_of ?activity .
+  ?activity cidoc:P14_carried_out_by ?guarantor ;
+            cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/aat/300379835> ;
+            cidoc:P17_was_motivated_by ?seller .
+  OPTIONAL { ?guarantor rdfs:label ?guarantorName }
+}
+ORDER BY ?contract
+```
+
+#### Query 2: Count Guarantors per Contract
+```sparql
+SELECT ?contract (COUNT(?guarantor) AS ?num_guarantors) WHERE {
+  ?contract cidoc:P70_documents ?acquisition .
+  ?acquisition cidoc:P9_consists_of ?activity .
+  ?activity cidoc:P14_carried_out_by ?guarantor ;
+            cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/aat/300379835> .
+}
+GROUP BY ?contract
+HAVING (?num_guarantors > 1)
+ORDER BY DESC(?num_guarantors)
+```
+
+#### Query 3: Find Persons Who Are Both Sellers and Guarantors
+```sparql
+SELECT DISTINCT ?person ?personName WHERE {
+  # Person as seller
+  ?contract1 cidoc:P70_documents ?acq1 .
+  ?acq1 cidoc:P23_transferred_title_from ?person .
+  
+  # Same person as guarantor in different contract
+  ?contract2 cidoc:P70_documents ?acq2 .
+  ?acq2 cidoc:P9_consists_of ?activity .
+  ?activity cidoc:P14_carried_out_by ?person ;
+            cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/aat/300379835> .
+  
+  FILTER(?contract1 != ?contract2)
+  OPTIONAL { ?person rdfs:label ?personName }
+}
+```
+
+#### Query 4: Analyze Guarantor Relationships
+```sparql
+# Find guarantors and their family relationships to sellers
+SELECT ?seller ?sellerName ?guarantor ?guarantorName ?relationship WHERE {
+  ?contract cidoc:P70_documents ?acquisition .
+  ?acquisition cidoc:P23_transferred_title_from ?seller ;
+               cidoc:P9_consists_of ?activity .
+  ?activity cidoc:P14_carried_out_by ?guarantor ;
+            cidoc:P17_was_motivated_by ?seller .
+  
+  # Check for family relationships (adjust property as needed)
+  OPTIONAL {
+    ?guarantor gmn:has_parent ?seller .
+    BIND("son/daughter" AS ?relationship)
+  }
+  OPTIONAL {
+    ?seller gmn:has_parent ?guarantor .
+    BIND("father/mother" AS ?relationship)
+  }
+  
+  OPTIONAL { ?seller rdfs:label ?sellerName }
+  OPTIONAL { ?guarantor rdfs:label ?guarantorName }
+}
+```
+
+# =============================================================================
+# SECTION 7: DATA ENTRY GUIDELINES
+# =============================================================================
+
+### Guidelines for Data Entry
+
+#### When to Use P70.6
+
+**DO use P70.6 when the contract explicitly states:**
+- "cum fideiussore" (with guarantor)
+- "fideiussor et principalis debitor" (guarantor and principal debtor)
+- "pro... spopondit" (promised for...)
+- "se constituit fideiussorem" (constituted himself as guarantor)
+- "plegio" / "plegius" (pledge, guarantor in vernacular)
+
+**DO NOT use P70.6 for:**
+- Witnesses (use P70.15 instead)
+- Procurators acting with legal authority (use P70.4)
+- Payment recipients (use P70.10)
+- Persons merely referenced in property descriptions (use P70.11)
+
+#### Identifying Guarantors in Contract Text
+
+**Latin terminology:**
+- fideiussor, fideiussores (guarantor, guarantors)
+- plegio, plegius (guarantor, pledge)
+- sponsor (guarantor, sponsor)
+- vas, vadis (guarantor, surety)
+
+**Common phrases:**
+- "constituit se fideiussorem" (constituted himself as guarantor)
+- "sub obligatione" (under obligation)
+- "renuntiavit beneficio" (renounced the benefit [of discussion/division])
+
+**Key distinguishing features:**
+- Guarantors typically appear *after* the principal parties
+- Guarantor clauses often include renunciations of legal protections
+- Guarantors may be described as "principalis debitor" (principal debtor)
+
+#### Multiple Guarantors
+
+When a contract has multiple guarantors:
+```json
+"gmn:P70_6_documents_sellers_guarantor": [
+  {"@id": "person:guarantor1"},
+  {"@id": "person:guarantor2"},
+  {"@id": "person:guarantor3"}
+]
+```
+
+**Order:** Preserve the order from the original document if possible.
+
+**Joint vs. Several Liability:** If the contract specifies, add a note:
+```json
+"gmn:P70_6_documents_sellers_guarantor": [
+  {
+    "@id": "person:guarantor1",
+    "rdfs:comment": "Joint liability with guarantor2"
+  }
+]
+```
+
+# =============================================================================
+# SECTION 8: HISTORICAL EXAMPLES
+# =============================================================================
+
+### Historical Examples from Archival Sources
+
+#### Example 1: Genoese Notarial Contract (1455)
+**Source:** Archivio di Stato di Genova, Notai Antichi, 1455
+
+**Latin excerpt:**
+"Antonius Spinola vendit Johanni de Grimaldis... Marco Spinola fideiussore et principali debitore..."
+
+**Translation:**
+"Antonio Spinola sells to Giovanni de Grimaldi... with Marco Spinola as guarantor and principal debtor..."
+
+**Encoding:**
+```json
+{
+  "gmn:P70_1_documents_seller": {"@id": "person:antonius_spinola"},
+  "gmn:P70_2_documents_buyer": {"@id": "person:johannes_grimaldis"},
+  "gmn:P70_6_documents_sellers_guarantor": [{"@id": "person:marcus_spinola"}]
+}
+```
+
+**Analysis:** Marco Spinola (likely a family member) guarantees Antonio's obligations as seller.
+
+#### Example 2: Venetian Contract with Multiple Guarantors (1472)
+**Source:** Archivio di Stato di Venezia, Notarile, 1472
+
+**Italian vernacular excerpt:**
+"...el dito vendedor ave dato per plegii e prinzipali debitori Zuan da Cha' e Piero da Cha' suo fradelo..."
+
+**Translation:**
+"...the said seller has given as pledges and principal debtors Giovanni da Ca' and Pietro da Ca' his brother..."
+
+**Encoding:**
+```json
+{
+  "gmn:P70_6_documents_sellers_guarantor": [
+    {"@id": "person:johannes_ca"},
+    {"@id": "person:petrus_ca"}
+  ]
+}
+```
+
+**Analysis:** Two brothers jointly guarantee the seller's obligations.
+
+# =============================================================================
+# SECTION 9: LEGAL BACKGROUND
+# =============================================================================
+
+### Legal Context
+
+#### Roman Law Foundations
+
+The institution of guarantorship (fideiussio) derives from Roman law:
+- **Stipulatio:** Verbal contract form
+- **Fideiussio:** Personal guarantee by third party
+- **Beneficium excussionis:** Right to require creditor to pursue principal first
+- **Beneficium divisionis:** Right to divide liability among co-guarantors
+
+Many medieval contracts include clauses where guarantors renounce these protections:
+"renuntiavit beneficio excussionis et divisionis"
+
+#### Medieval Statutory Law
+
+Local statutes often regulated guarantorship:
+- **Genoa:** Statutes requiring guarantors for non-citizens
+- **Venice:** Regulations on broker and guarantor roles
+- **Florence:** Rules for guarantors in guild transactions
+
+#### Practical Implications
+
+Understanding guarantorship helps interpret:
+- **Risk assessment:** Who trusted whom?
+- **Social networks:** Family, business, patronage connections
+- **Economic structures:** Credit availability, transaction security
+- **Legal sophistication:** Use of Roman law concepts
+
+# =============================================================================
+# SECTION 10: IMPLEMENTATION NOTES
+# =============================================================================
+
+### Notes for Implementers
+
+#### URI Generation
+- Use consistent person URIs across all properties
+- Guarantor URI should match if person appears in multiple roles
+- Activity URIs are auto-generated with hash-based suffix
+
+#### Performance Considerations
+- Indexing: Create indexes on P14_carried_out_by and P17_was_motivated_by
+- Query optimization: Pre-compute guarantor-seller links for frequent queries
+- Batch processing: Process guarantor transformations in bulk for large datasets
+
+#### Data Quality Checks
+- Verify seller exists before processing guarantors
+- Check for duplicate guarantor entries
+- Validate person URIs resolve correctly
+- Ensure AAT concept URI is accessible
+
+#### Migration from Simplified Structure
+If migrating from a simpler model:
+```python
+# Old format (hypothetical)
+contract['seller_guarantor'] = 'Marco Bianchi'
+
+# New format
+contract['gmn:P70_6_documents_sellers_guarantor'] = [{
+    '@id': 'http://example.org/person/marcus_blanchiis'
+}]
+```
+
+# =============================================================================
+# END OF DOCUMENT ADDITIONS
+# =============================================================================
+
+## Integration Instructions
+
+1. **Property Table:** Add the table entry to your property reference section
+2. **Property Description:** Insert the full description in the P70 properties section
+3. **Examples:** Include all examples in an "Examples" subsection
+4. **Comparison Tables:** Add the role comparison tables to clarify distinctions
+5. **SPARQL Queries:** Add queries to a "Querying" section or appendix
+6. **Guidelines:** Include data entry guidelines in a methodology section
+7. **Historical Examples:** Add to a "Case Studies" or "Historical Context" section
+8. **Legal Background:** Include in background or context section
+
+## Formatting Notes
+
+- Adapt markdown/formatting to match your documentation style
+- Adjust URIs to match your namespace conventions
+- Modify examples to use your actual person identifiers
+- Update cross-references to point to relevant sections in your docs
+- Ensure code examples match your JSON-LD context definitions
