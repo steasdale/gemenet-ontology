@@ -1,0 +1,303 @@
+# TTL Additions for gmn:P70_8_documents_broker
+# Ready-to-copy snippets for the main GMN ontology file
+
+# =============================================================================
+# MAIN PROPERTY DEFINITION
+# =============================================================================
+# Insert this after gmn:P70_7_documents_buyers_guarantor in the ontology file
+
+# Property: P70.8 documents broker
+gmn:P70_8_documents_broker
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.8 documents broker"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with the person named as the broker who facilitated the transaction. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P14_carried_out_by > E21_Person. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. Unlike procurators and guarantors who act for one party, brokers facilitate the transaction between both parties, arranging the sale and often receiving a commission."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by .
+
+
+# =============================================================================
+# USAGE EXAMPLES
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Example 1: Simple Broker Assignment
+# -----------------------------------------------------------------------------
+
+<contract_001> a gmn:E31_2_Sales_Contract ;
+    rdfs:label "Sale of House, 1345-03-15" ;
+    gmn:P70_8_documents_broker <person_giovanni_broker> .
+
+<person_giovanni_broker> a cidoc:E21_Person ;
+    rdfs:label "Giovanni de Sancto Petro, sensale" .
+
+
+# -----------------------------------------------------------------------------
+# Example 2: Multiple Brokers
+# -----------------------------------------------------------------------------
+
+<contract_002> a gmn:E31_2_Sales_Contract ;
+    rdfs:label "Large Property Sale, 1347" ;
+    gmn:P70_8_documents_broker <person_giovanni_broker> ,
+                                <person_marco_broker> .
+
+<person_giovanni_broker> a cidoc:E21_Person ;
+    rdfs:label "Giovanni Sensale" .
+
+<person_marco_broker> a cidoc:E21_Person ;
+    rdfs:label "Marco Broker" .
+
+
+# -----------------------------------------------------------------------------
+# Example 3: Complete Transaction with Broker
+# -----------------------------------------------------------------------------
+
+<contract_003> a gmn:E31_2_Sales_Contract ;
+    rdfs:label "House Sale with Broker, 1350-06-20" ;
+    gmn:P70_1_documents_seller <person_seller> ;
+    gmn:P70_2_documents_buyer <person_buyer> ;
+    gmn:P70_8_documents_broker <person_broker> ;
+    gmn:P70_15_documents_witness <person_witness1> ,
+                                  <person_witness2> .
+
+<person_seller> a cidoc:E21_Person ;
+    rdfs:label "Pietro de Mari, seller" .
+
+<person_buyer> a cidoc:E21_Person ;
+    rdfs:label "Antonio de Nigro, buyer" .
+
+<person_broker> a cidoc:E21_Person ;
+    rdfs:label "Giovanni Broker" .
+
+<person_witness1> a cidoc:E21_Person ;
+    rdfs:label "Marco Witness" .
+
+<person_witness2> a cidoc:E21_Person ;
+    rdfs:label "Luca Witness" .
+
+
+# =============================================================================
+# EXPECTED CIDOC-CRM OUTPUT (After Transformation)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Example 1 Output: Simple Broker
+# -----------------------------------------------------------------------------
+
+<contract_001> a gmn:E31_2_Sales_Contract ;
+    rdfs:label "Sale of House, 1345-03-15" ;
+    cidoc:P70_documents <contract_001/acquisition> .
+
+<contract_001/acquisition> a cidoc:E8_Acquisition ;
+    cidoc:P14_carried_out_by <person_giovanni_broker> .
+
+<person_giovanni_broker> a cidoc:E21_Person ;
+    rdfs:label "Giovanni de Sancto Petro, sensale" ;
+    cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300025234> .
+
+<http://vocab.getty.edu/page/aat/300025234> a cidoc:E55_Type ;
+    rdfs:label "brokers (people)" .
+
+
+# -----------------------------------------------------------------------------
+# Example 2 Output: Multiple Brokers
+# -----------------------------------------------------------------------------
+
+<contract_002> a gmn:E31_2_Sales_Contract ;
+    rdfs:label "Large Property Sale, 1347" ;
+    cidoc:P70_documents <contract_002/acquisition> .
+
+<contract_002/acquisition> a cidoc:E8_Acquisition ;
+    cidoc:P14_carried_out_by <person_giovanni_broker> ,
+                             <person_marco_broker> .
+
+<person_giovanni_broker> a cidoc:E21_Person ;
+    rdfs:label "Giovanni Sensale" ;
+    cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300025234> .
+
+<person_marco_broker> a cidoc:E21_Person ;
+    rdfs:label "Marco Broker" ;
+    cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300025234> .
+
+
+# =============================================================================
+# ALTERNATIVE FORMATS
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Compact Format (for dense ontologies)
+# -----------------------------------------------------------------------------
+
+gmn:P70_8_documents_broker a owl:ObjectProperty, rdf:Property ;
+    rdfs:label "P70.8 documents broker"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with the person named as the broker who facilitated the transaction. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P14_carried_out_by > E21_Person. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. Unlike procurators and guarantors who act for one party, brokers facilitate the transaction between both parties, arranging the sale and often receiving a commission."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by .
+
+
+# -----------------------------------------------------------------------------
+# Extended Format (with additional metadata)
+# -----------------------------------------------------------------------------
+
+gmn:P70_8_documents_broker
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.8 documents broker"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with the person named as the broker who facilitated the transaction. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P14_carried_out_by > E21_Person. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. Unlike procurators and guarantors who act for one party, brokers facilitate the transaction between both parties, arranging the sale and often receiving a commission."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    dcterms:creator "GMN Ontology Team" ;
+    dcterms:contributor "Historical Research Group" ;
+    skos:scopeNote "Brokers (Italian: sensali) were professional intermediaries in medieval Genoa who facilitated transactions between buyers and sellers, typically receiving a commission for their services."@en ;
+    skos:example "Giovanni de Sancto Petro, sensale, who arranged the sale of property in Via Nova" ;
+    owl:versionInfo "1.0" ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by ;
+    rdfs:seeAlso <http://vocab.getty.edu/page/aat/300025234> .
+
+
+# =============================================================================
+# VALIDATION QUERIES
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# SPARQL Query: Find All Contracts with Brokers
+# -----------------------------------------------------------------------------
+
+# Before Transformation (using simplified property):
+# SELECT ?contract ?broker
+# WHERE {
+#     ?contract gmn:P70_8_documents_broker ?broker .
+# }
+
+# After Transformation (using CIDOC-CRM):
+# SELECT ?contract ?broker ?brokerName
+# WHERE {
+#     ?contract a gmn:E31_2_Sales_Contract ;
+#         cidoc:P70_documents ?acquisition .
+#     ?acquisition cidoc:P14_carried_out_by ?broker .
+#     ?broker cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300025234> .
+#     OPTIONAL { ?broker rdfs:label ?brokerName . }
+# }
+
+
+# -----------------------------------------------------------------------------
+# SPARQL Query: Find Contracts with Multiple Brokers
+# -----------------------------------------------------------------------------
+
+# SELECT ?contract (COUNT(?broker) AS ?brokerCount)
+# WHERE {
+#     ?contract a gmn:E31_2_Sales_Contract ;
+#         cidoc:P70_documents ?acquisition .
+#     ?acquisition cidoc:P14_carried_out_by ?broker .
+#     ?broker cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300025234> .
+# }
+# GROUP BY ?contract
+# HAVING (COUNT(?broker) > 1)
+
+
+# =============================================================================
+# INTEGRATION WITH EXISTING PROPERTIES
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Complete Transaction Example
+# -----------------------------------------------------------------------------
+
+<contract_complete> a gmn:E31_2_Sales_Contract ;
+    rdfs:label "Complete Property Sale, 1352" ;
+    
+    # Document creation
+    gmn:P94i_1_was_created_by <notary_oberto> ;
+    gmn:P94i_2_has_enactment_date "1352-04-15"^^xsd:date ;
+    gmn:P94i_3_has_place_of_enactment <place_genoa> ;
+    
+    # Principal parties
+    gmn:P70_1_documents_seller <person_seller> ;
+    gmn:P70_2_documents_buyer <person_buyer> ;
+    
+    # Property transferred
+    gmn:P70_3_documents_transfer_of <house_property> ;
+    
+    # Representatives
+    gmn:P70_4_documents_sellers_procurator <person_seller_proc> ;
+    gmn:P70_5_documents_buyers_procurator <person_buyer_proc> ;
+    
+    # Security providers
+    gmn:P70_6_documents_sellers_guarantor <person_seller_guar> ;
+    gmn:P70_7_documents_buyers_guarantor <person_buyer_guar> ;
+    
+    # Facilitator
+    gmn:P70_8_documents_broker <person_broker> ;
+    
+    # Observers
+    gmn:P70_15_documents_witness <person_witness1> ,
+                                  <person_witness2> ;
+    
+    # Price information
+    gmn:P70_16_documents_sale_price_amount "500"^^xsd:decimal ;
+    gmn:P70_17_documents_sale_price_currency <currency_genoese_lira> .
+
+
+# =============================================================================
+# NOTES FOR ONTOLOGY MAINTAINERS
+# =============================================================================
+
+# 1. PROPERTY PLACEMENT
+#    - Insert after gmn:P70_7_documents_buyers_guarantor
+#    - Before gmn:P70_9_documents_payment_provider_for_buyer
+#    - Maintains sequential numbering (P70.8)
+
+# 2. PREFIX REQUIREMENTS
+#    Ensure these prefixes are declared at the top of your ontology file:
+#    @prefix gmn: <http://example.org/gmn#> .
+#    @prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+#    @prefix owl: <http://www.w3.org/2002/07/owl#> .
+#    @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+#    @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+#    @prefix dcterms: <http://purl.org/dc/terms/> .
+#    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# 3. VALIDATION
+#    After adding the property, validate with:
+#    riot --validate gmn_ontology.ttl
+
+# 4. VERSIONING
+#    Update ontology version metadata after adding this property
+
+# 5. DOCUMENTATION
+#    Update any property tables or indexes in accompanying documentation
+
+# 6. TESTING
+#    Test transformation with sample data before production deployment
+
+
+# =============================================================================
+# GETTY AAT REFERENCE
+# =============================================================================
+
+# URI: http://vocab.getty.edu/page/aat/300025234
+# Preferred Label: brokers (people)
+# Scope Note: People who act as intermediaries in negotiating contracts, 
+#             purchases, or sales in return for a fee or commission.
+# Hierarchy: agents (people) > agents by general role > brokers (people)
+
+
+# =============================================================================
+# CHANGE LOG
+# =============================================================================
+
+# 2025-10-17: Property created
+# 2025-10-27: Documentation and examples added
+
+
+# =============================================================================
+# END OF TTL ADDITIONS
+# =============================================================================

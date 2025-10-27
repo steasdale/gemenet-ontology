@@ -1,0 +1,467 @@
+=============================================================================
+DOCUMENTATION ADDITIONS FOR gmn:P70_8_documents_broker
+=============================================================================
+
+This file contains examples, tables, and text to add to the main GMN
+ontology documentation text file.
+
+=============================================================================
+SECTION 1: PROPERTY DEFINITION (for Property Reference section)
+=============================================================================
+
+### gmn:P70_8_documents_broker
+
+**Label**: P70.8 documents broker
+
+**Type**: Object Property
+
+**Domain**: gmn:E31_2_Sales_Contract
+
+**Range**: cidoc:E21_Person
+
+**Super Property**: cidoc:P70_documents
+
+**Description**: 
+Simplified property for associating a sales contract with the person named 
+as the broker who facilitated the transaction. Unlike procurators and 
+guarantors who act for one party, brokers facilitate the transaction between 
+both parties, arranging the sale and often receiving a commission.
+
+**CIDOC-CRM Path**: 
+E31_Document > P70_documents > E8_Acquisition > P14_carried_out_by > E21_Person
+
+**Transformation**: 
+This shortcut property should be transformed to the full CIDOC-CRM structure 
+for formal compliance. The broker is added to the acquisition event with the 
+role type from Getty AAT (300025234: "brokers (people)").
+
+**Historical Context**: 
+In medieval Genoa, brokers (Italian: *sensali*) were professional 
+intermediaries who facilitated commercial transactions. They were often 
+licensed by the commune and received commissions for their services.
+
+**Created**: 2025-10-17
+
+
+=============================================================================
+SECTION 2: EXAMPLES (for Examples section)
+=============================================================================
+
+### Example: Sales Contract with Broker
+
+#### Simplified Representation (Data Entry)
+
+```turtle
+<contract_1345_03_15> a gmn:E31_2_Sales_Contract ;
+    rdfs:label "Sale of House in Via Nova, 15 March 1345" ;
+    gmn:P70_1_documents_seller <person_pietro_seller> ;
+    gmn:P70_2_documents_buyer <person_antonio_buyer> ;
+    gmn:P70_8_documents_broker <person_giovanni_broker> ;
+    gmn:P70_3_documents_transfer_of <house_via_nova> .
+
+<person_giovanni_broker> a cidoc:E21_Person ;
+    rdfs:label "Giovanni de Sancto Petro, sensale" .
+```
+
+#### Full CIDOC-CRM Representation (After Transformation)
+
+```turtle
+<contract_1345_03_15> a gmn:E31_2_Sales_Contract ;
+    rdfs:label "Sale of House in Via Nova, 15 March 1345" ;
+    cidoc:P70_documents <contract_1345_03_15/acquisition> .
+
+<contract_1345_03_15/acquisition> a cidoc:E8_Acquisition ;
+    cidoc:P23_transferred_title_from <person_pietro_seller> ;
+    cidoc:P22_transferred_title_to <person_antonio_buyer> ;
+    cidoc:P14_carried_out_by <person_giovanni_broker> ;
+    cidoc:P24_transferred_title_of <house_via_nova> .
+
+<person_giovanni_broker> a cidoc:E21_Person ;
+    rdfs:label "Giovanni de Sancto Petro, sensale" ;
+    cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300025234> .
+```
+
+
+### Example: Transaction with Multiple Brokers
+
+In some cases, particularly large or complex transactions, multiple brokers 
+might be involved:
+
+```turtle
+<contract_large_sale> a gmn:E31_2_Sales_Contract ;
+    rdfs:label "Large Commercial Property Sale, 1347" ;
+    gmn:P70_8_documents_broker <person_broker_1> ,
+                                <person_broker_2> .
+
+<person_broker_1> a cidoc:E21_Person ;
+    rdfs:label "Giovanni Sensale" .
+
+<person_broker_2> a cidoc:E21_Person ;
+    rdfs:label "Marco Broker" .
+```
+
+
+=============================================================================
+SECTION 3: PROPERTY COMPARISON TABLE (for Reference section)
+=============================================================================
+
+### Transaction Participant Roles Comparison
+
+| Property | Role | Represents | Authority | Commission | P17 Link |
+|----------|------|------------|-----------|-----------|----------|
+| **P70.1** | Seller | Seller party | Full | No | No |
+| **P70.2** | Buyer | Buyer party | Full | No | No |
+| **P70.4** | Seller's Procurator | Seller | Legal | Rare | Yes (seller) |
+| **P70.5** | Buyer's Procurator | Buyer | Legal | Rare | Yes (buyer) |
+| **P70.6** | Seller's Guarantor | Seller | None | No | Yes (seller) |
+| **P70.7** | Buyer's Guarantor | Buyer | None | No | Yes (buyer) |
+| **P70.8** | **Broker** | **Both parties** | **None** | **Yes** | **No** |
+| **P70.15** | Witness | Neither | None | Rare | No |
+
+
+### Structural Differences in CIDOC-CRM Mapping
+
+| Property | Attachment Point | Intermediate Node | Motivation Link |
+|----------|-----------------|-------------------|-----------------|
+| **P70.8 Broker** | E8_Acquisition via P14 | None | None |
+| **P70.4 Seller's Procurator** | E7_Activity via P14 | E7_Activity | P17 to seller |
+| **P70.6 Seller's Guarantor** | E7_Activity via P14 | E7_Activity | P17 to seller |
+
+
+=============================================================================
+SECTION 4: ROLE TYPES REFERENCE (for Getty AAT section)
+=============================================================================
+
+### Getty AAT Role Types Used in GMN
+
+| GMN Property | AAT URI | AAT Term | AAT ID |
+|--------------|---------|----------|--------|
+| P70.4, P70.5 | http://vocab.getty.edu/page/aat/300386866 | procurators (people) | 300386866 |
+| P70.6, P70.7 | http://vocab.getty.edu/page/aat/300025614 | guarantors | 300025614 |
+| **P70.8** | **http://vocab.getty.edu/page/aat/300025234** | **brokers (people)** | **300025234** |
+| P70.15 | http://vocab.getty.edu/page/aat/300028910 | witnesses | 300028910 |
+
+
+=============================================================================
+SECTION 5: HISTORICAL CONTEXT (for Background section)
+=============================================================================
+
+### Brokers in Medieval Genoa
+
+Brokers (Italian: *sensali*, Latin: *sensales*) were professional intermediaries 
+who played a crucial role in medieval Genoese commercial transactions:
+
+**Professional Status**:
+- Often licensed by the Genoese commune
+- Required to maintain good reputation and trustworthiness
+- Specialized in different types of transactions (property, goods, ships)
+- Subject to regulations regarding fees and conduct
+
+**Functions**:
+- Brought together potential buyers and sellers
+- Facilitated negotiations between parties
+- Helped establish fair market prices
+- Witnessed agreements and sales
+- Maintained records of transactions
+
+**Compensation**:
+- Received commissions based on transaction value
+- Fees typically paid by one or both parties
+- Sometimes received payment in goods or services
+- Commission rates regulated by commune authorities
+
+**Distinction from Other Roles**:
+Unlike procurators (who legally represented one party) or guarantors 
+(who provided security for one party), brokers served as neutral 
+intermediaries who facilitated the transaction for both buyer and 
+seller. They had no legal authority to bind either party but provided 
+valuable services in bringing parties together and ensuring smooth 
+completion of transactions.
+
+
+=============================================================================
+SECTION 6: USAGE GUIDELINES (for Best Practices section)
+=============================================================================
+
+### When to Use gmn:P70_8_documents_broker
+
+✓ **Use this property when**:
+- The contract explicitly names a broker (*sensale*, *mediatore*)
+- The person facilitated the transaction for both parties
+- The document indicates the person received or will receive a commission
+- The person's role was to bring buyer and seller together
+- The text describes the person as an intermediary
+
+✗ **Do NOT use this property for**:
+- Procurators (legal representatives) → Use P70.4 or P70.5
+- Guarantors (security providers) → Use P70.6 or P70.7
+- Witnesses (observers) → Use P70.15
+- Payment providers → Use P70.9
+- Payment recipients → Use P70.10
+- Family members facilitating transaction informally
+
+
+### Identifying Brokers in Historical Documents
+
+**Latin indicators**:
+- *sensalis*, *sensales* (broker, brokers)
+- *mediator*, *mediatores* (mediator, mediators)
+- *intermediarius* (intermediary)
+- *pro eius mercede* (for his/her commission)
+
+**Italian indicators**:
+- *sensale*, *sensaro* (broker)
+- *mediatore* (mediator)
+- *intermediante* (intermediating)
+- *chi procurò il negozio* (who arranged the business)
+
+**Contextual clues**:
+- Mention of commission or fee (*mercede*, *provisione*)
+- Description of bringing parties together
+- Reference to facilitating the transaction
+- Professional title indicating brokerage role
+
+
+=============================================================================
+SECTION 7: TRANSFORMATION NOTES (for Technical Documentation)
+=============================================================================
+
+### Broker Transformation Pattern
+
+The transformation of gmn:P70_8_documents_broker differs from procurator 
+and guarantor transformations in an important way:
+
+**Broker Structure** (simpler):
+```
+E8_Acquisition
+  └─ P14_carried_out_by → E21_Person (broker)
+      └─ P14.1_in_the_role_of → E55_Type (AAT: brokers)
+```
+
+**Procurator/Guarantor Structure** (more complex):
+```
+E8_Acquisition
+  └─ P9_consists_of → E7_Activity
+      ├─ P14_carried_out_by → E21_Person (procurator/guarantor)
+      │   └─ P14.1_in_the_role_of → E55_Type (AAT: role)
+      └─ P17_was_motivated_by → E21_Person (principal)
+```
+
+**Rationale for Difference**:
+Brokers are neutral facilitators who serve both parties equally, so they 
+attach directly to the acquisition event without needing an intermediate 
+E7_Activity or P17_was_motivated_by link to specify which party they 
+represent. Procurators and guarantors, by contrast, represent or provide 
+security for a specific party (seller or buyer), so they require the 
+E7_Activity with P17 to make this relationship explicit.
+
+
+=============================================================================
+SECTION 8: SPARQL QUERY EXAMPLES (for Query Guide section)
+=============================================================================
+
+### Query 1: Find All Contracts with Brokers
+
+```sparql
+PREFIX gmn: <http://example.org/gmn#>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX aat: <http://vocab.getty.edu/page/aat/>
+
+SELECT ?contract ?contractLabel ?broker ?brokerName
+WHERE {
+    ?contract a gmn:E31_2_Sales_Contract ;
+        rdfs:label ?contractLabel ;
+        cidoc:P70_documents ?acquisition .
+    ?acquisition cidoc:P14_carried_out_by ?broker .
+    ?broker cidoc:P14.1_in_the_role_of aat:300025234 ;
+        rdfs:label ?brokerName .
+}
+ORDER BY ?contractLabel
+```
+
+
+### Query 2: Find Contracts with Multiple Brokers
+
+```sparql
+SELECT ?contract ?contractLabel (COUNT(?broker) AS ?brokerCount)
+WHERE {
+    ?contract a gmn:E31_2_Sales_Contract ;
+        rdfs:label ?contractLabel ;
+        cidoc:P70_documents ?acquisition .
+    ?acquisition cidoc:P14_carried_out_by ?broker .
+    ?broker cidoc:P14.1_in_the_role_of aat:300025234 .
+}
+GROUP BY ?contract ?contractLabel
+HAVING (COUNT(?broker) > 1)
+ORDER BY DESC(?brokerCount)
+```
+
+
+### Query 3: Most Active Brokers
+
+```sparql
+SELECT ?broker ?brokerName (COUNT(?contract) AS ?contractCount)
+WHERE {
+    ?contract a gmn:E31_2_Sales_Contract ;
+        cidoc:P70_documents ?acquisition .
+    ?acquisition cidoc:P14_carried_out_by ?broker .
+    ?broker cidoc:P14.1_in_the_role_of aat:300025234 ;
+        rdfs:label ?brokerName .
+}
+GROUP BY ?broker ?brokerName
+ORDER BY DESC(?contractCount)
+LIMIT 20
+```
+
+
+### Query 4: Contracts with Complete Transaction Team
+
+Find contracts that have seller, buyer, broker, and witnesses:
+
+```sparql
+SELECT ?contract ?seller ?buyer ?broker ?witness
+WHERE {
+    ?contract a gmn:E31_2_Sales_Contract ;
+        cidoc:P70_documents ?acquisition .
+    
+    ?acquisition cidoc:P23_transferred_title_from ?seller ;
+                 cidoc:P22_transferred_title_to ?buyer ;
+                 cidoc:P14_carried_out_by ?broker ;
+                 cidoc:P11_had_participant ?witness .
+    
+    ?broker cidoc:P14.1_in_the_role_of aat:300025234 .
+    ?witness cidoc:P14.1_in_the_role_of aat:300028910 .
+}
+```
+
+
+=============================================================================
+SECTION 9: DATA ENTRY TEMPLATE (for User Guide)
+=============================================================================
+
+### Template for Sales Contract with Broker
+
+```turtle
+# Contract Document
+<contract_YYYY_MM_DD> a gmn:E31_2_Sales_Contract ;
+    rdfs:label "Sale of [PROPERTY], [DATE]" ;
+    
+    # Notary and creation
+    gmn:P94i_1_was_created_by <notary_[NAME]> ;
+    gmn:P94i_2_has_enactment_date "[YYYY-MM-DD]"^^xsd:date ;
+    gmn:P94i_3_has_place_of_enactment <place_[LOCATION]> ;
+    
+    # Principal parties
+    gmn:P70_1_documents_seller <person_[SELLER_NAME]> ;
+    gmn:P70_2_documents_buyer <person_[BUYER_NAME]> ;
+    
+    # Property transferred
+    gmn:P70_3_documents_transfer_of <[PROPERTY_ID]> ;
+    
+    # Broker (if present)
+    gmn:P70_8_documents_broker <person_[BROKER_NAME]> ;
+    
+    # Witnesses (if present)
+    gmn:P70_15_documents_witness <person_[WITNESS_1]> ,
+                                  <person_[WITNESS_2]> ;
+    
+    # Price (if recorded)
+    gmn:P70_16_documents_sale_price_amount "[AMOUNT]"^^xsd:decimal ;
+    gmn:P70_17_documents_sale_price_currency <currency_[TYPE]> .
+
+# Broker Person
+<person_[BROKER_NAME]> a cidoc:E21_Person ;
+    rdfs:label "[Full Name], sensale" .
+```
+
+
+=============================================================================
+SECTION 10: FREQUENTLY ASKED QUESTIONS
+=============================================================================
+
+**Q: How do I distinguish between a broker and a procurator?**
+
+A: Procurators have legal authority to represent one party (seller or buyer) 
+and can bind that party to agreements. Brokers are neutral intermediaries 
+who facilitate transactions for both parties but have no legal authority. 
+Look for terms like "nomine proprio et nomine" (in his own name and in the 
+name of) for procurators, versus "sensale" or "mediatore" for brokers.
+
+**Q: Can a person be both a broker and a witness on the same contract?**
+
+A: Yes, this is possible. Use both gmn:P70_8_documents_broker and 
+gmn:P70_15_documents_witness properties for the same person. In the 
+transformed CIDOC-CRM, they will appear in both P14_carried_out_by 
+(with broker role) and P11_had_participant (with witness role).
+
+**Q: What if the commission is mentioned in the contract?**
+
+A: The commission is a separate piece of information that can be modeled 
+using the monetary amount properties. The broker property captures who 
+facilitated the transaction; commission details would be additional data.
+
+**Q: How do I handle a broker who is also involved in another capacity?**
+
+A: Use multiple properties as appropriate. For example, if someone served 
+as both broker and witness, apply both properties. Each role will be 
+properly modeled in the CIDOC-CRM transformation.
+
+**Q: What if the document mentions "qui dictum negotium procuravit"?**
+
+A: This Latin phrase ("who arranged said business") typically indicates 
+a broker role rather than a procurator role. "Procurator" in this context 
+means "arranged" not "legal representative." Use gmn:P70_8_documents_broker.
+
+
+=============================================================================
+SECTION 11: CROSS-REFERENCES
+=============================================================================
+
+**See Also**:
+- gmn:P70_4_documents_sellers_procurator (seller's legal representative)
+- gmn:P70_5_documents_buyers_procurator (buyer's legal representative)
+- gmn:P70_6_documents_sellers_guarantor (seller's guarantor)
+- gmn:P70_7_documents_buyers_guarantor (buyer's guarantor)
+- gmn:P70_15_documents_witness (witness to transaction)
+- CIDOC-CRM P14_carried_out_by (agent relationship)
+- Getty AAT 300025234 (brokers as people)
+
+**Related Documentation**:
+- Transaction Participant Modeling Guide
+- CIDOC-CRM Event Modeling Patterns
+- Medieval Italian Commercial Terminology
+- Getty AAT Role Type Selection Guide
+
+
+=============================================================================
+SECTION 12: VERSION INFORMATION
+=============================================================================
+
+**Property**: gmn:P70_8_documents_broker
+**Created**: 2025-10-17
+**Documentation Version**: 1.0
+**Last Updated**: 2025-10-27
+**Status**: Active
+
+**Change Log**:
+- 2025-10-17: Initial property definition
+- 2025-10-27: Documentation and examples added
+
+
+=============================================================================
+END OF DOCUMENTATION ADDITIONS
+=============================================================================
+
+INSTRUCTIONS FOR DOCUMENTATION MAINTAINERS:
+1. Add Section 1 content to the property reference table
+2. Add Section 2 examples to the examples section
+3. Add Section 3 tables to the comparison/reference section
+4. Add Section 4 to the Getty AAT reference section
+5. Add Section 5 to the historical background section
+6. Add Section 6 to the usage guidelines section
+7. Add Section 7 to the technical documentation
+8. Add Section 8 queries to the SPARQL examples section
+9. Add Section 9 template to the user guide
+10. Add Section 10 FAQs to the Q&A section
+11. Add Section 11 cross-references to the see-also section
+12. Add Section 12 to the version tracking section
