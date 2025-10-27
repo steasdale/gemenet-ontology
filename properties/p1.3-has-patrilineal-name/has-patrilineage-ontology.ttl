@@ -1,0 +1,177 @@
+# GMN Ontology TTL Additions for P1.3 Has Patrilineal Name
+# 
+# INSTRUCTIONS:
+# Copy the content between the START and END markers into your gmn_ontology.ttl file.
+# Insert after the P1.2 has name from source property (around line 187)
+# and before the P1.4 has loconym property (around line 209).
+#
+# Ensure proper indentation and formatting matches your existing file.
+
+# ============================================================================
+# START: P1.3 Has Patrilineal Name Property Definition
+# ============================================================================
+
+# Property: P1.3 has patrilineal name
+gmn:P1_3_has_patrilineal_name 
+    a owl:DatatypeProperty ;
+    a rdf:Property ;
+    rdfs:label "P1.3 has patrilineal name"@en ;
+    rdfs:comment "Simplified property for expressing the patrilineal name of a person, which includes their given name followed by their patronymic ancestry (e.g., 'Giacomo Spinola q. Antonio' meaning 'Giacomo Spinola, son of the late Antonio'). This naming pattern is common in medieval and early modern Italian contexts where 'q.' (quondam) indicates a deceased father or ancestor. Represents the full CIDOC-CRM path: P1_is_identified_by > E41_Appellation > P2_has_type <http://vocab.getty.edu/aat/300404651> > P190_has_symbolic_content. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The appellation type is automatically set to AAT 300404651 (patronymics)."@en ;
+    rdfs:subPropertyOf cidoc:P1_is_identified_by ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range cidoc:E62_String ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P1_is_identified_by, cidoc:P190_has_symbolic_content, aat:300404651 ;
+    owl:equivalentProperty [
+        a owl:Restriction ;
+        owl:onProperty cidoc:P1_is_identified_by ;
+        owl:allValuesFrom [
+            a owl:Restriction ;
+            owl:onProperty cidoc:P190_has_symbolic_content ;
+            owl:hasValue cidoc:E62_String
+        ]
+    ] ;
+    gmn:hasImplicitType aat:300404651 .
+
+# ============================================================================
+# END: P1.3 Has Patrilineal Name Property Definition
+# ============================================================================
+
+# ============================================================================
+# VALIDATION NOTES
+# ============================================================================
+#
+# After adding this property definition, validate your ontology file:
+#
+# 1. Check syntax with rapper:
+#    rapper -i turtle gmn_ontology.ttl > /dev/null
+#
+# 2. Verify property appears in ontology:
+#    grep "P1_3_has_patrilineal_name" gmn_ontology.ttl
+#
+# 3. Check for proper indentation and formatting
+#
+# 4. Ensure the AAT namespace is declared in your file header:
+#    @prefix aat: <http://vocab.getty.edu/page/aat/> .
+#
+# 5. Verify CIDOC-CRM namespace is declared:
+#    @prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+#
+# ============================================================================
+
+# ============================================================================
+# USAGE EXAMPLES
+# ============================================================================
+#
+# Example 1: Basic usage
+# ----------------------
+# <person001> a cidoc:E21_Person ;
+#     gmn:P1_3_has_patrilineal_name "Giacomo Spinola q. Antonio" .
+#
+# Example 2: Multiple patronymics
+# --------------------------------
+# <person002> a cidoc:E21_Person ;
+#     gmn:P1_3_has_patrilineal_name "Giovanni Doria q. Luca" ;
+#     gmn:P1_3_has_patrilineal_name "Giovanni Doria q. Luca q. Branca" .
+#
+# Example 3: Combined with other name properties
+# -----------------------------------------------
+# <person003> a cidoc:E21_Person ;
+#     gmn:P1_1_has_name "Bartolomeo de Serra" ;
+#     gmn:P1_2_has_name_from_source "Bart. de Serra q. Nic." ;
+#     gmn:P1_3_has_patrilineal_name "Bartolomeo de Serra q. Nicolò de Serra" ;
+#     gmn:P1_4_has_loconym <place_serra> .
+#
+# ============================================================================
+
+# ============================================================================
+# TRANSFORMATION REFERENCE
+# ============================================================================
+#
+# This shortcut property transforms to the following CIDOC-CRM structure:
+#
+# <person> a cidoc:E21_Person ;
+#     cidoc:P1_is_identified_by <appellation_uri> .
+#
+# <appellation_uri> a cidoc:E41_Appellation ;
+#     cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300404651> ;
+#     cidoc:P190_has_symbolic_content "Giacomo Spinola q. Antonio" .
+#
+# <http://vocab.getty.edu/page/aat/300404651> a cidoc:E55_Type ;
+#     rdfs:label "patronymics"@en .
+#
+# ============================================================================
+
+# ============================================================================
+# RELATED PROPERTIES
+# ============================================================================
+#
+# This property is part of a family of name properties:
+#
+# - gmn:P1_1_has_name (general names)
+# - gmn:P1_2_has_name_from_source (names from source documents)
+# - gmn:P1_3_has_patrilineal_name (patronymic names) ← THIS PROPERTY
+# - gmn:P1_4_has_loconym (place-based names)
+#
+# All follow the same transformation pattern but with different AAT types.
+#
+# ============================================================================
+
+# ============================================================================
+# AAT REFERENCE
+# ============================================================================
+#
+# AAT Term: patronymics
+# AAT URI: http://vocab.getty.edu/page/aat/300404651
+# AAT ID: 300404651
+#
+# Definition: "Names derived from the name of a father or paternal ancestor,
+#              usually by the addition of a suffix or prefix meaning 'son of.'"
+#
+# Use for: Personal names that incorporate the father's or ancestor's name
+#          to indicate lineage, common in medieval Italian contexts.
+#
+# ============================================================================
+
+# ============================================================================
+# COMPATIBILITY NOTES
+# ============================================================================
+#
+# - OWL 2 DL compatible
+# - CIDOC-CRM 7.1+ compatible  
+# - RDF 1.1 compliant
+# - Turtle syntax version 1.1
+#
+# Tested with:
+# - Apache Jena 4.x
+# - RDFLib 6.x
+# - Protégé 5.x
+#
+# ============================================================================
+
+# ============================================================================
+# CHANGE LOG
+# ============================================================================
+#
+# Version 1.0 - 2025-10-17
+# - Initial property definition
+# - Added to gmn_ontology.ttl
+# - Transformation function implemented
+#
+# Version 1.1 - 2025-10-26
+# - Documentation package created
+# - TTL additions file prepared
+#
+# ============================================================================
+
+# ============================================================================
+# SUPPORT
+# ============================================================================
+#
+# For questions or issues:
+# 1. Check the has-patrilineage-documentation.md file
+# 2. Review the has-patrilineage-implementation-guide.md
+# 3. Consult the main GMN ontology documentation
+# 4. Contact the ontology maintainer
+#
+# ============================================================================

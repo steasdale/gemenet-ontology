@@ -1,0 +1,503 @@
+# Document Additions for P1.3 Has Patrilineal Name
+# 
+# INSTRUCTIONS:
+# Copy and paste the relevant sections below into your main documentation file.
+# Sections are organized by documentation type and can be adapted as needed.
+
+# ============================================================================
+# SECTION 1: PROPERTY OVERVIEW TABLE
+# ============================================================================
+# Add this to your property reference section or quick reference guide
+
+## Name Properties Quick Reference
+
+| Property | Code | Purpose | Example | AAT Type |
+|----------|------|---------|---------|----------|
+| Has Name | P1.1 | General standardized name | "Giacomo Spinola" | 300404688 (names) |
+| Has Name from Source | P1.2 | Exact source transcription | "Jac. Sp. q. Ant." | 300456607 |
+| Has Patrilineal Name | P1.3 | Name with patronymic ancestry | "Giacomo Spinola q. Antonio" | 300404651 (patronymics) |
+| Has Loconym | P1.4 | Place-based identifier | Reference to Genoa | Q17143070 (loconym) |
+
+# ============================================================================
+# SECTION 2: USAGE EXAMPLES
+# ============================================================================
+# Add this to your examples section or user guide
+
+## Example: Recording a Person with Patronymic Name
+
+When you encounter a person identified with patronymic ancestry in a historical document, use the P1.3 property:
+
+**Source Text:**
+"Giacomo Spinola quondam Antonio, notary of Genoa, appeared before the tribunal..."
+
+**Data Entry:**
+```turtle
+<person_giacomo_spinola_001> a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Giacomo Spinola" ;
+    gmn:P1_3_has_patrilineal_name "Giacomo Spinola q. Antonio" ;
+    gmn:P1_4_has_loconym <place_genoa> .
+```
+
+**Explanation:**
+- P1.1 captures the basic standardized name
+- P1.3 captures the full patronymic form including the father's name
+- P1.4 captures the place association (Genoa)
+
+## Example: Recording Extended Patronymic Chains
+
+Some documents include multiple generations of ancestry:
+
+**Source Text:**
+"Giovanni Doria quondam Luca quondam Branca"
+
+**Data Entry:**
+```turtle
+<person_giovanni_doria_002> a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Giovanni Doria" ;
+    gmn:P1_3_has_patrilineal_name "Giovanni Doria q. Luca q. Branca" .
+```
+
+**Note:** The P1.3 property captures the entire patronymic chain as a single string, preserving the genealogical information as it appears in the source.
+
+## Example: Handling Variant Forms
+
+The same person may appear with different levels of patronymic detail in different documents:
+
+**Document 1:** "Bartolomeo de Serra q. Nicolò"
+**Document 2:** "Bartolomeo de Serra q. Nicolò de Serra"
+
+**Data Entry:**
+```turtle
+<person_bartolomeo_001> a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Bartolomeo de Serra" ;
+    gmn:P1_3_has_patrilineal_name "Bartolomeo de Serra q. Nicolò" ;
+    gmn:P1_3_has_patrilineal_name "Bartolomeo de Serra q. Nicolò de Serra" .
+```
+
+**Note:** Both forms can be recorded using multiple P1.3 values. This preserves the variation in how the person was identified across different documents.
+
+# ============================================================================
+# SECTION 3: DATA ENTRY GUIDELINES
+# ============================================================================
+# Add this to your data entry manual or style guide
+
+## Guidelines for Recording Patrilineal Names
+
+### When to Use P1.3 Has Patrilineal Name
+
+Use this property when the source document includes:
+- The abbreviation "q." (quondam) meaning "the late" or "formerly"
+- The phrase "quondam" spelled out in full
+- The abbreviation "fq." (filius quondam) meaning "son of the late"
+- Other patronymic indicators like "f." (filius) for living fathers
+- Clear indication of generational relationship (father, grandfather, etc.)
+
+### Formatting Standards
+
+Follow these formatting guidelines for consistency:
+
+1. **Abbreviation Style**
+   - Use "q." for quondam (preferred form)
+   - Include a space after "q." before the father's name
+   - ✓ Correct: "Giacomo q. Antonio"
+   - ✗ Incorrect: "Giacomo q.Antonio" or "Giacomo qd Antonio"
+
+2. **Name Components**
+   - Include the full name (given name + family name) before the patronymic
+   - ✓ Correct: "Giacomo Spinola q. Antonio"
+   - ✗ Incorrect: "Giacomo q. Antonio" (missing family name)
+
+3. **Capitalization**
+   - Follow the capitalization conventions of the source
+   - Proper names should be capitalized
+   - ✓ Correct: "Giovanni Doria q. Luca"
+
+4. **Special Characters**
+   - Preserve apostrophes, accents, and other diacritical marks
+   - Examples: "Giovanni d'Oria", "Nicolò", "de' Medici"
+
+5. **Multiple Generations**
+   - Record the entire chain as it appears in the source
+   - Use consistent spacing between each generation
+   - Example: "Giovanni Doria q. Luca q. Branca"
+
+### Common Patterns and Abbreviations
+
+| Abbreviation | Full Form | English | Usage |
+|--------------|-----------|---------|-------|
+| q. | quondam | the late, formerly | Most common for deceased father |
+| fq. | filius quondam | son of the late | More explicit form |
+| f. | filius | son of | For living father |
+| olim | olim | formerly | Alternative to quondam |
+| bon. mem. | bonae memoriae | of good memory | Honorific for deceased |
+
+### Quality Control Checklist
+
+Before finalizing a record with P1.3 property, verify:
+
+- [ ] The patronymic indicator (q., fq., etc.) is present
+- [ ] Spacing is consistent (space after abbreviation)
+- [ ] Full name is included (not just given name)
+- [ ] Spelling matches the source document
+- [ ] Special characters are preserved
+- [ ] Multiple values are used for variant forms (if applicable)
+
+# ============================================================================
+# SECTION 4: HISTORICAL CONTEXT
+# ============================================================================
+# Add this to your background information or user training materials
+
+## Understanding Medieval Italian Patronymic Naming
+
+### Historical Background
+
+In medieval and early modern Italian society, particularly in notarial and legal documents, individuals were commonly identified through patronymic formulas that indicated their lineage. This practice served several important functions:
+
+1. **Identity Verification**: Distinguishing between individuals with common names
+2. **Social Status**: Indicating family connections and social standing
+3. **Legal Requirements**: Meeting notarial standards for proper identification
+4. **Property Rights**: Establishing legitimate claims through lineage
+
+### The Role of "Quondam"
+
+The Latin term "quondam" (abbreviated as "q.") literally means "formerly" or "at one time," but in naming conventions it specifically indicates that the named ancestor is deceased. This distinction was legally and socially significant because:
+
+- It clarified succession and inheritance matters
+- It helped distinguish between multiple family members with the same name
+- It provided temporal context for document dating and verification
+
+### Evolution of the Practice
+
+The use of patronymics in Italian documents evolved over time:
+
+**13th-14th Centuries:**
+- Simple patronymics were common: "Giovanni f. Antonio" (Giovanni, son of Antonio)
+- Family names were becoming more fixed but not universal
+
+**15th-16th Centuries:**
+- Combination of family name + patronymic became standard
+- Multiple generations might be cited: "Giovanni Doria q. Luca q. Branca"
+- The practice was formalized in notarial conventions
+
+**17th Century onwards:**
+- Family names became more stable and primary
+- Patronymics were still used but less frequently
+- Eventually phased out in favor of fixed surnames
+
+### Regional Variations
+
+Different Italian regions had somewhat different practices:
+
+**Genoa and Liguria:**
+- Strong use of patronymics through the 16th century
+- Often combined with loconyms: "Bartolomeo de Serra q. Nicolò"
+- Maritime families maintained detailed genealogical records
+
+**Tuscany:**
+- Similar patterns but with some variation in abbreviations
+- More frequent use of "olim" as alternative to "quondam"
+
+**Venice:**
+- Patronymics used but supplemented with parish identifiers
+- Family names (casate) were particularly important
+
+### Interpreting Patronymic Formulas
+
+When encountering patronymic names in documents, consider:
+
+1. **Literal Meaning**: "Giacomo Spinola q. Antonio" = "Giacomo Spinola, son of the late Antonio Spinola"
+
+2. **Legal Significance**: The inclusion of patronymic was often legally required for valid contracts
+
+3. **Genealogical Value**: These names provide direct father-son relationships useful for reconstructing family trees
+
+4. **Social Context**: The level of detail in patronymic formulas could indicate social status or document importance
+
+# ============================================================================
+# SECTION 5: TRANSFORMATION REFERENCE
+# ============================================================================
+# Add this to technical documentation or API reference
+
+## P1.3 Has Patrilineal Name Transformation
+
+### Overview
+
+The `gmn:P1_3_has_patrilineal_name` property is a shortcut property that automatically transforms to full CIDOC-CRM structure during data processing.
+
+### Input Format
+
+**Turtle/RDF:**
+```turtle
+<person_uri> a cidoc:E21_Person ;
+    gmn:P1_3_has_patrilineal_name "Giacomo Spinola q. Antonio" .
+```
+
+**JSON-LD:**
+```json
+{
+  "@id": "person_uri",
+  "@type": "cidoc:E21_Person",
+  "gmn:P1_3_has_patrilineal_name": [
+    {"@value": "Giacomo Spinola q. Antonio"}
+  ]
+}
+```
+
+### Output Format
+
+**Turtle/RDF:**
+```turtle
+<person_uri> a cidoc:E21_Person ;
+    cidoc:P1_is_identified_by <appellation_uri> .
+
+<appellation_uri> a cidoc:E41_Appellation ;
+    cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300404651> ;
+    cidoc:P190_has_symbolic_content "Giacomo Spinola q. Antonio" .
+```
+
+**JSON-LD:**
+```json
+{
+  "@id": "person_uri",
+  "@type": "cidoc:E21_Person",
+  "cidoc:P1_is_identified_by": [
+    {
+      "@id": "appellation_uri",
+      "@type": "cidoc:E41_Appellation",
+      "cidoc:P2_has_type": {
+        "@id": "http://vocab.getty.edu/page/aat/300404651",
+        "@type": "cidoc:E55_Type"
+      },
+      "cidoc:P190_has_symbolic_content": "Giacomo Spinola q. Antonio"
+    }
+  ]
+}
+```
+
+### Transformation Rules
+
+1. **Property Removal**: Original `gmn:P1_3_has_patrilineal_name` property is removed
+2. **Appellation Creation**: New `cidoc:E41_Appellation` entity is created
+3. **Type Assignment**: Appellation is typed as AAT 300404651 (patronymics)
+4. **Content Preservation**: Original string is stored in `cidoc:P190_has_symbolic_content`
+5. **URI Generation**: Unique URI is generated for the appellation
+
+### Multiple Values
+
+When a person has multiple patronymic names, each creates a separate appellation:
+
+**Input:**
+```turtle
+<person_uri> 
+    gmn:P1_3_has_patrilineal_name "Giovanni Doria q. Luca" ;
+    gmn:P1_3_has_patrilineal_name "Giovanni Doria q. Luca q. Branca" .
+```
+
+**Output:**
+```turtle
+<person_uri>
+    cidoc:P1_is_identified_by <appellation_uri_1> ;
+    cidoc:P1_is_identified_by <appellation_uri_2> .
+
+<appellation_uri_1> a cidoc:E41_Appellation ;
+    cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300404651> ;
+    cidoc:P190_has_symbolic_content "Giovanni Doria q. Luca" .
+
+<appellation_uri_2> a cidoc:E41_Appellation ;
+    cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300404651> ;
+    cidoc:P190_has_symbolic_content "Giovanni Doria q. Luca q. Branca" .
+```
+
+# ============================================================================
+# SECTION 6: COMMON QUESTIONS AND ANSWERS
+# ============================================================================
+# Add this to FAQ or support documentation
+
+## Frequently Asked Questions: P1.3 Has Patrilineal Name
+
+**Q: When should I use P1.3 instead of P1.1?**
+A: Use P1.3 when the source includes patronymic information (q., quondam, etc.). Use P1.1 for the basic standardized name. You can and should use both properties together.
+
+**Q: Can a person have multiple P1.3 values?**
+A: Yes! A person may be identified with different patronymic formulas in different documents. Record each distinct form as a separate P1.3 value.
+
+**Q: What if the father's name is not preceded by "q." but the document says he's deceased?**
+A: If the source explicitly states the father is deceased but doesn't use "q.", you can add "q." when recording the P1.3 value, noting this editorial addition in your documentation.
+
+**Q: How do I handle variations in spelling (e.g., "quondam" vs "quond." vs "q.")?**
+A: Standardize to "q." in the P1.3 property for consistency. Use P1.2 (has name from source) to record the exact source text.
+
+**Q: Should I include the family name in P1.3?**
+A: Yes, include the full name: "Giacomo Spinola q. Antonio" not just "Giacomo q. Antonio".
+
+**Q: What if the source lists multiple generations (great-grandfather, etc.)?**
+A: Record the entire chain as written: "Giovanni Doria q. Luca q. Branca q. Domenico"
+
+**Q: Is there a limit to how many generations can be recorded?**
+A: No technical limit, but historical documents rarely go beyond 3-4 generations.
+
+**Q: What happens to the P1.3 property during transformation?**
+A: It's converted to CIDOC-CRM structure (P1_is_identified_by → E41_Appellation with AAT type 300404651) and the original P1.3 property is removed.
+
+**Q: Can I search for all people whose father was named "Antonio"?**
+A: Yes, you can query for P1.3 values containing "q. Antonio" in a SPARQL query or text search.
+
+**Q: What if I don't know if the father is deceased?**
+A: Don't add "q." if it's not in the source. Use P1.1 or P1.2 instead.
+
+# ============================================================================
+# SECTION 7: SPARQL QUERY EXAMPLES
+# ============================================================================
+# Add this to your query examples or technical documentation
+
+## SPARQL Queries for Patrilineal Names
+
+### Query 1: Find all persons with patronymic names
+```sparql
+PREFIX gmn: <https://genoese-merchants.org/ontology#>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?person ?patronymic
+WHERE {
+  ?person a cidoc:E21_Person ;
+          gmn:P1_3_has_patrilineal_name ?patronymic .
+}
+```
+
+### Query 2: Find persons whose father was named Antonio
+```sparql
+PREFIX gmn: <https://genoese-merchants.org/ontology#>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?person ?patronymic
+WHERE {
+  ?person a cidoc:E21_Person ;
+          gmn:P1_3_has_patrilineal_name ?patronymic .
+  FILTER(CONTAINS(LCASE(?patronymic), "q. antonio"))
+}
+```
+
+### Query 3: Find persons with extended patronymic chains (3+ generations)
+```sparql
+PREFIX gmn: <https://genoese-merchants.org/ontology#>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?person ?patronymic
+WHERE {
+  ?person a cidoc:E21_Person ;
+          gmn:P1_3_has_patrilineal_name ?patronymic .
+  FILTER(REGEX(?patronymic, "(q\\. .*){3,}", "i"))
+}
+```
+
+### Query 4: Count persons by patronymic depth
+```sparql
+PREFIX gmn: <https://genoese-merchants.org/ontology#>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT (COUNT(?person) as ?count) (COUNT(?q) as ?generations)
+WHERE {
+  ?person a cidoc:E21_Person ;
+          gmn:P1_3_has_patrilineal_name ?patronymic .
+  BIND(REPLACE(?patronymic, "[^q]", "") as ?q)
+}
+GROUP BY ?q
+ORDER BY DESC(?count)
+```
+
+### Query 5: Find all name variants for a person (expanded form)
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX aat: <http://vocab.getty.edu/page/aat/>
+
+SELECT ?person ?name ?type
+WHERE {
+  ?person a cidoc:E21_Person ;
+          cidoc:P1_is_identified_by ?appellation .
+  ?appellation a cidoc:E41_Appellation ;
+               cidoc:P2_has_type ?type_uri ;
+               cidoc:P190_has_symbolic_content ?name .
+  
+  ?type_uri rdfs:label ?type .
+  
+  # Filter to include patronymics and other name types
+  FILTER(?type_uri IN (
+    aat:300404651,  # patronymics
+    aat:300404688,  # names
+    aat:300456607   # names from source
+  ))
+}
+```
+
+# ============================================================================
+# SECTION 8: TROUBLESHOOTING GUIDE
+# ============================================================================
+# Add this to your support documentation or help system
+
+## Troubleshooting: P1.3 Has Patrilineal Name
+
+### Issue: Property not appearing in output
+
+**Symptoms:** P1.3 property is entered but doesn't appear in queries or exports
+
+**Possible Causes:**
+1. Property not properly namespaced (should be `gmn:P1_3_has_patrilineal_name`)
+2. Ontology file not loaded correctly
+3. Transformation script not processing the property
+
+**Solutions:**
+1. Verify exact property name matches: `gmn:P1_3_has_patrilineal_name`
+2. Check that GMN ontology is loaded in your system
+3. Verify transformation script is running
+4. Check logs for processing errors
+
+### Issue: Patronymic format inconsistent
+
+**Symptoms:** Some records use "q.", others use "quondam", "qd.", etc.
+
+**Solutions:**
+1. Standardize on "q." for consistency
+2. Use P1.2 (name from source) to preserve exact source text
+3. Create data entry guidelines for your team
+4. Run batch updates to normalize existing data
+
+### Issue: Multiple appellations for same person
+
+**Symptoms:** Person has many appellation entries, seems redundant
+
+**Solutions:**
+This is expected behavior! A person can legitimately have:
+- P1.1 (general name)
+- P1.2 (source transcription)  
+- P1.3 (patronymic) - possibly multiple if sources vary
+- P1.4 (loconym)
+
+Each serves a different semantic purpose.
+
+### Issue: Special characters not displaying correctly
+
+**Symptoms:** Names with apostrophes, accents display incorrectly
+
+**Solutions:**
+1. Ensure UTF-8 encoding throughout pipeline
+2. Check database character set settings
+3. Verify web interface encoding
+4. Test with ASCII-only names first, then add special characters
+
+### Issue: Transformation not working after code update
+
+**Symptoms:** After adding transformation code, property still not transforming
+
+**Solutions:**
+1. Verify AAT_PATRONYMIC constant is defined
+2. Check function is actually called in pipeline
+3. Restart application/service to load new code
+4. Check for Python syntax errors
+5. Verify helper function `transform_name_property` exists
+
+# ============================================================================
+# END OF DOCUMENT ADDITIONS
+# ============================================================================
+
+# These additions can be incorporated into your main documentation file as appropriate.
+# Adjust formatting and style to match your existing documentation conventions.
