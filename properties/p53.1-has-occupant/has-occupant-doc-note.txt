@@ -1,0 +1,611 @@
+# Document Additions for gmn:P53_1_has_occupant
+# Examples and tables to add to main documentation
+
+================================================================================
+SECTION 1: PROPERTY OVERVIEW
+================================================================================
+
+Add this section after the "P22.1 has owner" property documentation:
+
+---
+
+### P53.1 has occupant
+
+**Property ID:** gmn:P53_1_has_occupant  
+**Label:** "P53.1 has occupant"  
+**Domain:** gmn:E22_1_Building  
+**Range:** cidoc:E21_Person  
+**Parent Property:** cidoc:P53i_is_former_or_current_location_of
+
+**Description:**
+The `gmn:P53_1_has_occupant` property expresses occupation or residence relationships between buildings and persons. This property is specifically designed for recording persons who reside in a building but are not necessarily the owners. This captures the distinction between property ownership and actual residence, which is particularly important for understanding historical living arrangements, rental situations, and family structures.
+
+**Key Features:**
+- Captures residence relationships separate from ownership
+- Supports multiple occupants per building
+- Automatically transforms to CIDOC-CRM compliant structure
+- Maintains temporal flexibility (former or current occupancy)
+
+**When to Use:**
+- Recording tenants in rental properties
+- Documenting family members residing in inherited property
+- Noting residents of noble palaces and estates
+- Capturing occupancy information from historical records
+- Distinguishing residents from property owners
+
+**Related Properties:**
+- **gmn:P22_1_has_owner** - For property ownership (use both if person owns and occupies)
+- **cidoc:P74_has_current_or_former_residence** - Alternative person-centric property
+- **cidoc:P53i_is_former_or_current_location_of** - Parent CIDOC-CRM property
+
+---
+
+================================================================================
+SECTION 2: USAGE EXAMPLES
+================================================================================
+
+Add these examples to your documentation examples section:
+
+---
+
+#### Example 1: Single Occupant in a Palace
+
+**Scenario:** Lorenzo de' Medici resides in the Palazzo Medici in Florence.
+
+**GMN Shortcut Format:**
+```json
+{
+  "@id": "http://example.org/building/palazzo_medici",
+  "@type": "gmn:E22_1_Building",
+  "gmn:P1_1_has_name": [{"@value": "Palazzo Medici"}],
+  "gmn:P59i_1_is_located": [{"@value": "Via Cavour, Florence"}],
+  "gmn:P53_1_has_occupant": [
+    {
+      "@id": "http://example.org/person/lorenzo_medici",
+      "@type": "cidoc:E21_Person"
+    }
+  ]
+}
+```
+
+**CIDOC-CRM Compliant Output:**
+```json
+{
+  "@id": "http://example.org/building/palazzo_medici",
+  "@type": "gmn:E22_1_Building",
+  "cidoc:P1_is_identified_by": [...],
+  "cidoc:P53_has_former_or_current_location": [
+    {
+      "@id": "http://example.org/person/lorenzo_medici",
+      "@type": "cidoc:E21_Person"
+    }
+  ]
+}
+```
+
+---
+
+#### Example 2: Multiple Occupants in a Shared House
+
+**Scenario:** Three members of the Martelli family occupy a house on Via dei Martelli.
+
+**GMN Shortcut Format:**
+```json
+{
+  "@id": "http://example.org/building/casa_martelli",
+  "@type": "gmn:E22_1_Building",
+  "gmn:P1_1_has_name": [{"@value": "Casa Martelli"}],
+  "gmn:P53_1_has_occupant": [
+    {"@id": "http://example.org/person/niccolo_martelli"},
+    {"@id": "http://example.org/person/maria_martelli"},
+    {"@id": "http://example.org/person/francesco_martelli"}
+  ]
+}
+```
+
+**CIDOC-CRM Compliant Output:**
+```json
+{
+  "@id": "http://example.org/building/casa_martelli",
+  "@type": "gmn:E22_1_Building",
+  "cidoc:P1_is_identified_by": [...],
+  "cidoc:P53_has_former_or_current_location": [
+    {
+      "@id": "http://example.org/person/niccolo_martelli",
+      "@type": "cidoc:E21_Person"
+    },
+    {
+      "@id": "http://example.org/person/maria_martelli",
+      "@type": "cidoc:E21_Person"
+    },
+    {
+      "@id": "http://example.org/person/francesco_martelli",
+      "@type": "cidoc:E21_Person"
+    }
+  ]
+}
+```
+
+---
+
+#### Example 3: Distinguishing Owner from Occupant
+
+**Scenario:** A building on Via Santo Spirito is owned by Giovanni but occupied by Paolo (a rental situation).
+
+**GMN Shortcut Format:**
+```json
+{
+  "@id": "http://example.org/building/rental_house",
+  "@type": "gmn:E22_1_Building",
+  "gmn:P1_1_has_name": [{"@value": "House on Via Santo Spirito"}],
+  "gmn:P22_1_has_owner": [
+    {"@id": "http://example.org/person/giovanni_owner"}
+  ],
+  "gmn:P53_1_has_occupant": [
+    {"@id": "http://example.org/person/paolo_tenant"}
+  ]
+}
+```
+
+**CIDOC-CRM Compliant Output:**
+```json
+{
+  "@id": "http://example.org/building/rental_house",
+  "@type": "gmn:E22_1_Building",
+  "cidoc:P1_is_identified_by": [...],
+  "cidoc:P24i_changed_ownership_through": [
+    {
+      "@id": "http://example.org/building/rental_house/acquisition",
+      "@type": "cidoc:E8_Acquisition",
+      "cidoc:P22_transferred_title_to": [
+        {
+          "@id": "http://example.org/person/giovanni_owner",
+          "@type": "cidoc:E21_Person"
+        }
+      ]
+    }
+  ],
+  "cidoc:P53_has_former_or_current_location": [
+    {
+      "@id": "http://example.org/person/paolo_tenant",
+      "@type": "cidoc:E21_Person"
+    }
+  ]
+}
+```
+
+**Note:** This example shows how both ownership and occupancy can be expressed for the same building when the owner and occupant are different persons.
+
+---
+
+================================================================================
+SECTION 3: COMPARISON TABLE
+================================================================================
+
+Add this comparison table to help users understand when to use each property:
+
+---
+
+### Ownership vs. Occupancy: When to Use Each Property
+
+| Aspect | P22.1 has owner | P53.1 has occupant |
+|--------|-----------------|-------------------|
+| **Property ID** | gmn:P22_1_has_owner | gmn:P53_1_has_occupant |
+| **Legal Status** | Legal title holder | No legal ownership claim |
+| **Rights** | Full ownership rights | Residence/use rights only |
+| **CIDOC-CRM Path** | Via E8_Acquisition event | Via location (P53) |
+| **Typical Relationships** | Owner, proprietor | Tenant, resident, family member |
+| **Use For** | Property deeds, sales, ownership transfers | Rental agreements, residence records |
+| **Can Overlap?** | Yes - same person can own and occupy | Yes - same person can own and occupy |
+| **Parent Property** | P24i_changed_ownership_through | P53i_is_former_or_current_location_of |
+| **Domain** | E22_Human-Made_Object (all types) | E22.1_Building (buildings only) |
+| **Range** | E21_Person | E21_Person |
+
+**Decision Guide:**
+- If the person has legal title to the property → Use `gmn:P22_1_has_owner`
+- If the person lives in the property but doesn't own it → Use `gmn:P53_1_has_occupant`
+- If the person both owns and lives in the property → Use both properties
+- If uncertain about legal ownership status → Use `gmn:P53_1_has_occupant` (safer choice)
+
+---
+
+================================================================================
+SECTION 4: DATA ENTRY GUIDELINES
+================================================================================
+
+Add this section to your data entry or user guide documentation:
+
+---
+
+### Recording Building Occupancy
+
+**Step-by-Step Process:**
+
+1. **Identify the Building:**
+   - Ensure the building is already created as a `gmn:E22_1_Building` entity
+   - Verify you have the correct building URI
+
+2. **Identify the Occupant(s):**
+   - Ensure each occupant is created as a `cidoc:E21_Person` entity
+   - Note the URI for each occupant
+
+3. **Add Occupancy Relationship:**
+   - Use the `gmn:P53_1_has_occupant` property
+   - Link the building to each occupant
+   - Format as an array even for single occupants
+
+4. **Verify the Relationship:**
+   - Confirm the person actually resided in the building
+   - Check that this is not an ownership relationship (use P22.1 for ownership)
+   - Ensure you have documentary evidence for the occupancy
+
+**Common Sources for Occupancy Information:**
+- Tax records (estimi, catasti)
+- Census documents
+- Rental agreements and contracts
+- Family records and genealogies
+- Letters and correspondence mentioning residence
+- Notarial documents with residence information
+
+**Quality Control Checklist:**
+- [ ] Building URI is correct and exists
+- [ ] Occupant person URI is correct and exists
+- [ ] Occupancy is supported by documentary evidence
+- [ ] Occupancy is not actually an ownership relationship
+- [ ] Multiple occupants (if any) are all listed
+- [ ] Property is formatted as array (even for single occupant)
+
+---
+
+================================================================================
+SECTION 5: TECHNICAL SPECIFICATION TABLE
+================================================================================
+
+Add this table to your technical documentation:
+
+---
+
+### P53.1 has occupant - Technical Specification
+
+| Attribute | Value |
+|-----------|-------|
+| **Property URI** | http://example.org/gmn/P53_1_has_occupant |
+| **Property Type** | owl:ObjectProperty, rdf:Property |
+| **Label** | "P53.1 has occupant"@en |
+| **Domain** | gmn:E22_1_Building |
+| **Range** | cidoc:E21_Person |
+| **Super Property** | cidoc:P53i_is_former_or_current_location_of |
+| **Cardinality** | 0..* (zero or more occupants per building) |
+| **Inverse Property** | None explicitly defined |
+| **Functional?** | No (buildings can have multiple occupants) |
+| **Symmetric?** | No |
+| **Transitive?** | No |
+| **Created** | 2025-10-16 |
+| **Status** | Active, Production Ready |
+
+**Transformation Target:** `cidoc:P53_has_former_or_current_location`
+
+**Input Format:** Array of person objects or URIs  
+**Output Format:** Array of person objects with explicit @type
+
+**Example Transformation:**
+```
+INPUT:  gmn:P53_1_has_occupant → [person_uri]
+OUTPUT: cidoc:P53_has_former_or_current_location → [{"@id": person_uri, "@type": "cidoc:E21_Person"}]
+```
+
+---
+
+================================================================================
+SECTION 6: SEMANTIC PATH DIAGRAM
+================================================================================
+
+Add this ASCII diagram to illustrate the semantic relationships:
+
+---
+
+### Semantic Path Visualization
+
+```
+SIMPLIFIED PATH (Current Implementation):
+┌─────────────────────────┐
+│   gmn:E22_1_Building   │
+│   (Palazzo Medici)     │
+└───────────┬─────────────┘
+            │
+            │ cidoc:P53_has_former_or_current_location
+            │
+            ▼
+┌─────────────────────────┐
+│   cidoc:E21_Person     │
+│   (Lorenzo de' Medici) │
+└─────────────────────────┘
+
+FULL CIDOC-CRM PATH (Per Ontology Comment):
+┌─────────────────────────┐
+│   gmn:E22_1_Building   │
+│   (Palazzo Medici)     │
+└───────────┬─────────────┘
+            │
+            │ cidoc:P53i_is_former_or_current_location_of
+            │
+            ▼
+┌─────────────────────────┐
+│   cidoc:E9_Move        │
+│   (residence event)    │
+└───────────┬─────────────┘
+            │
+            │ cidoc:P25_moved
+            │
+            ▼
+┌─────────────────────────┐
+│   cidoc:E21_Person     │
+│   (Lorenzo de' Medici) │
+└─────────────────────────┘
+
+RELATIONSHIP TO OWNERSHIP:
+┌─────────────────────────┐
+│   gmn:E22_1_Building   │
+│   (House)              │
+└───────┬─────────┬───────┘
+        │         │
+        │         │ cidoc:P53_has_former_or_current_location
+        │         │ (OCCUPANCY)
+        │         ▼
+        │    ┌─────────────┐
+        │    │   Tenant    │
+        │    └─────────────┘
+        │
+        │ cidoc:P24i_changed_ownership_through
+        │ (OWNERSHIP)
+        ▼
+┌─────────────────────────┐
+│   cidoc:E8_Acquisition │
+└───────────┬─────────────┘
+            │
+            │ cidoc:P22_transferred_title_to
+            ▼
+┌─────────────────────────┐
+│   Owner                │
+└─────────────────────────┘
+```
+
+**Key Points:**
+- Occupancy and ownership are separate relationships
+- Same building can have both owner and occupant relationships
+- Occupant relationship is simpler (direct property)
+- Owner relationship goes through acquisition event (more complex)
+
+---
+
+================================================================================
+SECTION 7: HISTORICAL CONTEXT NOTE
+================================================================================
+
+Add this context section to help users understand the historical significance:
+
+---
+
+### Historical Context: Property Ownership vs. Occupancy in Renaissance Italy
+
+In Renaissance Italian cities, the distinction between property ownership and residence was significant and well-documented:
+
+**Common Scenarios:**
+
+1. **Noble Families:** Large palaces often housed multiple family members, not all of whom held legal title. For example, a son living in his father's palace would be an occupant but not an owner.
+
+2. **Rental Properties:** Wealthy families owned multiple properties and rented them to others. Tax records (estimi) carefully distinguished between property owned and property occupied.
+
+3. **Dowry Properties:** A wife might bring a house as part of her dowry, making her the legal owner while her husband and their family occupied it.
+
+4. **Commercial Buildings:** Shops and warehouses might be owned by one party and operated (and resided in) by another.
+
+5. **Inherited Property:** Multiple heirs might share ownership of a property, but only one branch of the family actually resided there.
+
+**Documentary Evidence:**
+
+The distinction between ownership and occupancy appears consistently in:
+- **Catasti (tax records):** Listed both "beni possessi" (property owned) and "dove abitano" (where they reside)
+- **Notarial records:** Carefully specified "dominus" (owner) vs. "habitator" (occupant)
+- **Marriage contracts:** Distinguished between properties brought by bride and where couple would reside
+
+**Data Entry Implications:**
+
+When transcribing historical documents:
+- Look for explicit language about ownership vs. residence
+- Check if the document is about a property transaction (suggests ownership) or residence status
+- Consider the context: contracts vs. census vs. correspondence
+- When in doubt, use the occupancy property rather than ownership
+
+---
+
+================================================================================
+SECTION 8: QUERY EXAMPLES
+================================================================================
+
+Add these SPARQL query examples to help users extract useful information:
+
+---
+
+### Common SPARQL Queries for Building Occupancy
+
+**Query 1: Find all buildings and their occupants**
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?building ?buildingName ?occupant ?occupantName
+WHERE {
+    ?building a gmn:E22_1_Building ;
+              gmn:P1_1_has_name ?buildingName ;
+              gmn:P53_1_has_occupant ?occupant .
+    ?occupant gmn:P1_1_has_name ?occupantName .
+}
+ORDER BY ?buildingName
+```
+
+**Query 2: Find buildings with multiple occupants**
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+
+SELECT ?building ?buildingName (COUNT(?occupant) AS ?occupantCount)
+WHERE {
+    ?building a gmn:E22_1_Building ;
+              gmn:P1_1_has_name ?buildingName ;
+              gmn:P53_1_has_occupant ?occupant .
+}
+GROUP BY ?building ?buildingName
+HAVING (COUNT(?occupant) > 1)
+ORDER BY DESC(?occupantCount)
+```
+
+**Query 3: Find persons who both own and occupy the same building**
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+
+SELECT ?person ?personName ?building ?buildingName
+WHERE {
+    ?building gmn:P22_1_has_owner ?person ;
+              gmn:P53_1_has_occupant ?person ;
+              gmn:P1_1_has_name ?buildingName .
+    ?person gmn:P1_1_has_name ?personName .
+}
+```
+
+**Query 4: Find buildings with occupants but no recorded owner**
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+
+SELECT ?building ?buildingName ?occupant ?occupantName
+WHERE {
+    ?building a gmn:E22_1_Building ;
+              gmn:P1_1_has_name ?buildingName ;
+              gmn:P53_1_has_occupant ?occupant .
+    ?occupant gmn:P1_1_has_name ?occupantName .
+    
+    FILTER NOT EXISTS { 
+        ?building gmn:P22_1_has_owner ?owner 
+    }
+}
+```
+
+**Query 5: Find all occupants of buildings in a specific location**
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+
+SELECT ?building ?buildingName ?location ?occupant ?occupantName
+WHERE {
+    ?building a gmn:E22_1_Building ;
+              gmn:P1_1_has_name ?buildingName ;
+              gmn:P59i_1_is_located ?location ;
+              gmn:P53_1_has_occupant ?occupant .
+    ?occupant gmn:P1_1_has_name ?occupantName .
+    
+    FILTER(CONTAINS(?location, "Via Cavour"))
+}
+```
+
+---
+
+================================================================================
+SECTION 9: TROUBLESHOOTING GUIDE
+================================================================================
+
+Add this troubleshooting section to your user documentation:
+
+---
+
+### Common Issues and Solutions
+
+**Issue 1: "Should I use owner or occupant property?"**
+
+**Solution:**
+- If you have a property deed, sales contract, or inheritance document → Use `gmn:P22_1_has_owner`
+- If you have a census, tax record showing residence, or rental agreement → Use `gmn:P53_1_has_occupant`
+- If the person both owns and lives there → Use both properties
+- When uncertain → Default to occupant (it's safer and more general)
+
+---
+
+**Issue 2: "The same person appears in multiple buildings - is this correct?"**
+
+**Solution:**
+This is normal and historically accurate. People could:
+- Own multiple properties (use P22.1 for each)
+- Occupy multiple properties at different times (use P53.1 for each)
+- Own one property and occupy another (use P22.1 for first, P53.1 for second)
+
+The property system can handle multiple relationships. Just ensure each relationship is documented.
+
+---
+
+**Issue 3: "How do I handle temporal changes in occupancy?"**
+
+**Solution:**
+Currently, the `gmn:P53_1_has_occupant` property is temporally flexible (former or current). For more precise temporal modeling:
+
+Option A (Simple): Create separate building instances for different time periods
+Option B (Advanced): Add time-span information to the person entity
+Option C (Future): Wait for temporal extensions to the property
+
+For most historical research, Option A is recommended.
+
+---
+
+**Issue 4: "What if I'm not sure if someone actually lived there?"**
+
+**Solution:**
+- Add an editorial note (using `gmn:P3_1_has_editorial_note`) indicating uncertainty
+- Use phrases like "possibly occupied" or "residence unclear" in notes
+- Document your source and its reliability
+- Don't create the occupancy relationship if evidence is too weak
+
+Quality over quantity - better to have fewer certain relationships than many uncertain ones.
+
+---
+
+**Issue 5: "Can businesses or institutions be occupants?"**
+
+**Solution:**
+The `gmn:P53_1_has_occupant` property is specifically for persons (E21_Person). For institutional occupancy:
+- If modeling a religious institution's use of a building → Use different CIDOC-CRM patterns
+- If modeling a business operated by a person → Record the person as occupant
+- If modeling a company or guild → This falls outside the current property's scope
+
+---
+
+================================================================================
+SECTION 10: FURTHER READING AND REFERENCES
+================================================================================
+
+Add this reference section:
+
+---
+
+### Further Reading
+
+**CIDOC-CRM Documentation:**
+- P53 has former or current location: http://www.cidoc-crm.org/Property/P53
+- E9 Move: http://www.cidoc-crm.org/Entity/E9-Move
+- P25 moved: http://www.cidoc-crm.org/Property/P25-moved
+
+**Historical Background:**
+- Goldthwaite, Richard A. *The Economy of Renaissance Florence*. Chapter on housing and property
+- Molho, Anthony. *Marriage Alliance in Late Medieval Florence*. On property transfers and residence
+- Herlihy, David & Klapisch-Zuber, Christiane. *Tuscans and Their Families*. On household structure
+
+**Related Project Documentation:**
+- Property ownership property: See documentation for `gmn:P22_1_has_owner`
+- Building class: See documentation for `gmn:E22_1_Building`
+- Person class: See documentation for `cidoc:E21_Person`
+- Transformation guide: See `gmn_to_cidoc_transform.py` documentation
+
+---
+
+================================================================================
+END OF DOCUMENT ADDITIONS
+================================================================================
+
+Note: These sections can be integrated into your main documentation file in the
+appropriate locations. Each section is designed to be self-contained and can be
+inserted where it makes the most sense in your document structure.
