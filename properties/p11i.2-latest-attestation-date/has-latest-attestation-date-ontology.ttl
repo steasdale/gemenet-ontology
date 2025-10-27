@@ -1,0 +1,437 @@
+# TTL Additions for gmn:P11i_2_latest_attestation_date
+# Ready-to-copy Turtle snippets for gmn_ontology.ttl
+
+## STATUS: ✅ ALREADY IMPLEMENTED
+## This file contains the CURRENT ontology definition for reference
+
+---
+
+## Complete Property Definition
+
+```turtle
+# Property: P11i.2 latest attestation date
+gmn:P11i_2_latest_attestation_date
+    a owl:DatatypeProperty ;
+    a rdf:Property ;
+    rdfs:label "P11i.2 latest attestation date"@en ;
+    rdfs:comment "Simplified property for expressing the latest date at which a person is documented or attested to have been alive in historical sources. Represents the full CIDOC-CRM path: E21_Person > P11i_participated_in > E5_Event > P4_has_time-span > E52_Time-Span > P82b_end_of_the_end. This property captures the last known documentary evidence of a person's existence. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance."@en ;
+    rdfs:subPropertyOf cidoc:P11i_participated_in ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range xsd:date ;
+    dcterms:created "2025-10-16"^^xsd:date ;
+    rdfs:seeAlso cidoc:P11i_participated_in, cidoc:P4_has_time-span, cidoc:P82b_end_of_the_end .
+```
+
+---
+
+## Location in gmn_ontology.ttl
+
+- **File:** `gmn_ontology.ttl`
+- **Lines:** 143-152 (approximately, may vary with updates)
+- **Section:** Person attestation and relationship properties
+
+---
+
+## Required Namespace Prefixes
+
+Ensure these prefixes are declared at the top of your TTL file:
+
+```turtle
+@prefix gmn: <http://example.org/gmn/> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+```
+
+---
+
+## Property Components Breakdown
+
+### 1. Type Declarations
+
+```turtle
+gmn:P11i_2_latest_attestation_date
+    a owl:DatatypeProperty ;
+    a rdf:Property ;
+```
+
+**Explanation:**
+- `owl:DatatypeProperty` - Indicates the range is a literal value (not an object)
+- `rdf:Property` - General RDF property type
+
+### 2. Human-Readable Labels
+
+```turtle
+    rdfs:label "P11i.2 latest attestation date"@en ;
+```
+
+**Explanation:**
+- Language-tagged label for UI display
+- Follow the pattern: "P[parent].[number] [description]"
+
+### 3. Documentation
+
+```turtle
+    rdfs:comment "Simplified property for expressing the latest date at which a person is documented or attested to have been alive in historical sources. Represents the full CIDOC-CRM path: E21_Person > P11i_participated_in > E5_Event > P4_has_time-span > E52_Time-Span > P82b_end_of_the_end. This property captures the last known documentary evidence of a person's existence. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance."@en ;
+```
+
+**Explanation:**
+- Detailed description of property purpose
+- MUST include the full CIDOC-CRM transformation path
+- Should explain "latest attestation" vs. "death date" distinction
+
+### 4. Property Hierarchy
+
+```turtle
+    rdfs:subPropertyOf cidoc:P11i_participated_in ;
+```
+
+**Explanation:**
+- Establishes parent-child relationship
+- Enables property hierarchy reasoning
+- Links simplified property to CIDOC-CRM
+
+### 5. Domain and Range
+
+```turtle
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range xsd:date ;
+```
+
+**Explanation:**
+- **Domain:** Property can only be used with E21_Person
+- **Range:** Value must be an xsd:date literal
+
+### 6. Metadata
+
+```turtle
+    dcterms:created "2025-10-16"^^xsd:date ;
+    rdfs:seeAlso cidoc:P11i_participated_in, cidoc:P4_has_time-span, cidoc:P82b_end_of_the_end .
+```
+
+**Explanation:**
+- Creation date for provenance tracking
+- Related properties for reference and documentation
+
+---
+
+## Usage Examples in Data
+
+### Example 1: Simple Person Record
+
+```turtle
+@prefix person: <http://example.org/person/> .
+@prefix gmn: <http://example.org/gmn/> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+person:francesco_corner 
+    a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Francesco Corner" ;
+    gmn:P11i_2_latest_attestation_date "1592-06-15"^^xsd:date .
+```
+
+### Example 2: Person with Both Attestation Dates
+
+```turtle
+person:maria_venier 
+    a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Maria Venier" ;
+    gmn:P11i_1_earliest_attestation_date "1575-03-12"^^xsd:date ;
+    gmn:P11i_2_latest_attestation_date "1598-11-20"^^xsd:date .
+```
+
+### Example 3: Multiple Latest Attestations
+
+```turtle
+person:lorenzo_giustiniani 
+    a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Lorenzo Giustiniani" ;
+    gmn:P11i_2_latest_attestation_date 
+        "1595-06-10"^^xsd:date,
+        "1595-08-20"^^xsd:date,
+        "1595-12-15"^^xsd:date .
+```
+
+### Example 4: Different Date Precisions
+
+```turtle
+# Precise date (day)
+person:p001 gmn:P11i_2_latest_attestation_date "1595-08-20"^^xsd:date .
+
+# Month precision
+person:p002 gmn:P11i_2_latest_attestation_date "1595-08"^^xsd:date .
+
+# Year only
+person:p003 gmn:P11i_2_latest_attestation_date "1595"^^xsd:date .
+```
+
+---
+
+## Validation Rules
+
+### Must Have
+
+- ✅ Type declarations (owl:DatatypeProperty and rdf:Property)
+- ✅ rdfs:label with language tag
+- ✅ rdfs:comment with full transformation path
+- ✅ rdfs:domain (must be cidoc:E21_Person)
+- ✅ rdfs:range (must be xsd:date)
+- ✅ rdfs:subPropertyOf (must be cidoc:P11i_participated_in)
+
+### Should Have
+
+- ✅ dcterms:created with date
+- ✅ rdfs:seeAlso with related properties
+
+### Must NOT Have
+
+- ❌ Conflicting domain (only E21_Person allowed)
+- ❌ Conflicting range (only xsd:date allowed)
+- ❌ Wrong super property (must be P11i_participated_in)
+
+---
+
+## CIDOC-CRM Transformation Output
+
+When transformed, this property produces:
+
+```turtle
+person:francesco_corner 
+    a cidoc:E21_Person ;
+    cidoc:P11i_participated_in [
+        a cidoc:E5_Event ;
+        cidoc:P4_has_time-span [
+            a cidoc:E52_Time-Span ;
+            cidoc:P82b_end_of_the_end "1592-06-15"^^xsd:date
+        ]
+    ] .
+```
+
+---
+
+## Related Properties
+
+### Sibling Properties (Same Pattern)
+
+```turtle
+# Earliest attestation (P82a_begin_of_the_begin)
+gmn:P11i_1_earliest_attestation_date
+    a owl:DatatypeProperty ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range xsd:date ;
+    rdfs:subPropertyOf cidoc:P11i_participated_in .
+
+# Has spouse (P11_had_participant with type)
+gmn:P11i_3_has_spouse
+    a owl:ObjectProperty ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range cidoc:E21_Person ;
+    rdfs:subPropertyOf cidoc:P11i_participated_in .
+```
+
+### Contrasting Properties (Different Events)
+
+```turtle
+# Birth (uses P98i_was_born → E67_Birth)
+cidoc:P98i_was_born 
+    a owl:ObjectProperty ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range cidoc:E67_Birth .
+
+# Death (uses P100i_died_in → E69_Death)
+cidoc:P100i_died_in
+    a owl:ObjectProperty ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range cidoc:E69_Death .
+```
+
+---
+
+## Integration with Other GMN Properties
+
+### Complete Person Model
+
+```turtle
+person:complete_example 
+    a cidoc:E21_Person ;
+    
+    # Identity
+    gmn:P1_1_has_name "Complete Example" ;
+    gmn:P1_2_has_name_from_source "Example, Comp." ;
+    gmn:P1_3_has_patrilineal_name "Example" ;
+    gmn:P1_4_has_loconym "da Venezia" ;
+    
+    # Attestations
+    gmn:P11i_1_earliest_attestation_date "1575"^^xsd:date ;
+    gmn:P11i_2_latest_attestation_date "1598"^^xsd:date ;
+    
+    # Relationships
+    gmn:P11i_3_has_spouse person:spouse ;
+    gmn:P96_1_has_mother person:mother ;
+    gmn:P97_1_has_father person:father ;
+    
+    # Social categories
+    gmn:P107i_1_has_regional_provenance "Venice" ;
+    gmn:P107i_2_has_social_category "Nobility" ;
+    gmn:P107i_3_has_occupation "Merchant" .
+```
+
+---
+
+## Testing Queries
+
+### Test 1: Retrieve All Latest Attestations
+
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?person ?name ?latestDate
+WHERE {
+    ?person a cidoc:E21_Person ;
+            gmn:P1_1_has_name ?name ;
+            gmn:P11i_2_latest_attestation_date ?latestDate .
+}
+ORDER BY DESC(?latestDate)
+```
+
+### Test 2: Validate Date Format
+
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?person ?date
+WHERE {
+    ?person gmn:P11i_2_latest_attestation_date ?date .
+    FILTER(datatype(?date) != xsd:date)
+}
+```
+
+Expected result: Empty (all dates should have xsd:date type)
+
+### Test 3: Find Persons with Multiple Latest Attestations
+
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?person ?name (COUNT(?date) AS ?count)
+WHERE {
+    ?person a cidoc:E21_Person ;
+            gmn:P1_1_has_name ?name ;
+            gmn:P11i_2_latest_attestation_date ?date .
+}
+GROUP BY ?person ?name
+HAVING (COUNT(?date) > 1)
+```
+
+---
+
+## Common Errors and Fixes
+
+### Error 1: Missing Language Tag
+
+❌ **Wrong:**
+```turtle
+rdfs:label "P11i.2 latest attestation date" ;
+```
+
+✅ **Correct:**
+```turtle
+rdfs:label "P11i.2 latest attestation date"@en ;
+```
+
+### Error 2: Wrong Datatype
+
+❌ **Wrong:**
+```turtle
+person:p001 gmn:P11i_2_latest_attestation_date "1595-08-20" .  # String, not date
+```
+
+✅ **Correct:**
+```turtle
+person:p001 gmn:P11i_2_latest_attestation_date "1595-08-20"^^xsd:date .
+```
+
+### Error 3: Using with Non-Person Entity
+
+❌ **Wrong:**
+```turtle
+document:d001 a cidoc:E31_Document ;
+    gmn:P11i_2_latest_attestation_date "1595"^^xsd:date .  # Domain violation
+```
+
+✅ **Correct:**
+```turtle
+person:p001 a cidoc:E21_Person ;
+    gmn:P11i_2_latest_attestation_date "1595"^^xsd:date .
+```
+
+### Error 4: Incomplete Transformation Path in Comment
+
+❌ **Wrong:**
+```turtle
+rdfs:comment "Property for expressing latest attestation date."@en ;
+```
+
+✅ **Correct:**
+```turtle
+rdfs:comment "Simplified property for expressing the latest date at which a person is documented or attested to have been alive in historical sources. Represents the full CIDOC-CRM path: E21_Person > P11i_participated_in > E5_Event > P4_has_time-span > E52_Time-Span > P82b_end_of_the_end. [...]"@en ;
+```
+
+---
+
+## File Integration Notes
+
+### Where to Add (If Creating New)
+
+1. Add to ontology file after P11i_1_earliest_attestation_date
+2. Keep together with other person attestation properties
+3. Maintain consistent formatting and indentation
+
+### Section Organization
+
+```turtle
+# ============================================
+# PERSON ATTESTATION AND RELATIONSHIP PROPERTIES
+# ============================================
+
+# Property: P11i.1 earliest attestation date
+gmn:P11i_1_earliest_attestation_date [...] .
+
+# Property: P11i.2 latest attestation date
+gmn:P11i_2_latest_attestation_date [...] .   # ← This property
+
+# Property: P11i.3 has spouse
+gmn:P11i_3_has_spouse [...] .
+```
+
+---
+
+## Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0 | 2025-10-16 | Initial implementation |
+
+---
+
+## Summary
+
+This file contains:
+- ✅ Complete property definition in Turtle format
+- ✅ All required components and metadata
+- ✅ Usage examples with different scenarios
+- ✅ Validation rules and testing queries
+- ✅ Common errors and their fixes
+- ✅ Integration guidance
+
+**Status:** Property is fully implemented in gmn_ontology.ttl  
+**Action Required:** None - reference only
+
+For implementation in new ontologies, copy the complete property definition block and adjust namespaces as needed.

@@ -1,0 +1,506 @@
+# Document Additions for gmn:P11i_2_latest_attestation_date
+# Examples and Tables for Main Documentation File
+
+This file contains ready-to-copy sections for adding to your main project documentation.
+
+---
+
+## SECTION 1: Property Summary Table Entry
+
+Add this row to your "GMN Properties Summary" table:
+
+| Property | Label | Type | Domain | Range | Super Property | Description |
+|----------|-------|------|--------|-------|----------------|-------------|
+| gmn:P11i_2_latest_attestation_date | P11i.2 latest attestation date | DatatypeProperty | E21_Person | xsd:date | P11i_participated_in | Expresses the latest date at which a person is attested in historical sources. Represents: E21_Person → P11i_participated_in → E5_Event → P4_has_time-span → E52_Time-Span → P82b_end_of_the_end. |
+
+---
+
+## SECTION 2: Attestation Properties Overview
+
+Add this section to your documentation:
+
+### Person Attestation Properties
+
+The GMN ontology includes two complementary properties for documenting the attested lifespan of historical persons when exact birth and death dates are unknown:
+
+#### P11i.1 Earliest Attestation Date
+- **Purpose:** Records the first known date when a person appears in historical sources
+- **Use:** Establishes the earliest documented evidence of a person's existence
+- **CIDOC-CRM Mapping:** Uses P82a_begin_of_the_begin
+
+#### P11i.2 Latest Attestation Date
+- **Purpose:** Records the last known date when a person appears in historical sources  
+- **Use:** Establishes the latest documented evidence of a person's existence
+- **CIDOC-CRM Mapping:** Uses P82b_end_of_the_end
+
+**Together, these properties bracket the documented lifespan of a person, representing the period during which historical evidence confirms their existence.**
+
+---
+
+## SECTION 3: Usage Examples
+
+Add these examples to your documentation:
+
+### Example 1: Person with Latest Attestation Date
+
+**Scenario:** A merchant last appears in archival records in 1592.
+
+**GMN Format (Simplified):**
+```turtle
+person:francesco_corner a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Francesco Corner" ;
+    gmn:P11i_2_latest_attestation_date "1592-06-15"^^xsd:date .
+```
+
+**CIDOC-CRM Format (After Transformation):**
+```turtle
+person:francesco_corner a cidoc:E21_Person ;
+    cidoc:P1_is_identified_by [
+        a cidoc:E41_Appellation ;
+        cidoc:P190_has_symbolic_content "Francesco Corner"
+    ] ;
+    cidoc:P11i_participated_in [
+        a cidoc:E5_Event ;
+        cidoc:P4_has_time-span [
+            a cidoc:E52_Time-Span ;
+            cidoc:P82b_end_of_the_end "1592-06-15"^^xsd:date
+        ]
+    ] .
+```
+
+### Example 2: Complete Documented Lifespan
+
+**Scenario:** A person appears in records from 1575 to 1598.
+
+**GMN Format:**
+```turtle
+person:maria_venier a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Maria Venier" ;
+    gmn:P11i_1_earliest_attestation_date "1575-03-12"^^xsd:date ;
+    gmn:P11i_2_latest_attestation_date "1598-11-20"^^xsd:date .
+```
+
+**Interpretation:** Maria Venier is documented in historical sources between March 1575 and November 1598. We have no records of her before 1575 or after 1598.
+
+### Example 3: Multiple Latest Attestations
+
+**Scenario:** A person appears in several documents during their final year.
+
+**GMN Format:**
+```turtle
+person:lorenzo_giustiniani a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Lorenzo Giustiniani" ;
+    gmn:P11i_2_latest_attestation_date 
+        "1595-06-10"^^xsd:date,
+        "1595-08-20"^^xsd:date,
+        "1595-12-15"^^xsd:date .
+```
+
+**Use Case:** Each date represents a distinct document or event where Lorenzo appears, preserving granular temporal information about his activities in 1595.
+
+---
+
+## SECTION 4: Comparison with Related Properties
+
+Add this comparison table to clarify distinctions:
+
+### Attestation vs. Birth/Death Properties
+
+| Aspect | Birth (P98i_was_born) | Death (P100i_died_in) | Earliest Attestation (P11i.1) | Latest Attestation (P11i.2) |
+|--------|----------------------|----------------------|------------------------------|----------------------------|
+| **Event Type** | E67_Birth | E69_Death | E5_Event (generic) | E5_Event (generic) |
+| **Certainty** | Known birth date | Known death date | First documentary evidence | Last documentary evidence |
+| **Meaning** | Actual birth occurred | Actual death occurred | Person first appears in records | Person last appears in records |
+| **Temporal Property** | P82_at_some_time_within | P82_at_some_time_within | P82a_begin_of_the_begin | P82b_end_of_the_end |
+| **Use When** | Birth date is known | Death date is known | Only earliest record is known | Only latest record is known |
+
+**Key Distinction:** 
+- Birth/Death properties represent actual biographical events
+- Attestation properties represent documentary evidence (when records show the person was alive)
+
+**Example of Both:**
+```turtle
+person:example a cidoc:E21_Person ;
+    # Actual dates (if known)
+    cidoc:P98i_was_born [ cidoc:P4_has_time-span/cidoc:P82_at_some_time_within "1550"^^xsd:date ] ;
+    cidoc:P100i_died_in [ cidoc:P4_has_time-span/cidoc:P82_at_some_time_within "1610"^^xsd:date ] ;
+    # Documentary evidence (what records show)
+    gmn:P11i_1_earliest_attestation_date "1575"^^xsd:date ;
+    gmn:P11i_2_latest_attestation_date "1598"^^xsd:date .
+```
+Here, the person was born in 1550 and died in 1610, but we only have records documenting them between 1575-1598.
+
+---
+
+## SECTION 5: Query Examples
+
+Add these SPARQL examples to show how to query latest attestation data:
+
+### Query 1: Find All Persons with Latest Attestations
+
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?person ?name ?latestDate
+WHERE {
+    ?person a cidoc:E21_Person ;
+            gmn:P1_1_has_name ?name ;
+            gmn:P11i_2_latest_attestation_date ?latestDate .
+}
+ORDER BY DESC(?latestDate)
+```
+
+### Query 2: Find Persons Active in a Specific Year
+
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT DISTINCT ?person ?name
+WHERE {
+    ?person a cidoc:E21_Person ;
+            gmn:P1_1_has_name ?name ;
+            gmn:P11i_1_earliest_attestation_date ?earliest ;
+            gmn:P11i_2_latest_attestation_date ?latest .
+    
+    # Find persons documented during 1590
+    FILTER(YEAR(?earliest) <= 1590 && YEAR(?latest) >= 1590)
+}
+ORDER BY ?name
+```
+
+### Query 3: Calculate Documented Lifespan
+
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?person ?name ?earliest ?latest 
+       (YEAR(?latest) - YEAR(?earliest) AS ?years_documented)
+WHERE {
+    ?person a cidoc:E21_Person ;
+            gmn:P1_1_has_name ?name ;
+            gmn:P11i_1_earliest_attestation_date ?earliest ;
+            gmn:P11i_2_latest_attestation_date ?latest .
+}
+ORDER BY DESC(?years_documented)
+```
+
+### Query 4: After Transformation (CIDOC-CRM)
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?person ?name ?latestDate
+WHERE {
+    ?person a cidoc:E21_Person ;
+            cidoc:P1_is_identified_by/cidoc:P190_has_symbolic_content ?name ;
+            cidoc:P11i_participated_in ?event .
+    
+    ?event cidoc:P4_has_time-span ?timespan .
+    ?timespan cidoc:P82b_end_of_the_end ?latestDate .
+}
+ORDER BY DESC(?latestDate)
+```
+
+---
+
+## SECTION 6: Best Practices
+
+Add these guidelines to your documentation:
+
+### Best Practices for Latest Attestation Dates
+
+#### 1. Use for Documentary Evidence Only
+- ✅ **Correct:** Person last appears in a contract dated 1595-08-20
+- ❌ **Incorrect:** Person probably died around 1595
+
+Latest attestation represents what documents show, not biographical assumptions.
+
+#### 2. Date Precision
+- Use the most precise date available from the source
+- If only year is known: `"1595"^^xsd:date`
+- If year and month: `"1595-08"^^xsd:date`  
+- If full date: `"1595-08-20"^^xsd:date`
+
+#### 3. Multiple Attestations
+- Record each distinct attestation as a separate date value
+- This preserves granular information about documentary evidence
+- Example: If a person appears in three documents in 1595, record all three dates
+
+#### 4. Relationship to Death Date
+Latest attestation provides a **terminus post quem** (earliest possible date) for death:
+- If latest attestation is 1595-08-20, the person died on or after that date
+- Cannot use latest attestation as death date without additional evidence
+
+#### 5. Combined with Earliest Attestation
+Always use both properties together when possible:
+```turtle
+person:p001
+    gmn:P11i_1_earliest_attestation_date "1575"^^xsd:date ;
+    gmn:P11i_2_latest_attestation_date "1598"^^xsd:date .
+```
+This brackets the documented lifespan: 1575-1598.
+
+#### 6. When to Use Latest Attestation vs. Death Date
+
+| Situation | Property to Use |
+|-----------|----------------|
+| Death date is documented in sources | `cidoc:P100i_died_in` (actual death) |
+| Death date is unknown but person last appears in 1595 | `gmn:P11i_2_latest_attestation_date` |
+| Both are known | Use both properties |
+| Estimated death date | Use CIDOC-CRM E52_Time-Span with qualifiers |
+
+---
+
+## SECTION 7: Common Use Cases
+
+Add these scenarios to help users understand when to apply the property:
+
+### Use Case 1: Prosopographical Database
+**Scenario:** Building a database of medieval merchants where most lack birth/death dates.
+
+**Solution:**
+```turtle
+merchant:giovanni_corner a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Giovanni Corner" ;
+    gmn:P107i_3_has_occupation "Merchant" ;
+    gmn:P11i_1_earliest_attestation_date "1465"^^xsd:date ;
+    gmn:P11i_2_latest_attestation_date "1492"^^xsd:date .
+```
+
+**Benefit:** Establishes documented activity period without false precision about birth/death.
+
+### Use Case 2: Family Tree with Uncertain Dates
+**Scenario:** Reconstructing genealogy where exact dates are rare.
+
+**Approach:**
+```turtle
+# Father
+person:marco_soranzo
+    gmn:P11i_2_latest_attestation_date "1465-03-10"^^xsd:date .
+
+# Son  
+person:giovanni_soranzo
+    gmn:P97_1_has_father person:marco_soranzo ;
+    gmn:P11i_1_earliest_attestation_date "1480"^^xsd:date ;
+    gmn:P11i_2_latest_attestation_date "1515"^^xsd:date .
+```
+
+**Insight:** Father's latest attestation (1465) predates son's first attestation (1480), consistent with chronology.
+
+### Use Case 3: Historical Network Analysis
+**Scenario:** Identifying contemporaries who might have known each other.
+
+**Query:** Find persons with overlapping documentation periods:
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?person1 ?name1 ?person2 ?name2
+WHERE {
+    ?person1 gmn:P1_1_has_name ?name1 ;
+             gmn:P11i_1_earliest_attestation_date ?start1 ;
+             gmn:P11i_2_latest_attestation_date ?end1 .
+    
+    ?person2 gmn:P1_1_has_name ?name2 ;
+             gmn:P11i_1_earliest_attestation_date ?start2 ;
+             gmn:P11i_2_latest_attestation_date ?end2 .
+    
+    # Temporal overlap
+    FILTER(?start1 <= ?end2 && ?start2 <= ?end1)
+    FILTER(?person1 != ?person2)
+}
+```
+
+### Use Case 4: Data Quality Checks
+**Scenario:** Validating chronological consistency.
+
+**Check:** Ensure latest attestation doesn't precede earliest:
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+
+SELECT ?person ?name ?earliest ?latest
+WHERE {
+    ?person gmn:P1_1_has_name ?name ;
+            gmn:P11i_1_earliest_attestation_date ?earliest ;
+            gmn:P11i_2_latest_attestation_date ?latest .
+    
+    FILTER(?latest < ?earliest)  # Should return no results
+}
+```
+
+If this query returns results, there are data quality issues to investigate.
+
+---
+
+## SECTION 8: Transformation Pipeline
+
+Add this technical note about the transformation:
+
+### Latest Attestation Date Transformation
+
+**Input Property:** `gmn:P11i_2_latest_attestation_date`  
+**Output Structure:** CIDOC-CRM event with temporal bounds
+
+**Transformation Path:**
+```
+E21_Person
+  → P11i_participated_in
+    → E5_Event
+      → P4_has_time-span
+        → E52_Time-Span
+          → P82b_end_of_the_end (date value)
+```
+
+**Key Features:**
+- Automatically expands simplified property to full CIDOC-CRM structure
+- Generates stable, deterministic URIs for events and timespans
+- Handles multiple date values by creating separate events
+- Preserves date precision (year, year-month, or full date)
+- Coexists with earliest attestation and other participation events
+
+**Example URI Generation:**
+- Person URI: `person:lorenzo_giustiniani`
+- Event URI: `person:lorenzo_giustiniani/event/latest_45678901`
+- Timespan URI: `person:lorenzo_giustiniani/event/latest_45678901/timespan`
+
+The hash suffix (`45678901`) ensures unique event URIs even with multiple attestations.
+
+---
+
+## SECTION 9: Frequently Asked Questions
+
+Add this FAQ section:
+
+### FAQ: Latest Attestation Date
+
+**Q: What's the difference between latest attestation and death date?**
+
+A: Latest attestation is the last time a person appears in historical records. Death date is the actual date of death (if known). A person may have died years after their latest attestation if records are incomplete.
+
+**Q: Can I use multiple latest attestation dates for one person?**
+
+A: Yes! Multiple dates are supported and encouraged when a person appears in several documents. Each date creates a separate event, preserving fine-grained temporal information.
+
+**Q: What if I only know the year, not the exact date?**
+
+A: Use year-only precision: `"1595"^^xsd:date`. The ontology supports year-only, year-month, and full date formats.
+
+**Q: Should I use this property if I know the death date?**
+
+A: It depends. If the death date is known, use `cidoc:P100i_died_in`. You can use both properties if you want to record both the actual death and the documentary evidence separately.
+
+**Q: What if the latest attestation is just "circa 1595"?**
+
+A: For uncertain dates, you have two options:
+1. Use the approximate year: `"1595"^^xsd:date`
+2. Use full CIDOC-CRM E52_Time-Span with P79_beginning_is_qualified_by qualifiers
+
+**Q: How does this differ from earliest attestation?**
+
+A: Earliest attestation uses `P82a_begin_of_the_begin` (beginning of lifespan), while latest attestation uses `P82b_end_of_the_end` (end of lifespan). Together they bracket the documented life period.
+
+**Q: Can I query for persons alive during a specific year?**
+
+A: Yes! Use a query that checks if the year falls between earliest and latest attestation dates. See the query examples above.
+
+---
+
+## SECTION 10: Related Resources
+
+Add these references:
+
+### Additional Documentation
+
+- **CIDOC-CRM Property P11i_participated_in:** http://www.cidoc-crm.org/Property/P11i-participated-in/version-7.1.1
+- **CIDOC-CRM Property P82b_end_of_the_end:** http://www.cidoc-crm.org/Property/P82b-end-of-the-end/version-7.1.1
+- **CIDOC-CRM Class E5_Event:** http://www.cidoc-crm.org/Entity/E5-Event/version-7.1.1
+- **CIDOC-CRM Class E52_Time-Span:** http://www.cidoc-crm.org/Entity/E52-Time-Span/version-7.1.1
+
+### Related GMN Properties
+
+- **P11i.1 earliest attestation date:** First documented appearance in sources
+- **P11i.3 has spouse:** Spousal relationships (also uses P11i_participated_in)
+- **P96.1 has mother / P97.1 has father:** Family relationships
+- **P98i.1 has birth date / P100i.1 has death date:** Actual biographical events (when known)
+
+---
+
+## SECTION 11: Data Entry Guidelines
+
+Add this practical guidance for data entry:
+
+### Guidelines for Recording Latest Attestation Dates
+
+1. **Source Documentation**
+   - Always record the source of the attestation
+   - Note the type of document (contract, letter, will, etc.)
+   - Preserve the original date format in notes if it differs from the normalized date
+
+2. **Date Format**
+   - Use ISO 8601 format: YYYY-MM-DD
+   - For Julian calendar dates, convert to Gregorian
+   - For "more veneto" dating, normalize to modern calendar
+
+3. **Multiple Documents**
+   - If a person appears in multiple documents in the same year, record each date separately
+   - This allows analysis of frequency and pattern of appearances
+
+4. **Uncertain Dates**
+   - If the date is uncertain but bounded (e.g., "between 1590 and 1595"), use 1595
+   - Add a note about the uncertainty
+   - Consider using editorial notes: `gmn:P3_1_has_editorial_note`
+
+5. **Last Will and Testament**
+   - If a will is the last attestation, note this is particularly significant
+   - The will date may be close to death date but is still an attestation, not a death date
+
+6. **Template for Data Entry**
+
+```turtle
+person:[person_id] a cidoc:E21_Person ;
+    gmn:P1_1_has_name "[Full Name]" ;
+    gmn:P11i_2_latest_attestation_date "[YYYY-MM-DD]"^^xsd:date ;
+    gmn:P3_1_has_editorial_note "Last appears in [document type] dated [original date format]" .
+```
+
+---
+
+## APPENDIX: Implementation Checklist
+
+Use this checklist to verify proper implementation:
+
+### Property Implementation Checklist
+
+- [ ] Property defined in `gmn_ontology.ttl`
+- [ ] All required attributes present (label, comment, domain, range, subPropertyOf)
+- [ ] Transformation function exists in `gmn_to_cidoc_transform.py`
+- [ ] Function called in main transformation pipeline
+- [ ] Unit tests written and passing
+- [ ] Documentation added to project docs
+- [ ] Example data tested with transformation
+- [ ] SPARQL queries verified against transformed output
+- [ ] Integration with related properties (earliest attestation) tested
+- [ ] Data entry guidelines provided to team
+- [ ] Training materials updated (if applicable)
+
+---
+
+**END OF DOCUMENT ADDITIONS**
+
+**Instructions for Use:**
+1. Copy relevant sections into your main documentation file
+2. Adjust section numbering to fit your documentation structure
+3. Modify examples to match your specific project context
+4. Update URIs to match your namespace conventions
+5. Add or remove FAQ items based on your users' needs
+
+**Suggested Locations:**
+- Section 1-2: Properties overview section
+- Section 3-4: Examples and comparisons section
+- Section 5: Queries and analytics section
+- Section 6-8: Best practices and guidelines section
+- Section 9: FAQ or troubleshooting section
+- Section 10-11: References and data entry section
