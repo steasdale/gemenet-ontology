@@ -1,0 +1,633 @@
+# Documentation Additions for P70.10 Documents Payment Recipient for Seller
+# Examples and tables to add to main documentation file
+
+# ============================================================================
+# PROPERTY DESCRIPTION (Add to P70 Properties Section)
+# ============================================================================
+
+### P70.10 documents payment recipient for seller
+
+**Property URI**: `gmn:P70_10_documents_payment_recipient_for_seller`
+
+**Label**: "P70.10 documents payment recipient for seller"
+
+**Domain**: `gmn:E31_2_Sales_Contract`
+
+**Range**: `cidoc:E21_Person`
+
+**Definition**: Associates a sales contract with a third party who receives the payment (funds) on behalf of the seller.
+
+**Purpose**: Documents situations where payment for a sale is received by someone other than the seller themselves, particularly in cases involving family members, business partners, or creditors.
+
+**Historical Context**: In medieval and early modern transactions, payment recipients served various functions: adult children receiving payment for elderly parents, business partners collecting payment for shared ventures, creditors receiving direct payment to settle debts, and estate executors collecting funds on behalf of estates.
+
+**Distinction from Related Roles**:
+- **Payment Recipient**: Receives actual funds on behalf of seller
+- **Procurator (P70.4)**: Legal representative with formal power of attorney
+- **Guarantor (P70.6)**: Security provider with contingent payment obligation
+- **Broker (P70.8)**: Transaction facilitator receiving commission only
+
+**CIDOC-CRM Transformation**:
+```
+E31_Document 
+  → P70_documents 
+    → E8_Acquisition 
+      → P9_consists_of 
+        → E7_Activity [Financial Transaction]
+          → P14_carried_out_by → E21_Person (payment recipient)
+          → P14.1_in_the_role_of → E55_Type (AAT: payee)
+```
+
+**Complementary Property**: `gmn:has_payment_received_by` provides a direct person-to-person link between seller and payment recipient for use in Omeka-S annotations.
+
+**Created**: 2025-10-17
+
+**See Also**: P70_documents, P14_carried_out_by, P70.9 documents payment provider for buyer
+
+---
+
+# ============================================================================
+# USE CASE EXAMPLES (Add to Examples Section)
+# ============================================================================
+
+## Payment Recipient Examples
+
+### Example 1: Family Member as Payment Recipient
+
+**Historical Scenario**: An elderly father sells vineyard property, but his adult son receives the payment on his behalf due to the father's advanced age and mobility limitations.
+
+**Simplified GMN Structure**:
+```turtle
+contract:elderly_father_sale a gmn:E31_2_Sales_Contract ;
+    gmn:P70_1_documents_seller person:Giovanni_the_Elder ;
+    gmn:P70_2_documents_buyer person:Merchant_Marco ;
+    gmn:P70_3_documents_transfer_of property:vineyard_42 ;
+    gmn:P70_10_documents_payment_recipient_for_seller person:Giovanni_the_Younger ;
+    gmn:P70_16_documents_sale_price_amount "500"^^xsd:decimal ;
+    gmn:P70_17_documents_sale_price_currency currency:florin .
+
+person:Giovanni_the_Elder a cidoc:E21_Person ;
+    gmn:has_payment_received_by person:Giovanni_the_Younger .
+
+person:Giovanni_the_Younger a cidoc:E21_Person .
+```
+
+**Narrative**: Giovanni the Elder sells his vineyard to Merchant Marco for 500 florins. The contract specifies that payment shall be received by Giovanni the Younger, his son, who will manage the transaction on behalf of his elderly father.
+
+---
+
+### Example 2: Creditor as Direct Payment Recipient
+
+**Historical Scenario**: A debtor sells property with the explicit condition that payment be made directly to his creditor to settle an outstanding debt.
+
+**Simplified GMN Structure**:
+```turtle
+contract:debt_settlement_sale a gmn:E31_2_Sales_Contract ;
+    gmn:P70_1_documents_seller person:Debtor_Paolo ;
+    gmn:P70_2_documents_buyer person:Buyer_Luca ;
+    gmn:P70_3_documents_transfer_of property:shop_18 ;
+    gmn:P70_10_documents_payment_recipient_for_seller person:Creditor_Antonio ;
+    gmn:P70_16_documents_sale_price_amount "300"^^xsd:decimal ;
+    gmn:P70_17_documents_sale_price_currency currency:ducat .
+
+person:Debtor_Paolo a cidoc:E21_Person ;
+    gmn:has_payment_received_by person:Creditor_Antonio .
+```
+
+**Narrative**: Paolo, seeking to settle his debt to Antonio, sells his shop to Luca for 300 ducats. The contract stipulates that Luca shall pay the purchase price directly to Antonio, thereby satisfying Paolo's obligation.
+
+---
+
+### Example 3: Business Partner as Payment Collector
+
+**Historical Scenario**: Two partners jointly own commercial property. When one partner sells his share, he directs that payment be collected by his business partner who manages their joint accounts.
+
+**Simplified GMN Structure**:
+```turtle
+contract:partnership_sale a gmn:E31_2_Sales_Contract ;
+    gmn:P70_1_documents_seller person:Partner_Francesco ;
+    gmn:P70_2_documents_buyer person:Outside_Buyer_Roberto ;
+    gmn:P70_3_documents_transfer_of property:warehouse_share_50pct ;
+    gmn:P70_10_documents_payment_recipient_for_seller person:Partner_Stefano ;
+    gmn:P70_16_documents_sale_price_amount "800"^^xsd:decimal .
+
+person:Partner_Francesco a cidoc:E21_Person ;
+    gmn:has_payment_received_by person:Partner_Stefano .
+
+person:Partner_Stefano a cidoc:E21_Person .
+```
+
+**Narrative**: Francesco sells his 50% share in the warehouse to Roberto. Payment is to be received by Stefano, Francesco's business partner, who maintains their joint business accounts.
+
+---
+
+### Example 4: Multiple Recipients for Estate Distribution
+
+**Historical Scenario**: An estate executor sells property belonging to a deceased person's estate, with payment to be distributed among multiple heirs.
+
+**Simplified GMN Structure**:
+```turtle
+contract:estate_distribution_sale a gmn:E31_2_Sales_Contract ;
+    gmn:P70_1_documents_seller person:Estate_Executor_Marco ;
+    gmn:P70_2_documents_buyer person:Property_Buyer_Andrea ;
+    gmn:P70_3_documents_transfer_of property:townhouse_23 ;
+    gmn:P70_10_documents_payment_recipient_for_seller person:Heir_Lorenzo ;
+    gmn:P70_10_documents_payment_recipient_for_seller person:Heir_Giulia ;
+    gmn:P70_10_documents_payment_recipient_for_seller person:Heir_Matteo ;
+    gmn:P70_16_documents_sale_price_amount "1200"^^xsd:decimal .
+
+person:Estate_Executor_Marco a cidoc:E21_Person ;
+    gmn:has_payment_received_by person:Heir_Lorenzo ;
+    gmn:has_payment_received_by person:Heir_Giulia ;
+    gmn:has_payment_received_by person:Heir_Matteo .
+```
+
+**Narrative**: Marco, as executor of the late Pietro's estate, sells the townhouse to Andrea for 1200 florins. The contract specifies that payment shall be divided among the three heirs: Lorenzo, Giulia, and Matteo.
+
+---
+
+### Example 5: Payment Recipient with Procurator Present
+
+**Historical Scenario**: A seller uses a procurator to conduct the legal transaction, but directs payment to a different person who will receive the funds.
+
+**Simplified GMN Structure**:
+```turtle
+contract:procurator_with_payee a gmn:E31_2_Sales_Contract ;
+    gmn:P70_1_documents_seller person:Seller_Roberto ;
+    gmn:P70_2_documents_buyer person:Buyer_Franco ;
+    gmn:P70_3_documents_transfer_of property:farmland_plot_7 ;
+    gmn:P70_4_documents_sellers_procurator person:Legal_Agent_Sergio ;
+    gmn:P70_10_documents_payment_recipient_for_seller person:Family_Member_Claudio ;
+    gmn:P70_16_documents_sale_price_amount "600"^^xsd:decimal .
+
+person:Seller_Roberto a cidoc:E21_Person ;
+    gmn:is_represented_by person:Legal_Agent_Sergio ;
+    gmn:has_payment_received_by person:Family_Member_Claudio .
+```
+
+**Narrative**: Roberto sells farmland to Franco. He engages Sergio as his legal procurator to handle the transaction formalities, but directs that payment be received by his family member Claudio.
+
+---
+
+# ============================================================================
+# COMPARISON TABLE (Add to Property Comparison Section)
+# ============================================================================
+
+## Roles in Sales Transactions: Payment Recipients vs. Other Participants
+
+| Property | Role | Function | Relationship to Principal | Payment Handling | Authorization Type | Typical Historical Context |
+|----------|------|----------|--------------------------|-----------------|-------------------|---------------------------|
+| **P70.10 Payment Recipient** | Financial collector | Receives payment funds | Acts on behalf of seller | **Receives actual payment** | Seller's authorization or instruction | Family member, creditor, business partner, estate heir |
+| P70.4 Seller's Procurator | Legal representative | Conducts legal transaction | Represents seller | May handle transaction | Formal power of attorney | Notarized legal agent, family representative with mandate |
+| P70.6 Seller's Guarantor | Security provider | Guarantees obligations | Backs seller's promises | Contingent payment if default | Contractual bond or guarantee | Wealthy patron, family member, guild master |
+| P70.8 Broker | Transaction facilitator | Arranges sale | Neutral intermediary | Commission only | Service agreement | Professional intermediary, merchant broker |
+| P70.9 Payment Provider (Buyer) | Financial source | Provides funds | Acts on behalf of buyer | Provides payment | Buyer's authorization | Family member, creditor, business associate |
+
+### Key Distinctions
+
+**Payment Recipient vs. Procurator**:
+- Payment Recipient: May or may not have legal authority; primary function is financial
+- Procurator: Has legal authority to act; may or may not receive funds
+
+**Payment Recipient vs. Guarantor**:
+- Payment Recipient: Receives payment as authorized collector
+- Guarantor: Only involved financially if principal defaults on obligations
+
+**Payment Recipient vs. Broker**:
+- Payment Recipient: Receives principal's payment (seller's funds)
+- Broker: Receives separate commission for facilitating transaction
+
+**Payment Recipient vs. Payment Provider**:
+- Payment Recipient: Receives funds on behalf of **seller**
+- Payment Provider: Provides funds on behalf of **buyer**
+
+---
+
+# ============================================================================
+# SEMANTIC MODEL DIAGRAM (Add to Modeling Section)
+# ============================================================================
+
+## P70.10 Semantic Model
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    SALES CONTRACT WITH PAYMENT RECIPIENT              │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                       │
+│  E31_2_Sales_Contract                                                │
+│  └── P70_documents                                                   │
+│       └── E8_Acquisition                                             │
+│            ├── P23_transferred_title_from → E21_Person (Seller)     │
+│            ├── P22_transferred_title_to → E21_Person (Buyer)        │
+│            ├── P24_transferred_title_of → E18_Physical_Thing        │
+│            └── P9_consists_of                                        │
+│                 └── E7_Activity [Payment Receipt]                    │
+│                      ├── @type: E7_Activity                          │
+│                      ├── P2_has_type → E55_Type                     │
+│                      │    └── @id: AAT:300417629 (financial trans.) │
+│                      ├── P14_carried_out_by → E21_Person (Recipient)│
+│                      └── P14.1_in_the_role_of → E55_Type            │
+│                           └── @id: AAT:300025555 (payee)            │
+│                                                                       │
+│  Supporting relationship:                                            │
+│  E21_Person (Seller)                                                 │
+│  └── gmn:has_payment_received_by → E21_Person (Recipient)          │
+│                                                                       │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+# ============================================================================
+# TRANSFORMATION EXAMPLES (Add to Transformation Section)
+# ============================================================================
+
+## P70.10 Transformation Examples
+
+### Transformation 1: Single Payment Recipient
+
+**Before Transformation (Simplified GMN)**:
+```json
+{
+  "@id": "contract:123",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "gmn:P70_1_documents_seller": [
+    {"@id": "person:Giovanni", "@type": "cidoc:E21_Person"}
+  ],
+  "gmn:P70_2_documents_buyer": [
+    {"@id": "person:Marco", "@type": "cidoc:E21_Person"}
+  ],
+  "gmn:P70_10_documents_payment_recipient_for_seller": [
+    {"@id": "person:Antonio", "@type": "cidoc:E21_Person"}
+  ]
+}
+```
+
+**After Transformation (Full CIDOC-CRM)**:
+```json
+{
+  "@id": "contract:123",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "cidoc:P70_documents": [{
+    "@id": "contract:123/acquisition",
+    "@type": "cidoc:E8_Acquisition",
+    "cidoc:P23_transferred_title_from": [
+      {"@id": "person:Giovanni", "@type": "cidoc:E21_Person"}
+    ],
+    "cidoc:P22_transferred_title_to": [
+      {"@id": "person:Marco", "@type": "cidoc:E21_Person"}
+    ],
+    "cidoc:P9_consists_of": [{
+      "@id": "contract:123/activity/payment_abc123",
+      "@type": "cidoc:E7_Activity",
+      "cidoc:P2_has_type": {
+        "@id": "http://vocab.getty.edu/aat/300417629",
+        "@type": "cidoc:E55_Type"
+      },
+      "cidoc:P14_carried_out_by": [
+        {"@id": "person:Antonio", "@type": "cidoc:E21_Person"}
+      ],
+      "cidoc:P14.1_in_the_role_of": {
+        "@id": "http://vocab.getty.edu/aat/300025555",
+        "@type": "cidoc:E55_Type"
+      }
+    }]
+  }]
+}
+```
+
+---
+
+### Transformation 2: Multiple Payment Recipients
+
+**Before Transformation**:
+```json
+{
+  "@id": "contract:456",
+  "gmn:P70_10_documents_payment_recipient_for_seller": [
+    {"@id": "person:Heir1"},
+    {"@id": "person:Heir2"},
+    {"@id": "person:Heir3"}
+  ]
+}
+```
+
+**After Transformation** (showing P9_consists_of section only):
+```json
+{
+  "cidoc:P9_consists_of": [
+    {
+      "@id": "contract:456/activity/payment_def456",
+      "@type": "cidoc:E7_Activity",
+      "cidoc:P2_has_type": {
+        "@id": "http://vocab.getty.edu/aat/300417629"
+      },
+      "cidoc:P14_carried_out_by": [{"@id": "person:Heir1"}],
+      "cidoc:P14.1_in_the_role_of": {
+        "@id": "http://vocab.getty.edu/aat/300025555"
+      }
+    },
+    {
+      "@id": "contract:456/activity/payment_ghi789",
+      "@type": "cidoc:E7_Activity",
+      "cidoc:P2_has_type": {
+        "@id": "http://vocab.getty.edu/aat/300417629"
+      },
+      "cidoc:P14_carried_out_by": [{"@id": "person:Heir2"}],
+      "cidoc:P14.1_in_the_role_of": {
+        "@id": "http://vocab.getty.edu/aat/300025555"
+      }
+    },
+    {
+      "@id": "contract:456/activity/payment_jkl012",
+      "@type": "cidoc:E7_Activity",
+      "cidoc:P2_has_type": {
+        "@id": "http://vocab.getty.edu/aat/300417629"
+      },
+      "cidoc:P14_carried_out_by": [{"@id": "person:Heir3"}],
+      "cidoc:P14.1_in_the_role_of": {
+        "@id": "http://vocab.getty.edu/aat/300025555"
+      }
+    }
+  ]
+}
+```
+
+---
+
+# ============================================================================
+# SPARQL QUERY EXAMPLES (Add to Query Examples Section)
+# ============================================================================
+
+## SPARQL Queries for P70.10
+
+### Query 1: Find All Contracts with Payment Recipients
+
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?contract ?contractLabel ?seller ?sellerName ?recipient ?recipientName
+WHERE {
+  # Find contracts with payment recipients (simplified structure)
+  ?contract a gmn:E31_2_Sales_Contract ;
+            gmn:P70_1_documents_seller ?seller ;
+            gmn:P70_10_documents_payment_recipient_for_seller ?recipient .
+  
+  # Optional labels
+  OPTIONAL { ?contract rdfs:label ?contractLabel }
+  OPTIONAL { ?seller rdfs:label ?sellerName }
+  OPTIONAL { ?recipient rdfs:label ?recipientName }
+}
+ORDER BY ?contract
+```
+
+### Query 2: Find Payment Recipients in Transformed Data
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?contract ?seller ?recipient ?activityType
+WHERE {
+  # Navigate through transformed structure
+  ?contract cidoc:P70_documents ?acquisition .
+  ?acquisition a cidoc:E8_Acquisition ;
+               cidoc:P23_transferred_title_from ?seller ;
+               cidoc:P9_consists_of ?activity .
+  
+  # Find payment receipt activities
+  ?activity a cidoc:E7_Activity ;
+            cidoc:P2_has_type <http://vocab.getty.edu/aat/300417629> ;
+            cidoc:P14_carried_out_by ?recipient ;
+            cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/aat/300025555> .
+  
+  BIND("Payment Receipt" AS ?activityType)
+}
+```
+
+### Query 3: Sellers with Multiple Payment Recipients
+
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?seller (COUNT(DISTINCT ?recipient) AS ?recipientCount) 
+       (GROUP_CONCAT(DISTINCT ?recipient; separator=", ") AS ?recipients)
+WHERE {
+  ?contract gmn:P70_1_documents_seller ?seller ;
+            gmn:P70_10_documents_payment_recipient_for_seller ?recipient .
+}
+GROUP BY ?seller
+HAVING (COUNT(DISTINCT ?recipient) > 1)
+ORDER BY DESC(?recipientCount)
+```
+
+### Query 4: Payment Recipients by Role
+
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?seller ?recipient ?relationship
+WHERE {
+  # Direct relationship from seller to recipient
+  ?seller gmn:has_payment_received_by ?recipient .
+  
+  # Try to infer relationship type (if annotated)
+  OPTIONAL {
+    ?seller ?relationshipProp ?recipient .
+    ?relationshipProp rdfs:label ?relationship .
+    FILTER(?relationshipProp != gmn:has_payment_received_by)
+  }
+}
+```
+
+### Query 5: Contracts with Both Procurator and Payment Recipient
+
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+
+SELECT ?contract ?seller ?procurator ?paymentRecipient
+WHERE {
+  ?contract a gmn:E31_2_Sales_Contract ;
+            gmn:P70_1_documents_seller ?seller ;
+            gmn:P70_4_documents_sellers_procurator ?procurator ;
+            gmn:P70_10_documents_payment_recipient_for_seller ?paymentRecipient .
+  
+  # Ensure procurator and payment recipient are different people
+  FILTER(?procurator != ?paymentRecipient)
+}
+```
+
+---
+
+# ============================================================================
+# DATA ENTRY GUIDELINES (Add to User Guide Section)
+# ============================================================================
+
+## Guidelines for Documenting Payment Recipients
+
+### When to Use P70.10
+
+Use `gmn:P70_10_documents_payment_recipient_for_seller` when:
+
+1. **Contract explicitly names** a person who will receive payment
+2. **Person is distinct** from the seller
+3. **Person's primary role** is to receive funds (not just to facilitate or represent)
+4. **Historical record indicates** authorized receipt of payment
+
+### When NOT to Use P70.10
+
+Do NOT use this property when:
+
+1. **Person is the seller** themselves (redundant)
+2. **Person is a procurator** who happens to collect payment (use P70.4)
+3. **Person is a guarantor** who only receives payment conditionally (use P70.6)
+4. **Person is a broker** who receives commission only (use P70.8)
+5. **No explicit authorization** or documentation of payment receipt
+
+### Data Entry Best Practices
+
+**1. Identify the Recipient Correctly**
+- Extract the exact name as written in the source document
+- Create or link to the person's entity in your person registry
+- Verify the person is not already documented in another role
+
+**2. Document the Relationship**
+- Use `gmn:has_payment_received_by` to link seller to recipient
+- Add annotations explaining the relationship (family member, creditor, etc.)
+- Note any conditions or amounts if specified
+
+**3. Provide Context**
+- Include sale price (P70.16) when payment recipient is documented
+- Note if payment is split among multiple recipients
+- Document any special conditions or arrangements
+
+**4. Quality Control**
+- Verify recipient is not also the buyer
+- Check that seller is also documented
+- Ensure person URIs are consistent across the dataset
+
+### Example Data Entry Workflow
+
+```
+Step 1: Read the contract text
+"...Giovanni sells to Marco for 500 florins, payment to be received 
+by Giovanni's son Antonio..."
+
+Step 2: Identify the entities
+- Seller: Giovanni (create/find person:Giovanni)
+- Buyer: Marco (create/find person:Marco)
+- Payment Recipient: Antonio (create/find person:Antonio)
+
+Step 3: Enter the data
+contract:xyz gmn:P70_1_documents_seller person:Giovanni ;
+            gmn:P70_2_documents_buyer person:Marco ;
+            gmn:P70_10_documents_payment_recipient_for_seller person:Antonio ;
+            gmn:P70_16_documents_sale_price_amount "500"^^xsd:decimal .
+
+Step 4: Add supporting relationships
+person:Giovanni gmn:has_payment_received_by person:Antonio .
+
+Step 5: Add annotations (optional but recommended)
+person:Antonio rdfs:comment "Son of Giovanni, received payment on father's behalf" .
+```
+
+---
+
+# ============================================================================
+# VALIDATION RULES (Add to Validation Section)
+# ============================================================================
+
+## Validation Rules for P70.10
+
+### Structural Validation
+
+1. **Domain Check**: Subject must be `gmn:E31_2_Sales_Contract`
+2. **Range Check**: Object must be `cidoc:E21_Person`
+3. **Cardinality**: 0 or more (multiple recipients allowed)
+4. **Format**: Must be URI reference or object with @id
+
+### Semantic Validation
+
+5. **Uniqueness**: Recipient should not be the same person as seller
+6. **Consistency**: If recipient documented, seller should also be documented
+7. **Completeness**: Consider documenting sale price when recipient is noted
+8. **Context**: Verify recipient role is appropriate (not procurator/guarantor/broker)
+
+### Transformation Validation
+
+9. **Activity Creation**: Each recipient must generate one E7_Activity
+10. **Activity Type**: Each activity must have AAT financial transaction type
+11. **Actor Link**: Each activity must link recipient via P14_carried_out_by
+12. **Role Specification**: Each activity must include P14.1 with AAT payee role
+13. **Cleanup**: Original P70.10 property must be removed after transformation
+
+### Example Validation Errors
+
+**Error 1: Recipient is also seller**
+```turtle
+# INVALID
+contract:123 gmn:P70_1_documents_seller person:Giovanni ;
+            gmn:P70_10_documents_payment_recipient_for_seller person:Giovanni .
+```
+Error: Payment recipient cannot be the same as seller
+
+**Error 2: Missing domain class**
+```turtle
+# INVALID
+person:Antonio gmn:P70_10_documents_payment_recipient_for_seller person:Luigi .
+```
+Error: Subject must be a sales contract, not a person
+
+**Error 3: Wrong range class**
+```turtle
+# INVALID
+contract:123 gmn:P70_10_documents_payment_recipient_for_seller property:house_42 .
+```
+Error: Object must be a person (E21_Person), not a property
+
+---
+
+# ============================================================================
+# HISTORICAL NOTES (Add to Historical Context Section)
+# ============================================================================
+
+## Historical Context for Payment Recipients
+
+### Medieval and Renaissance Commercial Practice
+
+In medieval and Renaissance commercial transactions, the person receiving payment was not always the seller themselves. This practice reflected several social and economic realities:
+
+**Family Structure**: Extended family networks meant that transactions often involved multiple family members. Elderly parents might conduct sales while having adult children handle the financial aspects.
+
+**Debt Settlement**: Creditors had strong legal standing to demand direct payment from the debtor's transactions. Contracts would frequently specify that payment go directly to a creditor to settle outstanding obligations.
+
+**Partnership Arrangements**: Business partnerships were common, with one partner often managing financial transactions for the group. Payment collection was frequently delegated to the partner handling accounts.
+
+**Estate Administration**: When estates were sold, executors managed transactions but payments were often directed to heirs or other beneficiaries.
+
+**Trust Arrangements**: Wealthy individuals sometimes had trusted agents or family members who managed their financial affairs, including receipt of payments from sales.
+
+### Legal Framework
+
+The practice of designating payment recipients was well-established in medieval commercial law:
+
+- **Authorization**: The seller's authorization could be explicit (stated in the contract) or implicit (understood from social relationships)
+- **Receipt Requirements**: Payment to a designated recipient was legally binding, freeing the buyer from further obligation
+- **Liability**: The designated recipient bore responsibility for proper distribution or use of funds
+- **Documentation**: Notarial records carefully documented payment arrangements to prevent disputes
+
+### Archival Evidence
+
+Common formulaic language in notarial contracts:
+- "...payment to be made to..." (Italian: "...pagamento da farsi a...")
+- "...received by..." (Italian: "...ricevuto da...")
+- "...collected on behalf of..." (Italian: "...riscosso per conto di...")
+
+---
+
+# ============================================================================
+# END OF DOCUMENTATION ADDITIONS
+# ============================================================================

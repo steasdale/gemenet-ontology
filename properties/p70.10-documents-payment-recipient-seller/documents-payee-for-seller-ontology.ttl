@@ -1,0 +1,260 @@
+# TTL Additions for P70.10 Documents Payment Recipient for Seller
+# Ready-to-copy Turtle snippets for gmn_ontology.ttl
+
+# ============================================================================
+# MAIN PROPERTY DEFINITION
+# ============================================================================
+# Add this in the P70 Sales Contract Properties section (after P70.9)
+
+# Property: P70.10 documents payment recipient for seller
+gmn:P70_10_documents_payment_recipient_for_seller
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.10 documents payment recipient for seller"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with a third party who receives the payment (funds) on behalf of the seller. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P9_consists_of > E7_Activity > P14_carried_out_by > E21_Person (payment recipient), with P17_was_motivated_by linking to the seller (E21_Person). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. Unlike procurators (legal representatives), guarantors (security providers), or brokers (facilitators), payment recipients are third parties who receive the actual funds from the purchase on behalf of the seller, often in situations involving family members, business partners, or creditors to whom the seller owes money."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by, cidoc:P17_was_motivated_by .
+
+# ============================================================================
+# SUPPORTING PROPERTY DEFINITION
+# ============================================================================
+# Add this in the Direct Relationship Properties section (with has_payment_provided_by, is_represented_by, etc.)
+
+# Property: has payment received by
+gmn:has_payment_received_by
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "has payment received by"@en ;
+    rdfs:comment "Direct relationship linking a person (seller) to another person (payment recipient) who receives the funds from their sale. This property provides a simple semantic link between sellers and those who collect payment on their behalf. When used in the context of sales contracts, this relationship is documented within the contract and elaborated through E7_Activity nodes in the acquisition event structure. This property enables Omeka-S annotations to directly connect sellers with their payment recipients."@en ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date .
+
+# ============================================================================
+# USAGE EXAMPLES
+# ============================================================================
+
+# Example 1: Simple payment recipient
+# ----------------------------------
+# A son receives payment on behalf of his father (the seller)
+
+sales_contract:123 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_1_documents_seller person:Giovanni_Father ;
+    gmn:P70_2_documents_buyer person:Marco_Merchant ;
+    gmn:P70_10_documents_payment_recipient_for_seller person:Antonio_Son .
+
+person:Giovanni_Father a cidoc:E21_Person ;
+    gmn:has_payment_received_by person:Antonio_Son .
+
+person:Antonio_Son a cidoc:E21_Person .
+
+person:Marco_Merchant a cidoc:E21_Person .
+
+# Example 2: Multiple payment recipients
+# -------------------------------------
+# Payment split among multiple recipients
+
+sales_contract:456 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_1_documents_seller person:Estate_Executor ;
+    gmn:P70_2_documents_buyer person:Property_Buyer ;
+    gmn:P70_10_documents_payment_recipient_for_seller person:Heir_One ;
+    gmn:P70_10_documents_payment_recipient_for_seller person:Heir_Two ;
+    gmn:P70_10_documents_payment_recipient_for_seller person:Heir_Three .
+
+person:Estate_Executor a cidoc:E21_Person ;
+    gmn:has_payment_received_by person:Heir_One ;
+    gmn:has_payment_received_by person:Heir_Two ;
+    gmn:has_payment_received_by person:Heir_Three .
+
+# Example 3: Creditor as payment recipient
+# ---------------------------------------
+# Payment directed to creditor to settle debt
+
+sales_contract:789 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_1_documents_seller person:Debtor_Paolo ;
+    gmn:P70_2_documents_buyer person:Buyer_Luca ;
+    gmn:P70_10_documents_payment_recipient_for_seller person:Creditor_Antonio .
+
+person:Debtor_Paolo a cidoc:E21_Person ;
+    gmn:has_payment_received_by person:Creditor_Antonio .
+
+person:Creditor_Antonio a cidoc:E21_Person .
+
+# Example 4: Payment recipient with full contract context
+# ------------------------------------------------------
+# Complete contract showing payment recipient alongside other roles
+
+sales_contract:complete_001 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_1_documents_seller person:Seller_Roberto ;
+    gmn:P70_2_documents_buyer person:Buyer_Franco ;
+    gmn:P70_3_documents_transfer_of property:vineyard_42 ;
+    gmn:P70_4_documents_sellers_procurator person:Legal_Agent_Sergio ;
+    gmn:P70_10_documents_payment_recipient_for_seller person:Partner_Claudio ;
+    gmn:P70_16_documents_sale_price_amount "500"^^xsd:decimal ;
+    gmn:P70_17_documents_sale_price_currency currency:florin .
+
+person:Seller_Roberto a cidoc:E21_Person ;
+    gmn:is_represented_by person:Legal_Agent_Sergio ;
+    gmn:has_payment_received_by person:Partner_Claudio .
+
+# ============================================================================
+# TRANSFORMATION OUTPUT EXAMPLES
+# ============================================================================
+# These show what the data looks like after CIDOC-CRM transformation
+
+# Transformed Example 1: Simple recipient
+# --------------------------------------
+
+sales_contract:123 a gmn:E31_2_Sales_Contract ;
+    cidoc:P70_documents acquisition:123 .
+
+acquisition:123 a cidoc:E8_Acquisition ;
+    cidoc:P23_transferred_title_from person:Giovanni_Father ;
+    cidoc:P22_transferred_title_to person:Marco_Merchant ;
+    cidoc:P9_consists_of activity:payment_xyz123 .
+
+activity:payment_xyz123 a cidoc:E7_Activity ;
+    cidoc:P2_has_type <http://vocab.getty.edu/aat/300417629> ; # financial transaction
+    cidoc:P14_carried_out_by person:Antonio_Son ;
+    cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/aat/300025555> . # payee
+
+person:Giovanni_Father a cidoc:E21_Person ;
+    gmn:has_payment_received_by person:Antonio_Son .
+
+# Transformed Example 2: Multiple recipients
+# -----------------------------------------
+
+sales_contract:456 a gmn:E31_2_Sales_Contract ;
+    cidoc:P70_documents acquisition:456 .
+
+acquisition:456 a cidoc:E8_Acquisition ;
+    cidoc:P23_transferred_title_from person:Estate_Executor ;
+    cidoc:P22_transferred_title_to person:Property_Buyer ;
+    cidoc:P9_consists_of activity:payment_abc111 ;
+    cidoc:P9_consists_of activity:payment_def222 ;
+    cidoc:P9_consists_of activity:payment_ghi333 .
+
+activity:payment_abc111 a cidoc:E7_Activity ;
+    cidoc:P2_has_type <http://vocab.getty.edu/aat/300417629> ;
+    cidoc:P14_carried_out_by person:Heir_One ;
+    cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/aat/300025555> .
+
+activity:payment_def222 a cidoc:E7_Activity ;
+    cidoc:P2_has_type <http://vocab.getty.edu/aat/300417629> ;
+    cidoc:P14_carried_out_by person:Heir_Two ;
+    cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/aat/300025555> .
+
+activity:payment_ghi333 a cidoc:E7_Activity ;
+    cidoc:P2_has_type <http://vocab.getty.edu/aat/300417629> ;
+    cidoc:P14_carried_out_by person:Heir_Three ;
+    cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/aat/300025555> .
+
+# ============================================================================
+# AAT CONCEPT REFERENCES
+# ============================================================================
+# These AAT concepts are used in the transformation
+
+<http://vocab.getty.edu/aat/300417629> a cidoc:E55_Type ;
+    rdfs:label "financial transactions"@en ;
+    rdfs:comment "AAT concept for financial transaction activities" .
+
+<http://vocab.getty.edu/aat/300025555> a cidoc:E55_Type ;
+    rdfs:label "payee"@en ;
+    rdfs:comment "AAT concept for person receiving payment" .
+
+# ============================================================================
+# VALIDATION QUERIES
+# ============================================================================
+# SPARQL queries to validate the property implementation
+
+# Query 1: Find all contracts with payment recipients
+# --------------------------------------------------
+PREFIX gmn: <http://example.org/gmn/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?contract ?seller ?recipient
+WHERE {
+    ?contract a gmn:E31_2_Sales_Contract ;
+              gmn:P70_1_documents_seller ?seller ;
+              gmn:P70_10_documents_payment_recipient_for_seller ?recipient .
+}
+
+# Query 2: Find sellers with multiple payment recipients
+# ----------------------------------------------------
+PREFIX gmn: <http://example.org/gmn/>
+
+SELECT ?seller (COUNT(?recipient) AS ?recipientCount)
+WHERE {
+    ?contract gmn:P70_1_documents_seller ?seller ;
+              gmn:P70_10_documents_payment_recipient_for_seller ?recipient .
+}
+GROUP BY ?seller
+HAVING (COUNT(?recipient) > 1)
+
+# Query 3: Validate transformed payment activities
+# ----------------------------------------------
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?contract ?activity ?recipient
+WHERE {
+    ?contract cidoc:P70_documents ?acquisition .
+    ?acquisition cidoc:P9_consists_of ?activity .
+    ?activity a cidoc:E7_Activity ;
+              cidoc:P2_has_type <http://vocab.getty.edu/aat/300417629> ;
+              cidoc:P14_carried_out_by ?recipient ;
+              cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/aat/300025555> .
+}
+
+# Query 4: Find payment recipients who are also sellers (error check)
+# -----------------------------------------------------------------
+PREFIX gmn: <http://example.org/gmn/>
+
+SELECT ?contract ?person
+WHERE {
+    ?contract gmn:P70_1_documents_seller ?person ;
+              gmn:P70_10_documents_payment_recipient_for_seller ?person .
+}
+
+# Query 5: Find all direct seller-to-recipient relationships
+# --------------------------------------------------------
+PREFIX gmn: <http://example.org/gmn/>
+
+SELECT ?seller ?recipient
+WHERE {
+    ?seller gmn:has_payment_received_by ?recipient .
+}
+
+# ============================================================================
+# NOTES FOR IMPLEMENTATION
+# ============================================================================
+
+# PLACEMENT IN ONTOLOGY FILE:
+# - Add P70_10 property after P70_9 in the P70 series section
+# - Add has_payment_received_by in the custom GMN properties section
+# - Ensure proper ordering maintains numerical sequence
+
+# NAMESPACE REQUIREMENTS:
+# - Ensure gmn: namespace is defined
+# - Ensure cidoc: namespace is defined
+# - Ensure dcterms: namespace is defined
+# - Ensure owl: and rdf: namespaces are defined
+
+# RELATED PROPERTIES TO CHECK:
+# - P70.1 documents seller (domain provider)
+# - P70.9 documents payment provider for buyer (parallel property)
+# - has_payment_provided_by (analogous supporting property)
+
+# TESTING CHECKLIST:
+# □ Property appears in ontology with correct URI
+# □ Property has correct domain (gmn:E31_2_Sales_Contract)
+# □ Property has correct range (cidoc:E21_Person)
+# □ Property has correct superclass (cidoc:P70_documents)
+# □ Supporting property has correct domain/range (both E21_Person)
+# □ Examples validate without errors
+# □ SPARQL queries execute correctly
+# □ Transformation produces expected output structure
+
+# END OF TTL ADDITIONS
