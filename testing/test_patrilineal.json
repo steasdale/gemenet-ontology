@@ -1,0 +1,17 @@
+{
+  "@context": {
+    "cidoc": "http://www.cidoc-crm.org/cidoc-crm/",
+    "gmn": "https://genoese-merchants.org/ontology#"
+  },
+  "@graph": [
+    {
+      "@id": "https://example.org/person/giacomo_spinola",
+      "@type": "cidoc:E21_Person",
+      "gmn:P1_3_has_patrilineal_name": [
+        {
+          "@value": "Giacomo Spinola q. Antonio"
+        }
+      ]
+    }
+  ]
+}
