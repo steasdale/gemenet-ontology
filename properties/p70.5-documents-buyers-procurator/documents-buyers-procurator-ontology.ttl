@@ -1,0 +1,230 @@
+# TTL Additions for P70.5 Documents Buyer's Procurator
+# Ready-to-copy snippets for gmn_ontology.ttl
+
+# ==============================================================================
+# INSTRUCTIONS
+# ==============================================================================
+# 
+# 1. Open your gmn_ontology.ttl file
+# 2. Locate the sales contract properties section (P70 properties)
+# 3. Find P70.4 (documents seller's procurator)
+# 4. Insert the following definition AFTER P70.4 and BEFORE P70.6
+# 5. Ensure proper spacing and formatting
+# 6. Save and validate the TTL file
+#
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# MAIN PROPERTY DEFINITION
+# ------------------------------------------------------------------------------
+
+# Property: P70.5 documents buyer's procurator
+gmn:P70_5_documents_buyers_procurator
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.5 documents buyer's procurator"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with the person named as the procurator (legal representative) for the buyer. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P9_consists_of > E7_Activity > P14_carried_out_by > E21_Person (procurator), with P17_was_motivated_by linking to the buyer (E21_Person). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The transformation creates an E7_Activity node that explicitly links the procurator to the buyer they represent via P17_was_motivated_by."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by, cidoc:P17_was_motivated_by .
+
+# ------------------------------------------------------------------------------
+# END OF PROPERTY DEFINITION
+# ------------------------------------------------------------------------------
+
+# ==============================================================================
+# VERIFICATION CHECKLIST
+# ==============================================================================
+#
+# After adding the property, verify:
+# 
+# [ ] Property URI is correct: gmn:P70_5_documents_buyers_procurator
+# [ ] Label includes property number: "P70.5 documents buyer's procurator"
+# [ ] Comment explains transformation path fully
+# [ ] rdfs:subPropertyOf links to cidoc:P70_documents
+# [ ] rdfs:domain is gmn:E31_2_Sales_Contract
+# [ ] rdfs:range is cidoc:E21_Person
+# [ ] dcterms:created has proper date format: "2025-10-17"^^xsd:date
+# [ ] rdfs:seeAlso includes: cidoc:P70_documents, cidoc:P14_carried_out_by, 
+#     cidoc:P17_was_motivated_by
+# [ ] TTL syntax is valid (run validation tool)
+# [ ] Property appears in correct location (after P70.4, before P70.6)
+#
+# ==============================================================================
+
+# ==============================================================================
+# REQUIRED PREFIX DECLARATIONS
+# ==============================================================================
+#
+# Ensure these prefixes are declared at the top of your ontology file:
+#
+# @prefix gmn: <https://w3id.org/genoa-maritime-notarial/ontology#> .
+# @prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+# @prefix owl: <http://www.w3.org/2002/07/owl#> .
+# @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+# @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+# @prefix dcterms: <http://purl.org/dc/terms/> .
+# @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+#
+# ==============================================================================
+
+# ==============================================================================
+# VALIDATION COMMANDS
+# ==============================================================================
+#
+# Validate TTL syntax with rapper (if available):
+#
+#   rapper -i turtle -o ntriples gmn_ontology.ttl > /dev/null
+#
+# Or use online validators:
+#   - http://www.easyrdf.org/converter
+#   - http://ttl.summerofcode.be/
+#
+# Check for consistency:
+#   - Property numbering follows sequence (P70.4 → P70.5 → P70.6)
+#   - No duplicate property URIs
+#   - All referenced vocabularies are declared
+#
+# ==============================================================================
+
+# ==============================================================================
+# CONTEXTUAL INFORMATION
+# ==============================================================================
+#
+# This property is part of a series of P70 sales contract properties:
+#
+# P70.1 - documents seller
+# P70.2 - documents buyer
+# P70.3 - documents transfer of
+# P70.4 - documents seller's procurator
+# P70.5 - documents buyer's procurator (THIS PROPERTY)
+# P70.6 - documents seller's guarantor
+# P70.7 - documents buyer's guarantor
+# P70.8 - documents broker
+# P70.9 - documents payment provider for buyer
+# P70.10 - documents payment recipient for seller
+# [etc.]
+#
+# The property follows the same pattern as P70.4 but applies to the buyer
+# rather than the seller.
+#
+# ==============================================================================
+
+# ==============================================================================
+# RELATED PROPERTIES
+# ==============================================================================
+#
+# When implementing P70.5, consider also implementing:
+#
+# - gmn:P70_2_documents_buyer (if not already present)
+#   Required for proper P17_was_motivated_by linkage in transformation
+#
+# - gmn:P70_7_documents_buyers_guarantor
+#   Complementary property for buyer's guarantor (different role)
+#
+# - gmn:P70_9_documents_payment_provider_for_buyer
+#   Complementary property for payment provider (different role)
+#
+# ==============================================================================
+
+# ==============================================================================
+# ALTERNATIVE REPRESENTATIONS
+# ==============================================================================
+
+# If you need the property in different RDF serializations:
+
+# ------------------------------------------------------------------------------
+# N-TRIPLES FORMAT
+# ------------------------------------------------------------------------------
+# <https://w3id.org/genoa-maritime-notarial/ontology#P70_5_documents_buyers_procurator> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+# <https://w3id.org/genoa-maritime-notarial/ontology#P70_5_documents_buyers_procurator> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+# <https://w3id.org/genoa-maritime-notarial/ontology#P70_5_documents_buyers_procurator> <http://www.w3.org/2000/01/rdf-schema#label> "P70.5 documents buyer's procurator"@en .
+# <https://w3id.org/genoa-maritime-notarial/ontology#P70_5_documents_buyers_procurator> <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> <http://www.cidoc-crm.org/cidoc-crm/P70_documents> .
+# <https://w3id.org/genoa-maritime-notarial/ontology#P70_5_documents_buyers_procurator> <http://www.w3.org/2000/01/rdf-schema#domain> <https://w3id.org/genoa-maritime-notarial/ontology#E31_2_Sales_Contract> .
+# <https://w3id.org/genoa-maritime-notarial/ontology#P70_5_documents_buyers_procurator> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.cidoc-crm.org/cidoc-crm/E21_Person> .
+# <https://w3id.org/genoa-maritime-notarial/ontology#P70_5_documents_buyers_procurator> <http://purl.org/dc/terms/created> "2025-10-17"^^<http://www.w3.org/2001/XMLSchema#date> .
+
+# ------------------------------------------------------------------------------
+# RDF/XML FORMAT (excerpt)
+# ------------------------------------------------------------------------------
+# <owl:ObjectProperty rdf:about="https://w3id.org/genoa-maritime-notarial/ontology#P70_5_documents_buyers_procurator">
+#   <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+#   <rdfs:label xml:lang="en">P70.5 documents buyer's procurator</rdfs:label>
+#   <rdfs:comment xml:lang="en">Simplified property for associating a sales contract with the person named as the procurator (legal representative) for the buyer...</rdfs:comment>
+#   <rdfs:subPropertyOf rdf:resource="http://www.cidoc-crm.org/cidoc-crm/P70_documents"/>
+#   <rdfs:domain rdf:resource="https://w3id.org/genoa-maritime-notarial/ontology#E31_2_Sales_Contract"/>
+#   <rdfs:range rdf:resource="http://www.cidoc-crm.org/cidoc-crm/E21_Person"/>
+#   <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2025-10-17</dcterms:created>
+#   <rdfs:seeAlso rdf:resource="http://www.cidoc-crm.org/cidoc-crm/P70_documents"/>
+#   <rdfs:seeAlso rdf:resource="http://www.cidoc-crm.org/cidoc-crm/P14_carried_out_by"/>
+#   <rdfs:seeAlso rdf:resource="http://www.cidoc-crm.org/cidoc-crm/P17_was_motivated_by"/>
+# </owl:ObjectProperty>
+
+# ==============================================================================
+# IMPLEMENTATION NOTES
+# ==============================================================================
+#
+# 1. Property Ordering:
+#    - Maintain sequential numbering: P70.4 → P70.5 → P70.6
+#    - Keep related properties (P70.4 and P70.5) adjacent in the file
+#
+# 2. Comment Style:
+#    - Use consistent comment format matching other properties
+#    - Include full transformation path explanation
+#    - Mention relationship to buyer via P17_was_motivated_by
+#
+# 3. See Also References:
+#    - Include all CIDOC-CRM properties involved in transformation
+#    - List in logical order: P70_documents, P14_carried_out_by, P17_was_motivated_by
+#
+# 4. Versioning:
+#    - dcterms:created remains "2025-10-17" (original creation date)
+#    - If modifications needed, consider adding dcterms:modified
+#
+# 5. Multilingual Support:
+#    - Currently English only (@en)
+#    - Consider adding translations if needed:
+#      rdfs:label "P70.5 documenta il procuratore dell'acquirente"@it ;
+#
+# ==============================================================================
+
+# ==============================================================================
+# TESTING AFTER ADDITION
+# ==============================================================================
+#
+# 1. Syntax Validation:
+#    - Run TTL validator
+#    - Check for parser errors
+#
+# 2. Reasoning Tests:
+#    - Load ontology in Protégé or similar tool
+#    - Verify property hierarchy (P70.5 is subproperty of P70_documents)
+#    - Check domain/range inference
+#
+# 3. Query Tests:
+#    - Test SPARQL queries that use the property
+#    - Verify property appears in ontology browsers
+#
+# 4. Integration Tests:
+#    - Ensure transformation script recognizes new property
+#    - Test with sample data
+#    - Verify output structure
+#
+# ==============================================================================
+
+# ==============================================================================
+# SUPPORT AND DOCUMENTATION
+# ==============================================================================
+#
+# For questions or issues:
+#
+# - Review full documentation: documents-buyers-procurator-documentation.md
+# - Check implementation guide: documents-buyers-procurator-implementation-guide.md
+# - Consult CIDOC-CRM specification: http://www.cidoc-crm.org/
+# - AAT vocabulary: http://vocab.getty.edu/aat/300411835
+#
+# ==============================================================================
+
+# END OF FILE

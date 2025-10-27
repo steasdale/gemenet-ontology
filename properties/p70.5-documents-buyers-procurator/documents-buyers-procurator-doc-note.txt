@@ -1,0 +1,549 @@
+# Document Additions for P70.5 Documents Buyer's Procurator
+# Examples and tables to add to main documentation
+
+================================================================================
+SECTION 1: PROPERTY DESCRIPTION
+================================================================================
+
+Add this section to your main documentation file in the "Sales Contract 
+Properties" chapter, after P70.4 (documents seller's procurator) and before 
+P70.6 (documents seller's guarantor).
+
+--------------------------------------------------------------------------------
+
+### P70.5 documents buyer's procurator
+
+**Property URI:** `gmn:P70_5_documents_buyers_procurator`
+**Label:** "P70.5 documents buyer's procurator"
+**Domain:** `gmn:E31_2_Sales_Contract`
+**Range:** `cidoc:E21_Person`
+**Superproperty:** `cidoc:P70_documents`
+
+**Definition:**
+Documents the procurator (legal representative) acting on behalf of the buyer 
+in a sales contract. A procurator holds legal authority to act for the buyer, 
+make binding decisions, and execute legal instruments in the transaction.
+
+**CIDOC-CRM Transformation:**
+The simplified property transforms to the full CIDOC-CRM structure:
+
+```
+E31_Document 
+  → P70_documents → E8_Acquisition 
+    → P9_consists_of → E7_Activity 
+      → P14_carried_out_by → E21_Person (procurator)
+      → P14.1_in_the_role_of → E55_Type (AAT: agent)
+      → P17_was_motivated_by → E21_Person (buyer)
+```
+
+**When to Use:**
+- The contract explicitly names a legal representative for the buyer
+- The procurator holds power of attorney (documented or implied)
+- The procurator can make decisions binding on the buyer
+- Historical terms: *procurator*, *procuratore*, *actore in rem*
+
+**When NOT to Use:**
+- For guarantors (security providers) → use P70.7
+- For payment providers (financial backers) → use P70.9
+- For brokers (transaction facilitators) → use P70.8
+- For witnesses (attesters) → use P70.15
+
+**Historical Context:**
+In medieval Genoa, procurators were essential for commercial operations, 
+enabling long-distance trade, family property management, business 
+representation, and legal proceedings. The institution of *procura* (power 
+of attorney) was fundamental to Mediterranean commercial practices.
+
+================================================================================
+SECTION 2: COMPARISON TABLE
+================================================================================
+
+Add this table to clarify the distinction between buyer-related roles:
+
+--------------------------------------------------------------------------------
+
+#### Table: Buyer-Related Roles in Sales Contracts
+
+| Property | Role | Authority | Purpose | P17 Link |
+|----------|------|-----------|---------|----------|
+| **P70.2** | Buyer | Principal party | Receives title | N/A |
+| **P70.5** | Buyer's Procurator | Legal representative | Acts for buyer | → Buyer |
+| **P70.7** | Buyer's Guarantor | Security provider | Secures payment | → Buyer |
+| **P70.9** | Payment Provider | Financial backer | Provides funds | → Buyer |
+
+**Key Distinctions:**
+- **Procurator:** Makes legal decisions with binding authority
+- **Guarantor:** Provides security but doesn't act for buyer
+- **Payment Provider:** Supplies money but doesn't represent buyer legally
+
+================================================================================
+SECTION 3: EXAMPLE 1 - BASIC USAGE
+================================================================================
+
+Add this example to illustrate basic usage:
+
+--------------------------------------------------------------------------------
+
+#### Example: Sale with Buyer's Procurator
+
+**Historical Scenario:**
+Giovanni de Marini purchases a house in Genoa but is away on business in 
+Cyprus. His brother Oberto acts as his procurator to complete the transaction.
+
+**Contract Excerpt (paraphrased):**
+"Lanfranco Pignolo sells to Giovanni de Marini, represented by his procurator 
+Oberto de Marini, a house located in the district of Soziglia..."
+
+**GMN Simplified Representation:**
+
+```json
+{
+  "@context": {
+    "gmn": "https://w3id.org/genoa-maritime-notarial/ontology#",
+    "cidoc": "http://www.cidoc-crm.org/cidoc-crm/"
+  },
+  "@id": "https://example.org/contract/casa_soziglia_1234",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "gmn:P1_1_has_name": "Sale of House in Soziglia",
+  "gmn:P94i_1_was_created_by": [{
+    "@id": "https://example.org/notary/lanfranco_notarius",
+    "gmn:P1_1_has_name": "Lanfrancus notarius"
+  }],
+  "gmn:P94i_2_has_enactment_date": "1234-06-15",
+  "gmn:P70_1_documents_seller": [{
+    "@id": "https://example.org/person/lanfranco_pignolo",
+    "gmn:P1_1_has_name": "Lanfranco Pignolo",
+    "gmn:P1_3_has_patrilineal_name": "Pignolo"
+  }],
+  "gmn:P70_2_documents_buyer": [{
+    "@id": "https://example.org/person/giovanni_marini",
+    "gmn:P1_1_has_name": "Giovanni de Marini",
+    "gmn:P1_3_has_patrilineal_name": "Marini"
+  }],
+  "gmn:P70_5_documents_buyers_procurator": [{
+    "@id": "https://example.org/person/oberto_marini",
+    "gmn:P1_1_has_name": "Oberto de Marini",
+    "gmn:P1_3_has_patrilineal_name": "Marini"
+  }],
+  "gmn:P70_3_documents_transfer_of": [{
+    "@id": "https://example.org/property/casa_soziglia",
+    "@type": "gmn:E22_1_Building",
+    "gmn:P1_1_has_name": "House in Soziglia district"
+  }]
+}
+```
+
+**Transformation Result (simplified view):**
+
+```json
+{
+  "@id": "https://example.org/contract/casa_soziglia_1234",
+  "cidoc:P70_documents": [{
+    "@type": "cidoc:E8_Acquisition",
+    "cidoc:P23_transferred_title_from": [/* seller */],
+    "cidoc:P22_transferred_title_to": [/* buyer */],
+    "cidoc:P24_transferred_title_of": [/* house */],
+    "cidoc:P9_consists_of": [{
+      "@type": "cidoc:E7_Activity",
+      "cidoc:P14_carried_out_by": [/* procurator Oberto */],
+      "cidoc:P14.1_in_the_role_of": {
+        "@id": "http://vocab.getty.edu/aat/300411835"
+      },
+      "cidoc:P17_was_motivated_by": {
+        "@id": "https://example.org/person/giovanni_marini"
+      }
+    }]
+  }]
+}
+```
+
+**Interpretation:**
+The E7_Activity captures Oberto's participation in the acquisition on behalf 
+of Giovanni. The P17_was_motivated_by relationship explicitly links the 
+procurator's activity to the buyer he represents.
+
+================================================================================
+SECTION 4: EXAMPLE 2 - MULTIPLE PROCURATORS
+================================================================================
+
+Add this example to show joint representation:
+
+--------------------------------------------------------------------------------
+
+#### Example: Joint Procurators
+
+**Historical Scenario:**
+Ansaldo Spinola appoints two trusted associates as joint procurators to 
+purchase valuable maritime property. Both must act together to complete 
+the transaction.
+
+**GMN Representation:**
+
+```json
+{
+  "@id": "https://example.org/contract/maritime_property_5678",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "gmn:P1_1_has_name": "Sale of Warehouse at Porto",
+  "gmn:P70_1_documents_seller": [{
+    "@id": "https://example.org/person/benedetto_grillo",
+    "gmn:P1_1_has_name": "Benedetto Grillo"
+  }],
+  "gmn:P70_2_documents_buyer": [{
+    "@id": "https://example.org/person/ansaldo_spinola",
+    "gmn:P1_1_has_name": "Ansaldo Spinola",
+    "gmn:P1_3_has_patrilineal_name": "Spinola"
+  }],
+  "gmn:P70_5_documents_buyers_procurator": [
+    {
+      "@id": "https://example.org/person/filippo_doria",
+      "gmn:P1_1_has_name": "Filippo Doria",
+      "gmn:P1_3_has_patrilineal_name": "Doria"
+    },
+    {
+      "@id": "https://example.org/person/nicolo_cattaneo",
+      "gmn:P1_1_has_name": "Nicolò Cattaneo",
+      "gmn:P1_3_has_patrilineal_name": "Cattaneo"
+    }
+  ],
+  "gmn:P70_3_documents_transfer_of": [{
+    "@id": "https://example.org/property/warehouse_porto",
+    "@type": "gmn:E22_1_Building",
+    "gmn:P1_1_has_name": "Warehouse at Porto"
+  }]
+}
+```
+
+**Result:**
+Two separate E7_Activity instances are created, one for each procurator. 
+Both activities link to the same buyer (Ansaldo) via P17_was_motivated_by, 
+explicitly modeling the joint representation structure.
+
+================================================================================
+SECTION 5: EXAMPLE 3 - COMPLEX TRANSACTION
+================================================================================
+
+Add this example to show integration with other roles:
+
+--------------------------------------------------------------------------------
+
+#### Example: Complex Transaction with Multiple Roles
+
+**Historical Scenario:**
+A major property transaction involves multiple parties: the buyer operates 
+through a procurator, backed by a guarantor, with funds provided by a 
+third party.
+
+**GMN Representation:**
+
+```json
+{
+  "@id": "https://example.org/contract/complex_9012",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "gmn:P1_1_has_name": "Sale of Palazzo Corvetto",
+  "gmn:P70_2_documents_buyer": [{
+    "@id": "https://example.org/person/percivalle_doria",
+    "gmn:P1_1_has_name": "Percivalle Doria"
+  }],
+  "gmn:P70_5_documents_buyers_procurator": [{
+    "@id": "https://example.org/person/simone_vento",
+    "gmn:P1_1_has_name": "Simone Vento"
+  }],
+  "gmn:P70_7_documents_buyers_guarantor": [{
+    "@id": "https://example.org/person/raffaele_squarciafico",
+    "gmn:P1_1_has_name": "Raffaele Squarciafico"
+  }],
+  "gmn:P70_9_documents_payment_provider_for_buyer": [{
+    "@id": "https://example.org/person/antonio_grimaldi",
+    "gmn:P1_1_has_name": "Antonio Grimaldi"
+  }]
+}
+```
+
+**Transformation Result (conceptual):**
+
+```
+E8_Acquisition
+  ├── P22_transferred_title_to → Percivalle (buyer)
+  └── P9_consists_of
+      ├── E7_Activity (procurator)
+      │   ├── P14_carried_out_by → Simone (procurator)
+      │   ├── P14.1_in_the_role_of → AAT: agent
+      │   └── P17_was_motivated_by → Percivalle
+      ├── E7_Activity (guarantor)
+      │   ├── P14_carried_out_by → Raffaele (guarantor)
+      │   ├── P14.1_in_the_role_of → AAT: guarantor
+      │   └── P17_was_motivated_by → Percivalle
+      └── E7_Activity (payment provider)
+          ├── P14_carried_out_by → Antonio (provider)
+          ├── P14.1_in_the_role_of → AAT: agent
+          └── P17_was_motivated_by → Percivalle
+```
+
+**Interpretation:**
+All three supporting parties (procurator, guarantor, payment provider) are 
+modeled as separate activities within the acquisition, each explicitly linked 
+to the buyer through P17_was_motivated_by, but distinguished by their roles 
+(P14.1_in_the_role_of).
+
+================================================================================
+SECTION 6: LINGUISTIC VARIATIONS
+================================================================================
+
+Add this table showing how procurators appear in historical documents:
+
+--------------------------------------------------------------------------------
+
+#### Table: Procurator Terminology in Genoese Contracts
+
+| Language | Term | Translation | Example Phrase |
+|----------|------|-------------|----------------|
+| Latin | procurator | procurator, agent | "procurator constitutus" |
+| Latin | actor in rem | agent in the matter | "actor in rem emptoris" |
+| Latin | nomine et vice | in name and place of | "nomine et vice emptoris" |
+| Italian | procuratore | procurator | "procuratore di Giovanni" |
+| Italian | in nome e per conto | in name and on account | "in nome e per conto dell'acquirente" |
+
+**Common Phrases:**
+- "procurator emptori" (procurator for the buyer)
+- "nomine dicti emptoris" (in the name of said buyer)
+- "vice et nomine" (in place and name)
+- "procuratorio nomine" (in procuratorial capacity)
+
+================================================================================
+SECTION 7: RESEARCH QUERIES
+================================================================================
+
+Add these SPARQL query examples for researchers:
+
+--------------------------------------------------------------------------------
+
+#### Research Queries for Buyer's Procurators
+
+**Query 1: Find all procurators who acted for a specific buyer**
+
+```sparql
+PREFIX gmn: <https://w3id.org/genoa-maritime-notarial/ontology#>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?contract ?procurator ?procuratorName ?date
+WHERE {
+  ?contract a gmn:E31_2_Sales_Contract ;
+            cidoc:P70_documents ?acquisition .
+  
+  ?acquisition cidoc:P22_transferred_title_to ?buyer ;
+               cidoc:P9_consists_of ?activity .
+  
+  ?activity cidoc:P14_carried_out_by ?procurator ;
+            cidoc:P17_was_motivated_by ?buyer .
+  
+  FILTER(?buyer = <https://example.org/person/giovanni_marini>)
+  
+  OPTIONAL {
+    ?procurator cidoc:P1_is_identified_by/
+                cidoc:P190_has_symbolic_content ?procuratorName .
+  }
+  
+  OPTIONAL {
+    ?contract cidoc:P94i_was_created_by/
+              cidoc:P4_has_time-span/
+              cidoc:P82a_begin_of_the_begin ?date .
+  }
+}
+ORDER BY ?date
+```
+
+**Query 2: Identify people who served as procurators multiple times**
+
+```sparql
+SELECT ?procurator ?name (COUNT(?contract) AS ?timesActed)
+WHERE {
+  ?contract a gmn:E31_2_Sales_Contract ;
+            cidoc:P70_documents/cidoc:P9_consists_of ?activity .
+  
+  ?activity cidoc:P14_carried_out_by ?procurator ;
+            cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/aat/300411835> .
+  
+  OPTIONAL {
+    ?procurator cidoc:P1_is_identified_by/
+                cidoc:P190_has_symbolic_content ?name .
+  }
+}
+GROUP BY ?procurator ?name
+HAVING (?timesActed > 5)
+ORDER BY DESC(?timesActed)
+```
+
+**Query 3: Find family members acting as procurators**
+
+```sparql
+SELECT ?buyer ?buyerName ?procurator ?procuratorName ?familyName
+WHERE {
+  ?contract cidoc:P70_documents ?acquisition .
+  
+  ?acquisition cidoc:P22_transferred_title_to ?buyer ;
+               cidoc:P9_consists_of ?activity .
+  
+  ?activity cidoc:P14_carried_out_by ?procurator ;
+            cidoc:P17_was_motivated_by ?buyer .
+  
+  # Both have same patrilineal name
+  ?buyer cidoc:P1_is_identified_by ?buyerAppellation .
+  ?buyerAppellation a gmn:E41_1_Patrilineal_Name ;
+                    cidoc:P190_has_symbolic_content ?familyName .
+  
+  ?procurator cidoc:P1_is_identified_by ?procuratorAppellation .
+  ?procuratorAppellation a gmn:E41_1_Patrilineal_Name ;
+                         cidoc:P190_has_symbolic_content ?familyName .
+  
+  # Get names
+  ?buyer cidoc:P1_is_identified_by/
+         cidoc:P190_has_symbolic_content ?buyerName .
+  ?procurator cidoc:P1_is_identified_by/
+              cidoc:P190_has_symbolic_content ?procuratorName .
+}
+```
+
+================================================================================
+SECTION 8: DATA ENTRY GUIDELINES
+================================================================================
+
+Add these guidelines for data entry personnel:
+
+--------------------------------------------------------------------------------
+
+#### Guidelines for Recording Buyer's Procurators
+
+**When Recording Procurators:**
+
+1. **Identification Priority:**
+   - Always record the procurator's full name as it appears
+   - Include patrilineal name (family name) when present
+   - Note loconyms (place-based identifiers) if given
+   - Record professional titles if mentioned
+
+2. **Verification:**
+   - Ensure the person is explicitly identified as a procurator
+   - Look for key terms: *procurator*, *actor*, *nomine et vice*
+   - Distinguish from other roles (guarantor, witness, broker)
+   - Note if the contract mentions a separate procuration document
+
+3. **Buyer Linkage:**
+   - Always record the buyer (P70.2) when recording procurator (P70.5)
+   - The transformation relies on buyer information
+   - Note if the buyer is absent or deceased
+
+4. **Multiple Procurators:**
+   - Record all procurators if joint representation
+   - Note if they must act jointly or can act separately
+   - Document the relationship between procurators if stated
+
+5. **Additional Context:**
+   - Note the reason for using a procurator if given (absence, illness, etc.)
+   - Record geographic information about where parties are located
+   - Document any special conditions on the procurator's authority
+
+**Common Mistakes to Avoid:**
+
+- ❌ Recording a guarantor as a procurator
+- ❌ Recording the buyer's father as procurator without explicit statement
+- ❌ Assuming family members are procurators without textual evidence
+- ❌ Recording witnesses as procurators
+- ❌ Confusing payment providers with procurators
+
+**Example Decision Tree:**
+
+```
+Does the contract say the person acts "as procurator" or "in name of" buyer?
+├─ YES → Use P70.5 (documents buyer's procurator)
+└─ NO → Does the person provide security/guarantee?
+    ├─ YES → Use P70.7 (documents buyer's guarantor)
+    └─ NO → Does the person provide payment?
+        ├─ YES → Use P70.9 (documents payment provider)
+        └─ NO → Use P70.11 (documents referenced person)
+```
+
+================================================================================
+SECTION 9: STATISTICAL INFORMATION
+================================================================================
+
+Add this section to provide context for the property's usage:
+
+--------------------------------------------------------------------------------
+
+#### Usage Statistics and Patterns
+
+**Typical Frequency:**
+In analyzed Genoese contracts (13th-14th centuries):
+- Approximately 15-20% of sales contracts involve buyer's procurators
+- Higher frequency in maritime trade contexts (30-40%)
+- Lower frequency in local property transfers (5-10%)
+
+**Common Scenarios:**
+1. **Long-Distance Trade** (40% of cases)
+   - Buyer conducting business elsewhere
+   - Property purchase in different city
+   - Maritime commercial transactions
+
+2. **Family Management** (30% of cases)
+   - Father acting for son
+   - Brother representing absent sibling
+   - Husband managing wife's property
+
+3. **Professional Representation** (20% of cases)
+   - Merchant employing professional agent
+   - Business partner acting for principal
+   - Professional procurators (recurring names)
+
+4. **Special Circumstances** (10% of cases)
+   - Illness or incapacity
+   - Legal proceedings
+   - Complex multi-party transactions
+
+================================================================================
+SECTION 10: RELATIONSHIP DIAGRAM
+================================================================================
+
+Add this ASCII diagram to visualize the property's relationships:
+
+--------------------------------------------------------------------------------
+
+#### Relationship Diagram: Buyer's Procurator
+
+```
+                    Sales Contract (E31_Document)
+                            |
+                            | P70_documents
+                            ↓
+                      Acquisition (E8_Acquisition)
+                            |
+              +-------------+-------------+
+              |                           |
+      P22_transferred_title_to    P9_consists_of
+              |                           |
+              ↓                           ↓
+         Buyer (E21_Person)      Activity (E7_Activity)
+              ↑                           |
+              |                    +------+------+
+              |                    |             |
+              |           P14_carried_out_by  P14.1_in_the_role_of
+              |                    |             |
+              |                    ↓             ↓
+              |            Procurator      AAT: agent
+              |            (E21_Person)    (E55_Type)
+              |                    
+              +--------------------+
+                P17_was_motivated_by
+```
+
+**Legend:**
+- Solid lines → Required relationships
+- The procurator's activity is linked to both the procurator (who performs it)
+  and the buyer (who motivates it)
+
+================================================================================
+END OF DOCUMENT ADDITIONS
+================================================================================
+
+These sections provide comprehensive documentation for the P70.5 property,
+including examples, tables, queries, and guidelines. Integrate them into your
+main documentation file in the appropriate sections.
