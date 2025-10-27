@@ -1,0 +1,219 @@
+# has-loconym-ontology.ttl
+# GMN Ontology - P1.4 has loconym Property Definition
+# 
+# STATUS: Already implemented in gmn_ontology.ttl (lines 183-196)
+# This file provides a reference copy for documentation purposes.
+# NO ADDITIONS ARE NEEDED - the property is already defined.
+
+@prefix gmn: <http://example.org/gmn/> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix aat: <http://vocab.getty.edu/page/aat/> .
+
+# ==============================================================================
+# Property: P1.4 has loconym
+# ==============================================================================
+
+gmn:P1_4_has_loconym
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P1.4 has loconym"@en ;
+    rdfs:comment """Simplified property for expressing a place referenced in a 
+        person's name (loconym), indicating that the person or their ancestors 
+        originated from that place. Represents the full CIDOC-CRM path: 
+        P1_is_identified_by > E41_Appellation > P2_has_type 
+        <https://www.wikidata.org/wiki/Q17143070> > P67_refers_to > E53_Place. 
+        This captures toponymic naming patterns common in medieval Italian 
+        contexts (e.g., 'Giovanni da Genova', 'Bartolomeo de Vignolo'). This 
+        property is provided as a convenience for data entry and should be 
+        transformed to the full CIDOC-CRM structure for formal compliance. The 
+        appellation type is automatically set to Wikidata Q17143070 (loconym)."""@en ;
+    rdfs:subPropertyOf cidoc:P1_is_identified_by ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range cidoc:E53_Place ;
+    dcterms:created "2025-10-16"^^xsd:date ;
+    rdfs:seeAlso cidoc:P1_is_identified_by, 
+                 cidoc:P67_refers_to, 
+                 <https://www.wikidata.org/wiki/Q17143070> ;
+    gmn:hasImplicitType <https://www.wikidata.org/wiki/Q17143070> .
+
+# ==============================================================================
+# Property Specification Details
+# ==============================================================================
+
+# Property Type: ObjectProperty
+# - Links person resources to place resources
+# - Not a datatype property (doesn't link to literals)
+# - Allows semantic reasoning about person-place relationships
+
+# Domain: cidoc:E21_Person
+# - Applied only to person entities
+# - Includes all subclasses of E21_Person
+# - Cannot be applied to documents, objects, or other entity types
+
+# Range: cidoc:E53_Place
+# - Must reference place resources
+# - Includes all subclasses of E53_Place
+# - Place resources should be properly typed and documented
+
+# Supertype: cidoc:P1_is_identified_by
+# - Participates in CIDOC-CRM identification framework
+# - Reasoners will infer P1_is_identified_by relationships
+# - Compatible with broader identification queries
+
+# Implicit Type: Wikidata Q17143070
+# - Transformation automatically sets this type
+# - Defines the appellation as a loconym
+# - Links to Wikidata for external interoperability
+
+# ==============================================================================
+# Transformation Target Structure
+# ==============================================================================
+
+# The shortcut property transforms to this CIDOC-CRM compliant structure:
+#
+# <person_uri> a cidoc:E21_Person ;
+#     cidoc:P1_is_identified_by <appellation_uri> .
+#
+# <appellation_uri> a cidoc:E41_Appellation ;
+#     cidoc:P2_has_type <https://www.wikidata.org/wiki/Q17143070> ;
+#     cidoc:P67_refers_to <place_uri> .
+#
+# <place_uri> a cidoc:E53_Place .
+
+# ==============================================================================
+# Usage Examples
+# ==============================================================================
+
+# Example 1: Single loconym
+# -------------------------
+# Input (simplified):
+#   <person_giovanni> a cidoc:E21_Person ;
+#       gmn:P1_4_has_loconym <place_genoa> .
+#
+# Output (transformed):
+#   <person_giovanni> a cidoc:E21_Person ;
+#       cidoc:P1_is_identified_by <person_giovanni/appellation/loconym_12345678> .
+#   
+#   <person_giovanni/appellation/loconym_12345678> a cidoc:E41_Appellation ;
+#       cidoc:P2_has_type <https://www.wikidata.org/wiki/Q17143070> ;
+#       cidoc:P67_refers_to <place_genoa> .
+
+# Example 2: Multiple loconyms
+# -----------------------------
+# Input (simplified):
+#   <person_maria> a cidoc:E21_Person ;
+#       gmn:P1_4_has_loconym <place_venice> , <place_genoa> .
+#
+# Output (transformed):
+#   <person_maria> a cidoc:E21_Person ;
+#       cidoc:P1_is_identified_by 
+#           <person_maria/appellation/loconym_venice_hash> ,
+#           <person_maria/appellation/loconym_genoa_hash> .
+#   
+#   <person_maria/appellation/loconym_venice_hash> a cidoc:E41_Appellation ;
+#       cidoc:P2_has_type <https://www.wikidata.org/wiki/Q17143070> ;
+#       cidoc:P67_refers_to <place_venice> .
+#   
+#   <person_maria/appellation/loconym_genoa_hash> a cidoc:E41_Appellation ;
+#       cidoc:P2_has_type <https://www.wikidata.org/wiki/Q17143070> ;
+#       cidoc:P67_refers_to <place_genoa> .
+
+# Example 3: Combined with other name properties
+# ----------------------------------------------
+# Input (simplified):
+#   <person_bartolomeo> a cidoc:E21_Person ;
+#       gmn:P1_1_has_name "Bartolomeo de Vignolo" ;
+#       gmn:P1_3_has_patrilineal_name "Bartolomeo q. Antonio" ;
+#       gmn:P1_4_has_loconym <place_vignolo> .
+#
+# Output (transformed):
+#   <person_bartolomeo> a cidoc:E21_Person ;
+#       cidoc:P1_is_identified_by 
+#           <person_bartolomeo/appellation/name> ,
+#           <person_bartolomeo/appellation/patronymic> ,
+#           <person_bartolomeo/appellation/loconym> .
+#   
+#   <person_bartolomeo/appellation/name> a cidoc:E41_Appellation ;
+#       cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300404650> ;
+#       cidoc:P190_has_symbolic_content "Bartolomeo de Vignolo" .
+#   
+#   <person_bartolomeo/appellation/patronymic> a cidoc:E41_Appellation ;
+#       cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300404651> ;
+#       cidoc:P190_has_symbolic_content "Bartolomeo q. Antonio" .
+#   
+#   <person_bartolomeo/appellation/loconym> a cidoc:E41_Appellation ;
+#       cidoc:P2_has_type <https://www.wikidata.org/wiki/Q17143070> ;
+#       cidoc:P67_refers_to <place_vignolo> .
+
+# ==============================================================================
+# Related Properties
+# ==============================================================================
+
+# Name-based identification properties (P1.x series):
+# - gmn:P1_1_has_name           : General display/catalog name
+# - gmn:P1_2_has_name_from_source : Name as found in historical source
+# - gmn:P1_3_has_patrilineal_name : Patronymic ancestry (q. formula)
+# - gmn:P1_4_has_loconym          : Place-based name component (THIS PROPERTY)
+
+# Other person-place relationships:
+# - gmn:P107i_1_has_regional_provenance : Regional group membership
+# - gmn:P94i_3_has_place_of_enactment   : Document creation place (for docs)
+
+# Key differences:
+# - P1_4: Place in the PERSON'S NAME (e.g., "Giovanni da Genova")
+# - P107i_1: Person's REGIONAL GROUP membership (e.g., Genoese merchants)
+# - P94i_3: DOCUMENT creation place (e.g., contract signed in Genoa)
+
+# ==============================================================================
+# Implementation Notes
+# ==============================================================================
+
+# IMPORTANT: This property definition is ALREADY in your gmn_ontology.ttl file.
+# You do NOT need to add this definition to your ontology.
+# This file is provided as a reference for documentation purposes.
+
+# Location in gmn_ontology.ttl: Lines 183-196
+
+# The transformation function is also already implemented in:
+# - File: gmn_to_cidoc_transform.py
+# - Function: transform_p1_4_has_loconym()
+# - Lines: 154-186
+
+# To use this property:
+# 1. Use gmn:P1_4_has_loconym in your data entry
+# 2. Run the transformation script to convert to CIDOC-CRM structure
+# 3. The transformation will automatically create proper E41_Appellation resources
+
+# ==============================================================================
+# External References
+# ==============================================================================
+
+# Wikidata Q17143070 (loconym):
+# - URI: https://www.wikidata.org/wiki/Q17143070
+# - Label: loconym
+# - Description: a toponymic name component indicating geographic origin
+# - Used as the P2_has_type value for loconym appellations
+
+# CIDOC-CRM References:
+# - E21_Person: http://www.cidoc-crm.org/Entity/E21-Person/version-7.1.3
+# - E41_Appellation: http://www.cidoc-crm.org/Entity/E41-Appellation/version-7.1.3
+# - E53_Place: http://www.cidoc-crm.org/Entity/E53-Place/version-7.1.3
+# - P1_is_identified_by: http://www.cidoc-crm.org/Property/P1-is-identified-by/version-7.1.3
+# - P2_has_type: http://www.cidoc-crm.org/Property/P2-has-type/version-7.1.3
+# - P67_refers_to: http://www.cidoc-crm.org/Property/P67-refers-to/version-7.1.3
+
+# ==============================================================================
+# Change Log
+# ==============================================================================
+
+# 2025-10-16: Property created and added to gmn_ontology.ttl
+# 2025-10-16: Transformation function implemented in gmn_to_cidoc_transform.py
+# 2025-10-26: Documentation package created (this reference file)
+
+# ==============================================================================
+# END OF FILE
+# ==============================================================================

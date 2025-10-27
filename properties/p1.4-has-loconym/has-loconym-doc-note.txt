@@ -1,0 +1,613 @@
+# has-loconym-doc-note.txt
+# Documentation Additions for gmn:P1_4_has_loconym Property
+#
+# This file contains examples, tables, and text snippets to add to your
+# main project documentation file to describe the 'has loconym' property.
+#
+# Copy and paste relevant sections into your documentation as needed.
+
+================================================================================
+SECTION 1: PROPERTY OVERVIEW
+================================================================================
+
+Property: gmn:P1_4_has_loconym (P1.4 has loconym)
+Type: Object Property
+Domain: cidoc:E21_Person
+Range: cidoc:E53_Place
+Status: Implemented
+
+The gmn:P1_4_has_loconym property expresses a place referenced in a person's 
+name (loconym), indicating that the person or their ancestors originated from 
+that place. This property captures toponymic naming patterns common in medieval 
+Italian contexts, such as "Giovanni da Genova" (Giovanni from Genoa) or 
+"Bartolomeo de Vignolo" (Bartolomeo from Vignolo).
+
+The property is a shortcut for the full CIDOC-CRM path:
+  E21_Person → P1_is_identified_by → E41_Appellation 
+    → P2_has_type → Wikidata Q17143070 (loconym)
+    → P67_refers_to → E53_Place
+
+IMPORTANT: This property should be used ONLY for place components in a person's 
+NAME, not for places mentioned in documents, document creation locations, or 
+regional group memberships.
+
+================================================================================
+SECTION 2: QUICK REFERENCE TABLE
+================================================================================
+
+Table: P1.4 has loconym - Quick Reference
+
++-------------------+--------------------------------------------------+
+| Property URI      | gmn:P1_4_has_loconym                             |
++-------------------+--------------------------------------------------+
+| Label             | P1.4 has loconym                                 |
++-------------------+--------------------------------------------------+
+| Property Type     | Object Property (owl:ObjectProperty)             |
++-------------------+--------------------------------------------------+
+| Domain            | cidoc:E21_Person                                 |
++-------------------+--------------------------------------------------+
+| Range             | cidoc:E53_Place                                  |
++-------------------+--------------------------------------------------+
+| Supertype         | cidoc:P1_is_identified_by                        |
++-------------------+--------------------------------------------------+
+| Cardinality       | 0..* (zero or more)                              |
++-------------------+--------------------------------------------------+
+| Implicit Type     | Wikidata Q17143070 (loconym)                     |
++-------------------+--------------------------------------------------+
+| Status            | Implemented (no additions needed)                |
++-------------------+--------------------------------------------------+
+| Created           | 2025-10-16                                       |
++-------------------+--------------------------------------------------+
+
+================================================================================
+SECTION 3: WHEN TO USE THIS PROPERTY
+================================================================================
+
+Use gmn:P1_4_has_loconym when:
+
+✓ A person's name includes a place reference indicating origin
+  Example: "Giovanni da Genova" (Giovanni from Genoa)
+
+✓ The place component is part of their formal identification
+  Example: "Bartolomeo de Vignolo" in notarial records
+
+✓ You want to link the person to the place semantically
+  Example: Enabling queries for all people from Genoa
+
+✓ Documenting medieval Italian naming patterns
+  Example: Toponymic surnames in 14th-15th century Liguria
+
+Do NOT use gmn:P1_4_has_loconym for:
+
+✗ Modern addresses or current residences
+  → Use appropriate location properties instead
+
+✗ Places mentioned in document content
+  → Use gmn:P70_13_documents_referenced_place
+
+✗ Document creation or signing locations
+  → Use gmn:P94i_3_has_place_of_enactment
+
+✗ Regional group membership (not name-based)
+  → Use gmn:P107i_1_has_regional_provenance
+
+================================================================================
+SECTION 4: NAMING PATTERN EXAMPLES
+================================================================================
+
+Common Medieval Italian Loconym Patterns:
+
+1. "da" + Place Name (Italian)
+   - Giovanni da Genova = Giovanni from Genoa
+   - Antonio da Savona = Antonio from Savona
+   - Maria da Venezia = Maria from Venice
+   - Francesco da Rapallo = Francesco from Rapallo
+
+2. "de" + Place Name (Latin influenced)
+   - Bartholomeus de Vignolo = Bartolomeo from Vignolo
+   - Iacobus de Ianua = Giacomo from Genoa
+   - Francesca de Rapallo = Francesca from Rapallo
+   - Nicolaus de Alexandria = Nicolò from Alessandria
+
+3. Adjectival Form
+   - Giovanni Genovese = Giovanni the Genoese
+   - Antonio Savonese = Antonio from Savona
+   - Pietro Veneziano = Pietro the Venetian
+
+4. Multiple Loconyms (moved or complex origins)
+   - Maria da Venezia e Genova = Maria from Venice and Genoa
+   - Giovanni de Rapallo et Ianua = Giovanni from Rapallo and Genoa
+
+================================================================================
+SECTION 5: USAGE EXAMPLES
+================================================================================
+
+Example 1: Basic Person with Loconym
+-------------------------------------
+
+Input (simplified notation):
+
+  <person_giovanni> a cidoc:E21_Person ;
+      gmn:P1_1_has_name "Giovanni da Genova" ;
+      gmn:P1_4_has_loconym <place_genoa> .
+  
+  <place_genoa> a cidoc:E53_Place ;
+      rdfs:label "Genoa"@en ;
+      rdfs:label "Genova"@it .
+
+After transformation:
+
+  <person_giovanni> a cidoc:E21_Person ;
+      cidoc:P1_is_identified_by 
+          <person_giovanni/appellation/name> ,
+          <person_giovanni/appellation/loconym_genoa> .
+  
+  <person_giovanni/appellation/name> a cidoc:E41_Appellation ;
+      cidoc:P2_has_type <http://vocab.getty.edu/aat/300404650> ;
+      cidoc:P190_has_symbolic_content "Giovanni da Genova" .
+  
+  <person_giovanni/appellation/loconym_genoa> a cidoc:E41_Appellation ;
+      cidoc:P2_has_type <https://www.wikidata.org/wiki/Q17143070> ;
+      cidoc:P67_refers_to <place_genoa> .
+
+
+Example 2: Person with Multiple Name Properties
+------------------------------------------------
+
+Input:
+
+  <person_bartolomeo> a cidoc:E21_Person ;
+      gmn:P1_1_has_name "Bartolomeo de Vignolo" ;
+      gmn:P1_2_has_name_from_source "Bartholomeus de Vignolo" ;
+      gmn:P1_3_has_patrilineal_name "Bartolomeo q. Antonio" ;
+      gmn:P1_4_has_loconym <place_vignolo> .
+
+Result: Four separate E41_Appellation resources are created, each with the
+appropriate type:
+- P1.1: AAT 300404650 (names)
+- P1.2: AAT 300456607 (names from sources)
+- P1.3: AAT 300404651 (patronymics)
+- P1.4: Wikidata Q17143070 (loconyms)
+
+
+Example 3: Person with Multiple Loconyms
+-----------------------------------------
+
+Input:
+
+  <person_maria> a cidoc:E21_Person ;
+      gmn:P1_1_has_name "Maria da Venezia e Genova" ;
+      gmn:P1_4_has_loconym <place_venice> , <place_genoa> .
+
+Result: Two separate E41_Appellation resources with loconym type, one
+referencing Venice and one referencing Genoa.
+
+
+Example 4: Complete Person Record
+----------------------------------
+
+  <person_merchant> a cidoc:E21_Person ;
+      # Name properties
+      gmn:P1_1_has_name "Giacomo da Savona" ;
+      gmn:P1_4_has_loconym <place_savona> ;
+      
+      # Biographical properties
+      gmn:P2_1_gender aat:300189559 ;  # male
+      gmn:P97_1_has_father <person_antonio> ;
+      
+      # Social properties
+      gmn:P107i_1_has_regional_provenance <group_ligurian_merchants> ;
+      gmn:P107i_3_has_occupation <group_spice_traders> ;
+      
+      # Administrative
+      gmn:P3_1_has_editorial_note "Active in Genoa 1445-1460" .
+
+================================================================================
+SECTION 6: COMPARISON TABLE - RELATED PROPERTIES
+================================================================================
+
+Table: Loconym vs. Related Properties
+
++------------------+-------------------------+---------------------------+
+| Property         | Purpose                 | Example                   |
++------------------+-------------------------+---------------------------+
+| P1.4             | Place in person's       | "Giovanni da Genova"      |
+| has_loconym      | NAME                    | → links to Genoa place    |
++------------------+-------------------------+---------------------------+
+| P1.1             | General display         | "Giovanni da Genova"      |
+| has_name         | name                    | → string literal          |
++------------------+-------------------------+---------------------------+
+| P1.2             | Name as found in        | "Iohannes de Ianua"       |
+| has_name_from_   | historical source       | → string literal          |
+| source           |                         |                           |
++------------------+-------------------------+---------------------------+
+| P1.3             | Patronymic ancestry     | "Giovanni q. Antonio"     |
+| has_patrilineal_ | (q. formula)            | → string literal          |
+| name             |                         |                           |
++------------------+-------------------------+---------------------------+
+| P107i.1          | Regional group          | Person is member of       |
+| has_regional_    | membership              | "Genoese merchants"       |
+| provenance       |                         | group                     |
++------------------+-------------------------+---------------------------+
+| P94i.3           | Document creation       | Contract signed in        |
+| has_place_of_    | place                   | Genoa (applies to         |
+| enactment        | (for documents)         | document, not person)     |
++------------------+-------------------------+---------------------------+
+
+================================================================================
+SECTION 7: TRANSFORMATION DETAILS
+================================================================================
+
+Transformation Path:
+-------------------
+
+Shortcut Property:
+  gmn:P1_4_has_loconym
+
+CIDOC-CRM Structure:
+  E21_Person 
+    → P1_is_identified_by 
+      → E41_Appellation 
+        → P2_has_type → E55_Type (Wikidata Q17143070)
+        → P67_refers_to → E53_Place
+
+
+Key Characteristics:
+-------------------
+
+1. Object Property: Links person resources to place resources (not literals)
+
+2. Wikidata Integration: Uses Wikidata Q17143070 (loconym) as appellation type
+   - Wikidata URI: https://www.wikidata.org/wiki/Q17143070
+   - Label: "loconym"
+   - Definition: Toponymic name component indicating geographic origin
+
+3. Place Reference: Uses P67_refers_to to link appellation to place
+   - Different from other name properties which use P190_has_symbolic_content
+   - Enables semantic queries about person-place relationships
+
+4. URI Generation: Appellation URIs are deterministic based on place URI
+   - Format: {person_uri}/appellation/loconym_{hash}
+   - Same place always generates same URI
+   - Different places generate different URIs
+
+
+Transformation Function:
+------------------------
+
+Location: gmn_to_cidoc_transform.py, lines 154-186
+Function: transform_p1_4_has_loconym(data)
+Called in: transform_item() function, around line 840
+Status: Already implemented, no additions needed
+
+The function:
+1. Checks for gmn:P1_4_has_loconym property
+2. Extracts place URI(s) from property value
+3. For each place:
+   a. Generates unique appellation URI
+   b. Creates E41_Appellation structure
+   c. Sets type to Wikidata Q17143070
+   d. Adds P67_refers_to pointing to place
+   e. Adds appellation to P1_is_identified_by array
+4. Removes the shortcut property
+5. Returns transformed data
+
+================================================================================
+SECTION 8: SPARQL QUERY EXAMPLES
+================================================================================
+
+Query 1: Find all people from Genoa
+------------------------------------
+
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX gmn: <http://example.org/gmn/>
+
+SELECT ?person ?name WHERE {
+  ?person a cidoc:E21_Person ;
+          gmn:P1_4_has_loconym <http://example.org/place/genoa> ;
+          gmn:P1_1_has_name ?name .
+}
+
+
+Query 2: List all places referenced in loconyms
+-----------------------------------------------
+
+PREFIX gmn: <http://example.org/gmn/>
+
+SELECT DISTINCT ?place ?label WHERE {
+  ?person gmn:P1_4_has_loconym ?place .
+  OPTIONAL { ?place rdfs:label ?label }
+}
+ORDER BY ?label
+
+
+Query 3: Count people by origin place
+--------------------------------------
+
+PREFIX gmn: <http://example.org/gmn/>
+
+SELECT ?place (COUNT(?person) as ?count) WHERE {
+  ?person gmn:P1_4_has_loconym ?place .
+}
+GROUP BY ?place
+ORDER BY DESC(?count)
+
+
+Query 4: Find people with both loconym and regional provenance
+--------------------------------------------------------------
+
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX gmn: <http://example.org/gmn/>
+
+SELECT ?person ?name ?place ?group WHERE {
+  ?person a cidoc:E21_Person ;
+          gmn:P1_1_has_name ?name ;
+          gmn:P1_4_has_loconym ?place ;
+          gmn:P107i_1_has_regional_provenance ?group .
+}
+
+
+Query 5: Find loconym appellations (after transformation)
+---------------------------------------------------------
+
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?person ?appellation ?place WHERE {
+  ?person a cidoc:E21_Person ;
+          cidoc:P1_is_identified_by ?appellation .
+  
+  ?appellation a cidoc:E41_Appellation ;
+               cidoc:P2_has_type <https://www.wikidata.org/wiki/Q17143070> ;
+               cidoc:P67_refers_to ?place .
+}
+
+
+Query 6: Geographic network analysis
+------------------------------------
+
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX gmn: <http://example.org/gmn/>
+
+SELECT ?place1 ?place2 (COUNT(*) as ?connections) WHERE {
+  ?contract a gmn:E31_2_Sales_Contract ;
+            gmn:P70_1_documents_seller ?seller ;
+            gmn:P70_2_documents_buyer ?buyer .
+  
+  ?seller gmn:P1_4_has_loconym ?place1 .
+  ?buyer gmn:P1_4_has_loconym ?place2 .
+  
+  FILTER (?place1 != ?place2)
+}
+GROUP BY ?place1 ?place2
+ORDER BY DESC(?connections)
+
+This query finds which places are most connected through commercial
+transactions, based on the loconyms of sellers and buyers.
+
+================================================================================
+SECTION 9: BEST PRACTICES
+================================================================================
+
+1. Place Resource Management
+   ---------------------------
+   
+   DO:
+   ✓ Create persistent place resources with stable URIs
+   ✓ Add labels in multiple languages (Italian, Latin, English)
+   ✓ Link places to external gazetteers (GeoNames, Getty TGN)
+   ✓ Document place hierarchies (neighborhood → city → region)
+   
+   DON'T:
+   ✗ Use inline literals for places
+   ✗ Create duplicate place resources for same location
+   ✗ Use temporary or random URIs for important places
+   
+   Example:
+   
+   <place_genoa> a cidoc:E53_Place ;
+       rdfs:label "Genoa"@en ;
+       rdfs:label "Genova"@it ;
+       rdfs:label "Ianua"@la ;
+       owl:sameAs <http://www.geonames.org/3176219> ;
+       owl:sameAs <http://vocab.getty.edu/tgn/7006082> ;
+       cidoc:P89_falls_within <place_liguria> .
+
+
+2. Documentation Standards
+   ------------------------
+   
+   For uncertain identifications, add editorial notes:
+   
+   <person_bartolomeo> a cidoc:E21_Person ;
+       gmn:P1_2_has_name_from_source "Bartholomeus de Vignolo" ;
+       gmn:P1_4_has_loconym <place_vignolo> ;
+       gmn:P3_1_has_editorial_note """Vignolo likely refers to 
+           Vignole Borbera in Piedmont, though other places named 
+           Vignolo exist. Identification based on regional context 
+           of contract."""@en .
+
+
+3. Combining with Other Properties
+   --------------------------------
+   
+   Use loconym in combination with other person properties:
+   
+   <person_complete> a cidoc:E21_Person ;
+       # Multiple name forms
+       gmn:P1_1_has_name "Giovanni da Genova" ;
+       gmn:P1_2_has_name_from_source "Iohannes de Ianua" ;
+       gmn:P1_4_has_loconym <place_genoa> ;
+       
+       # Can also have regional provenance
+       gmn:P107i_1_has_regional_provenance <group_ligurian> ;
+       
+       # And biographical data
+       gmn:P2_1_gender aat:300189559 ;
+       gmn:P97_1_has_father <person_father> .
+
+
+4. Data Quality Validation
+   ------------------------
+   
+   Regular checks to maintain data quality:
+   
+   Check 1: Ensure all places are typed as E53_Place
+   Check 2: Verify place URIs are resolvable and meaningful
+   Check 3: Confirm no duplicate loconym appellations
+   Check 4: Validate place references exist in place resource database
+
+================================================================================
+SECTION 10: HISTORICAL CONTEXT
+================================================================================
+
+Medieval Italian Naming Conventions
+
+In medieval and Renaissance Italy, particularly in Genoa and surrounding 
+regions (Liguria, Piedmont), loconyms were a common and important component 
+of personal names. These toponymic elements served multiple social and legal 
+functions:
+
+1. Origin Identification
+   ---------------------
+   Loconyms distinguished persons from different places, which was crucial 
+   in commercial centers like Genoa where merchants from across the 
+   Mediterranean gathered. "Giovanni da Genova" vs. "Giovanni da Savona" 
+   clarified which Giovanni was being referenced in contracts and records.
+
+2. Family Prestige
+   ---------------
+   Connection to significant locations could enhance family prestige. Being 
+   "from Genoa" (a major commercial power) carried different connotations 
+   than being from a small rural town. Noble families particularly emphasized 
+   their territorial associations.
+
+3. Social Networks
+   ---------------
+   Loconyms indicated regional affiliations and trade connections. Merchants 
+   from the same origin often formed business partnerships and mutual support 
+   networks. Identifying as "Genovese" or "Savonese" signaled participation 
+   in these networks.
+
+4. Legal Documentation
+   --------------------
+   In notarial records, precise identification was essential for contract 
+   validity. Loconyms provided additional specificity beyond given names and 
+   patronymics, reducing ambiguity about parties' identities.
+
+Temporal Evolution:
+   - 12th-14th centuries: Loconyms increasingly common in notarial records
+   - 15th century: Height of usage in Genoa and major trading cities
+   - 16th century onward: Gradual stabilization into hereditary surnames
+
+Geographic Distribution:
+   - Liguria (Genoa, Savona, Rapallo)
+   - Piedmont (Vignole, Tortona, Alessandria)
+   - Lombardy (Milan, Pavia)
+   - Veneto (Venice, Padua)
+
+================================================================================
+SECTION 11: TROUBLESHOOTING
+================================================================================
+
+Common Issues and Solutions:
+
+Issue 1: Transformation not occurring
+--------------------------------------
+Symptoms: gmn:P1_4_has_loconym still present after transformation
+Solution: 
+  - Verify function is called in transform_item()
+  - Check property name spelling (P1_4, not P1.4)
+  - Ensure correct namespace prefix
+
+
+Issue 2: Invalid place URI
+---------------------------
+Symptoms: Error during transformation or malformed output
+Solution:
+  - Ensure place value is a valid URI string
+  - Check place object has @id field if using object format
+  - Verify place URI is not empty or null
+
+
+Issue 3: Duplicate appellations
+--------------------------------
+Symptoms: Multiple identical E41_Appellation resources
+Solution:
+  - Ensure transformation runs once per dataset
+  - Remove duplicate loconym values from source data
+  - Check for already-transformed data before processing
+
+
+Issue 4: Wrong appellation type
+--------------------------------
+Symptoms: P2_has_type not pointing to Wikidata Q17143070
+Solution:
+  - Verify WIKIDATA_LOCONYM constant is correctly defined
+  - Check correct transformation function is being called
+  - Ensure no manual overrides of type value
+
+
+Issue 5: Place not typed as E53_Place
+--------------------------------------
+Symptoms: Place resource missing cidoc:E53_Place type
+Solution:
+  - Add explicit E53_Place type to place resources
+  - Transformation adds type automatically, but explicit is better
+  - Validate place resource definitions
+
+================================================================================
+SECTION 12: IMPLEMENTATION CHECKLIST
+================================================================================
+
+Pre-Implementation (Already Complete):
+---------------------------------------
+☑ Property defined in gmn_ontology.ttl
+☑ Transformation function in gmn_to_cidoc_transform.py
+☑ Function integrated into transform_item()
+☑ WIKIDATA_LOCONYM constant defined
+
+Post-Implementation (To Do):
+-----------------------------
+☐ Add usage examples to project documentation
+☐ Test transformation with sample data
+☐ Validate place resource definitions
+☐ Document place URI conventions
+☐ Create data entry guidelines for team
+☐ Set up data quality validation queries
+☐ Train users on when to use vs. not use this property
+
+Data Quality Checks:
+--------------------
+☐ All places referenced by loconyms exist as resources
+☐ All places are typed as cidoc:E53_Place
+☐ Place URIs are persistent and meaningful
+☐ No duplicate place resources for same location
+☐ Place labels exist in relevant languages
+☐ External gazetteer links (GeoNames, TGN) added where available
+
+Documentation:
+--------------
+☐ Property description added to main documentation
+☐ Usage examples included with screenshots
+☐ SPARQL query examples documented
+☐ Common issues and solutions documented
+☐ Historical context explained for users
+
+Training:
+---------
+☐ Team trained on loconym concept
+☐ Examples of medieval Italian naming patterns shared
+☐ Data entry procedures documented and demonstrated
+☐ Distinction from related properties clarified
+
+================================================================================
+END OF DOCUMENTATION ADDITIONS
+================================================================================
+
+For questions or clarifications about using the gmn:P1_4_has_loconym property,
+refer to:
+  - README.md for overview and quick start
+  - has-loconym-implementation-guide.md for step-by-step instructions
+  - has-loconym-documentation.md for complete semantic documentation
+  - has-loconym-ontology.ttl for ontology definition reference
+  - has-loconym-transform.py for transformation code reference
