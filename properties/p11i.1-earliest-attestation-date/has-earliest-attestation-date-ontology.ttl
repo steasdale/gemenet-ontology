@@ -1,0 +1,239 @@
+# TTL Additions: gmn:P11i_1_earliest_attestation_date
+# Ready-to-copy Turtle snippets for gmn_ontology.ttl
+
+## INSTRUCTIONS:
+## 1. Copy the MAIN PROPERTY DEFINITION below
+## 2. Paste into gmn_ontology.ttl in the P11i properties section (around line 200-300)
+## 3. Ensure proper spacing and context
+## 4. Validate TTL syntax after insertion
+
+================================================================================
+MAIN PROPERTY DEFINITION
+================================================================================
+
+# Property: P11i.1 earliest attestation date
+gmn:P11i_1_earliest_attestation_date
+    a owl:DatatypeProperty ;
+    a rdf:Property ;
+    rdfs:label "P11i.1 earliest attestation date"@en ;
+    rdfs:comment "Simplified property for expressing the earliest date at which a person is documented or attested to have been alive in historical sources. Represents the full CIDOC-CRM path: E21_Person > P11i_participated_in > E5_Event > P4_has_time-span > E52_Time-Span > P82a_begin_of_the_begin. This property captures the earliest known documentary evidence of a person's existence. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance."@en ;
+    rdfs:subPropertyOf cidoc:P11i_participated_in ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range xsd:date ;
+    dcterms:created "2025-10-16"^^xsd:date ;
+    rdfs:seeAlso cidoc:P11i_participated_in, cidoc:P4_has_time-span, cidoc:P82a_begin_of_the_begin .
+
+================================================================================
+REQUIRED PREFIX DECLARATIONS
+================================================================================
+
+## Ensure these prefixes are declared at the top of gmn_ontology.ttl:
+
+@prefix gmn: <http://genoa-medieval-notarial.org/ontology#> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+================================================================================
+PROPERTY METADATA SUMMARY
+================================================================================
+
+Property IRI:    gmn:P11i_1_earliest_attestation_date
+Label:           "P11i.1 earliest attestation date"@en
+Type:            owl:DatatypeProperty, rdf:Property
+Superproperty:   cidoc:P11i_participated_in
+Domain:          cidoc:E21_Person
+Range:           xsd:date
+Created:         2025-10-16
+See Also:        cidoc:P11i_participated_in, cidoc:P4_has_time-span, cidoc:P82a_begin_of_the_begin
+
+CIDOC-CRM Path:  E21_Person > P11i_participated_in > E5_Event > P4_has_time-span > E52_Time-Span > P82a_begin_of_the_begin
+
+================================================================================
+USAGE EXAMPLES
+================================================================================
+
+## Example 1: Basic Usage
+<http://example.org/person/giovanni_rossi> 
+    a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Giovanni Rossi" ;
+    gmn:P11i_1_earliest_attestation_date "1450-03-15"^^xsd:date .
+
+## Example 2: Multiple Attestation Dates
+<http://example.org/person/caterina_spinola> 
+    a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Caterina Spinola" ;
+    gmn:P11i_1_earliest_attestation_date "1450-03-15"^^xsd:date ;
+    gmn:P11i_1_earliest_attestation_date "1450-07-22"^^xsd:date .
+
+## Example 3: With Document Reference
+<http://example.org/person/bartolomeo_vignolo> 
+    a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Bartolomeo Vignolo" ;
+    gmn:P11i_1_earliest_attestation_date "1450-03-15"^^xsd:date ;
+    cidoc:P70i_is_documented_in <http://example.org/document/ASG_Not_843_f12r> .
+
+## Example 4: Complete Person Record
+<http://example.org/person/maria_doria> 
+    a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Maria Doria" ;
+    gmn:P2_1_gender <http://vocab.getty.edu/page/aat/300189557> ; # female
+    gmn:P11i_1_earliest_attestation_date "1450-03-15"^^xsd:date ;
+    gmn:P11i_2_latest_attestation_date "1475-11-30"^^xsd:date ;
+    gmn:P96_1_has_mother <http://example.org/person/elisabetta_fieschi> ;
+    gmn:P97_1_has_father <http://example.org/person/antonio_doria> ;
+    cidoc:P70i_is_documented_in <http://example.org/document/ASG_Not_843_f12r> .
+
+## Example 5: With Other Temporal Properties
+<http://example.org/person/luca_grimaldi> 
+    a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Luca Grimaldi" ;
+    gmn:P98i_1_has_birth_date "1440-01-01"^^xsd:date ;
+    gmn:P11i_1_earliest_attestation_date "1460-05-12"^^xsd:date ;
+    gmn:P11i_2_latest_attestation_date "1490-08-15"^^xsd:date ;
+    gmn:P100i_1_has_death_date "1495-12-31"^^xsd:date .
+
+================================================================================
+VALIDATION QUERIES
+================================================================================
+
+## SPARQL Query 1: Find all persons with earliest attestation dates
+PREFIX gmn: <http://genoa-medieval-notarial.org/ontology#>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?person ?name ?earliest
+WHERE {
+    ?person a cidoc:E21_Person ;
+            gmn:P11i_1_earliest_attestation_date ?earliest .
+    OPTIONAL { ?person gmn:P1_1_has_name ?name }
+}
+ORDER BY ?earliest
+
+## SPARQL Query 2: Check for temporal consistency
+PREFIX gmn: <http://genoa-medieval-notarial.org/ontology#>
+
+SELECT ?person ?earliest ?latest
+WHERE {
+    ?person gmn:P11i_1_earliest_attestation_date ?earliest ;
+            gmn:P11i_2_latest_attestation_date ?latest .
+    FILTER (?earliest > ?latest)
+}
+# Should return no results if data is consistent
+
+## SPARQL Query 3: Count attestations by year
+PREFIX gmn: <http://genoa-medieval-notarial.org/ontology#>
+
+SELECT (YEAR(?date) AS ?year) (COUNT(?person) AS ?count)
+WHERE {
+    ?person gmn:P11i_1_earliest_attestation_date ?date .
+}
+GROUP BY YEAR(?date)
+ORDER BY ?year
+
+## SPARQL Query 4: Find persons attested before birth date
+PREFIX gmn: <http://genoa-medieval-notarial.org/ontology#>
+
+SELECT ?person ?birth ?attestation
+WHERE {
+    ?person gmn:P98i_1_has_birth_date ?birth ;
+            gmn:P11i_1_earliest_attestation_date ?attestation .
+    FILTER (?attestation < ?birth)
+}
+# Should return no results if data is consistent
+
+================================================================================
+RELATED PROPERTIES
+================================================================================
+
+## Properties that often appear together:
+
+# Latest attestation date (sibling property)
+gmn:P11i_2_latest_attestation_date
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range xsd:date .
+
+# Spouse relationship (also uses P11i_participated_in)
+gmn:P11i_3_has_spouse
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range cidoc:E21_Person .
+
+# Birth date
+gmn:P98i_1_has_birth_date
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range xsd:date .
+
+# Death date
+gmn:P100i_1_has_death_date
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range xsd:date .
+
+# Name
+gmn:P1_1_has_name
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range cidoc:E62_String .
+
+# Document reference
+cidoc:P70i_is_documented_in
+    rdfs:domain cidoc:E1_CRM_Entity ;
+    rdfs:range cidoc:E31_Document .
+
+================================================================================
+TRANSFORMATION OUTPUT EXAMPLE
+================================================================================
+
+## After transformation, the shortcut property expands to:
+
+INPUT:
+------
+<http://example.org/person/giovanni_rossi> 
+    a cidoc:E21_Person ;
+    gmn:P11i_1_earliest_attestation_date "1450-03-15"^^xsd:date .
+
+OUTPUT:
+-------
+<http://example.org/person/giovanni_rossi> 
+    a cidoc:E21_Person ;
+    cidoc:P11i_participated_in <http://example.org/person/giovanni_rossi/event/earliest_a1b2c3d4> .
+
+<http://example.org/person/giovanni_rossi/event/earliest_a1b2c3d4> 
+    a cidoc:E5_Event ;
+    cidoc:P4_has_time-span <http://example.org/person/giovanni_rossi/event/earliest_a1b2c3d4/timespan> .
+
+<http://example.org/person/giovanni_rossi/event/earliest_a1b2c3d4/timespan> 
+    a cidoc:E52_Time-Span ;
+    cidoc:P82a_begin_of_the_begin "1450-03-15"^^xsd:date .
+
+================================================================================
+NOTES
+================================================================================
+
+1. This is a SHORTCUT property for data entry convenience
+2. Must be transformed to full CIDOC-CRM structure for formal compliance
+3. The transformation is handled by gmn_to_cidoc_transform.py
+4. URI generation uses hash-based identifiers for stability
+5. Multiple dates create multiple separate events
+6. Dates must be in ISO 8601 format (YYYY-MM-DD)
+7. Property is designed for documentary attestation, not estimated dates
+8. Always link attestation dates to source documents when possible
+
+================================================================================
+VALIDATION CHECKLIST
+================================================================================
+
+After adding this property to gmn_ontology.ttl:
+
+[ ] Prefixes declared at file top
+[ ] Property inserted in correct location (with other P11i properties)
+[ ] TTL syntax validated (no parse errors)
+[ ] rdfs:domain is cidoc:E21_Person
+[ ] rdfs:range is xsd:date
+[ ] rdfs:subPropertyOf is cidoc:P11i_participated_in
+[ ] dcterms:created has correct date
+[ ] rdfs:seeAlso references correct properties
+[ ] No trailing whitespace or formatting issues
+[ ] File committed to version control
+
+================================================================================

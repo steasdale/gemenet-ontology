@@ -1,0 +1,496 @@
+# Documentation Additions: gmn:P11i_1_earliest_attestation_date
+# Content to add to main project documentation file
+
+================================================================================
+SECTION 1: PROPERTY OVERVIEW TABLE
+================================================================================
+
+Add this to your "Person Properties" or "Attestation Properties" section:
+
+## Person Attestation Properties
+
+| Property | Label | Domain | Range | Description |
+|----------|-------|--------|-------|-------------|
+| gmn:P11i_1_earliest_attestation_date | P11i.1 earliest attestation date | cidoc:E21_Person | xsd:date | Captures the earliest date at which a person is documented or attested to have been alive in historical sources |
+| gmn:P11i_2_latest_attestation_date | P11i.2 latest attestation date | cidoc:E21_Person | xsd:date | Captures the latest date at which a person is documented or attested to have been alive in historical sources |
+| gmn:P11i_3_has_spouse | P11i.3 has spouse | cidoc:E21_Person | cidoc:E21_Person | Expresses a spousal relationship between two persons |
+
+================================================================================
+SECTION 2: DETAILED PROPERTY DESCRIPTION
+================================================================================
+
+Add this to your detailed property descriptions:
+
+### P11i.1 Earliest Attestation Date
+
+**Property IRI:** `gmn:P11i_1_earliest_attestation_date`
+
+**Label:** "P11i.1 earliest attestation date"
+
+**Definition:** This property captures the earliest date at which a person is documented or attested to have been alive in historical sources. It represents the first known documentary evidence of a person's existence, which is crucial for prosopographical research and establishing chronological boundaries for historical figures.
+
+**CIDOC-CRM Path:** E21_Person > P11i_participated_in > E5_Event > P4_has_time-span > E52_Time-Span > P82a_begin_of_the_begin
+
+**Superproperty:** cidoc:P11i_participated_in
+
+**Domain:** cidoc:E21_Person
+
+**Range:** xsd:date
+
+**Cardinality:** 0 to many (typically 1-3)
+
+**Usage Notes:**
+- This property records documentary attestation dates, not birth dates or estimated dates
+- Multiple dates can be recorded to capture attestations from different sources
+- Always use ISO 8601 date format (YYYY-MM-DD)
+- Link attestation dates to source documents using cidoc:P70i_is_documented_in
+- This is a shortcut property that transforms to full CIDOC-CRM event structure
+
+**Example:**
+```turtle
+<person/giovanni_rossi> a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Giovanni Rossi" ;
+    gmn:P11i_1_earliest_attestation_date "1450-03-15"^^xsd:date ;
+    cidoc:P70i_is_documented_in <document/ASG_Not_843_f12r> .
+```
+
+================================================================================
+SECTION 3: COMPARISON TABLE WITH RELATED PROPERTIES
+================================================================================
+
+Add this table to show the relationship between temporal properties:
+
+### Temporal Properties for Persons
+
+| Property | Type | Meaning | CIDOC-CRM Property | When to Use |
+|----------|------|---------|-------------------|-------------|
+| gmn:P98i_1_has_birth_date | Biological | Actual birth date | P82a_begin_of_the_begin (via P98i_was_born) | When birth date is known |
+| **gmn:P11i_1_earliest_attestation_date** | **Documentary** | **First documented reference** | **P82a_begin_of_the_begin (via P11i_participated_in)** | **For first known attestation** |
+| gmn:P11i_2_latest_attestation_date | Documentary | Last documented reference | P82b_end_of_the_end (via P11i_participated_in) | For last known attestation |
+| gmn:P100i_1_has_death_date | Biological | Actual death date | P82b_end_of_the_end (via P100i_died_in) | When death date is known |
+
+**Timeline Representation:**
+```
+|-----------|---------------|---------------|-------------|
+Birth       Earliest        Latest          Death
+Date        Attestation     Attestation     Date
+(P98i)      (P11i.1)        (P11i.2)        (P100i)
+
+← Unknown → ← Known Period →  ← Unknown →
+```
+
+================================================================================
+SECTION 4: USAGE EXAMPLES
+================================================================================
+
+Add these examples to your documentation:
+
+### Example 1: Basic Person Record with Attestation Date
+
+```turtle
+@prefix gmn: <http://genoa-medieval-notarial.org/ontology#> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix aat: <http://vocab.getty.edu/page/aat/> .
+
+<person/giovanni_rossi> a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Giovanni Rossi" ;
+    gmn:P2_1_gender aat:300189559 ;  # male
+    gmn:P11i_1_earliest_attestation_date "1450-03-15"^^xsd:date ;
+    gmn:P107i_3_has_occupation <occupation/notary> ;
+    cidoc:P70i_is_documented_in <document/ASG_Not_843_f12r> .
+```
+
+### Example 2: Person with Multiple Attestation Dates
+
+```turtle
+<person/caterina_spinola> a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Caterina Spinola" ;
+    gmn:P2_1_gender aat:300189557 ;  # female
+    gmn:P11i_1_earliest_attestation_date "1450-03-15"^^xsd:date ;
+    gmn:P11i_1_earliest_attestation_date "1450-07-22"^^xsd:date ;
+    gmn:P11i_2_latest_attestation_date "1475-11-30"^^xsd:date .
+```
+
+**Interpretation:** Caterina Spinola appears in documents dated 1450-03-15 and 1450-07-22 (two early attestations), with her last known appearance in 1475-11-30.
+
+### Example 3: Complete Biographical Record
+
+```turtle
+<person/bartolomeo_vignolo> a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Bartolomeo Vignolo" ;
+    gmn:P1_3_has_patronymic "son of Antonio" ;
+    gmn:P1_4_has_loconym <place/vignolo> ;
+    gmn:P2_1_gender aat:300189559 ;  # male
+    gmn:P96_1_has_mother <person/maria_grimaldi> ;
+    gmn:P97_1_has_father <person/antonio_vignolo> ;
+    gmn:P98i_1_has_birth_date "1425-01-01"^^xsd:date ;
+    gmn:P11i_1_earliest_attestation_date "1445-06-15"^^xsd:date ;
+    gmn:P11i_2_latest_attestation_date "1485-10-20"^^xsd:date ;
+    gmn:P100i_1_has_death_date "1490-03-12"^^xsd:date ;
+    gmn:P107i_1_has_regional_provenance <place/genoa> ;
+    gmn:P107i_3_has_occupation <occupation/merchant> .
+```
+
+### Example 4: Attestation Date with Source Document Reference
+
+```turtle
+<person/maria_doria> a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Maria Doria" ;
+    gmn:P11i_1_earliest_attestation_date "1450-03-15"^^xsd:date ;
+    cidoc:P70i_is_documented_in <document/ASG_Not_843_f12r> .
+
+<document/ASG_Not_843_f12r> a gmn:E31_8_Dowry_Contract ;
+    gmn:P94i_2_has_enactment_date "1450-03-15"^^xsd:date ;
+    gmn:P46i_1_is_contained_in <collection/ASG_Not_843> .
+```
+
+**Note:** The attestation date matches the document enactment date, establishing the source of the attestation.
+
+### Example 5: Family Members with Attestation Dates
+
+```turtle
+# Father
+<person/luca_spinola> a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Luca Spinola" ;
+    gmn:P11i_1_earliest_attestation_date "1425-01-10"^^xsd:date ;
+    gmn:P11i_2_latest_attestation_date "1460-05-20"^^xsd:date .
+
+# Mother  
+<person/elisabetta_fieschi> a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Elisabetta Fieschi" ;
+    gmn:P11i_1_earliest_attestation_date "1425-01-10"^^xsd:date ;
+    gmn:P11i_2_latest_attestation_date "1455-12-15"^^xsd:date .
+
+# Daughter
+<person/caterina_spinola> a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Caterina Spinola" ;
+    gmn:P96_1_has_mother <person/elisabetta_fieschi> ;
+    gmn:P97_1_has_father <person/luca_spinola> ;
+    gmn:P11i_1_earliest_attestation_date "1450-03-15"^^xsd:date .
+```
+
+**Analysis:** Parents first attested in 1425, daughter first attested in 1450 - a plausible generational gap of 25 years.
+
+================================================================================
+SECTION 5: TRANSFORMATION EXPLANATION
+================================================================================
+
+Add this to explain the transformation process:
+
+### Transformation: Shortcut to Full CIDOC-CRM
+
+The `gmn:P11i_1_earliest_attestation_date` property is a **shortcut** designed for data entry convenience. During transformation, it expands to the full CIDOC-CRM compliant structure:
+
+**Input (Shortcut):**
+```turtle
+<person/giovanni_rossi> 
+    gmn:P11i_1_earliest_attestation_date "1450-03-15"^^xsd:date .
+```
+
+**Output (Full CIDOC-CRM):**
+```turtle
+<person/giovanni_rossi> 
+    cidoc:P11i_participated_in <person/giovanni_rossi/event/earliest_a1b2c3d4> .
+
+<person/giovanni_rossi/event/earliest_a1b2c3d4> 
+    a cidoc:E5_Event ;
+    cidoc:P4_has_time-span <person/giovanni_rossi/event/earliest_a1b2c3d4/timespan> .
+
+<person/giovanni_rossi/event/earliest_a1b2c3d4/timespan> 
+    a cidoc:E52_Time-Span ;
+    cidoc:P82a_begin_of_the_begin "1450-03-15"^^xsd:date .
+```
+
+**Benefits of This Approach:**
+- **Simplicity**: Data entry requires only a single property and date value
+- **Semantic Precision**: Full structure captures the event-based nature of attestation
+- **Interoperability**: Output is fully CIDOC-CRM compliant
+- **Extensibility**: Event structure can be extended with additional properties (location, type, etc.)
+
+================================================================================
+SECTION 6: SPARQL QUERY EXAMPLES
+================================================================================
+
+Add these query examples to help users work with the property:
+
+### SPARQL Query Examples
+
+#### Query 1: Find All Persons with Earliest Attestation Dates
+
+```sparql
+PREFIX gmn: <http://genoa-medieval-notarial.org/ontology#>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?person ?name ?earliest
+WHERE {
+    ?person a cidoc:E21_Person ;
+            gmn:P11i_1_earliest_attestation_date ?earliest .
+    OPTIONAL { ?person gmn:P1_1_has_name ?name }
+}
+ORDER BY ?earliest
+```
+
+#### Query 2: Find Persons First Attested in a Specific Year
+
+```sparql
+PREFIX gmn: <http://genoa-medieval-notarial.org/ontology#>
+
+SELECT ?person ?name ?date
+WHERE {
+    ?person gmn:P11i_1_earliest_attestation_date ?date .
+    OPTIONAL { ?person gmn:P1_1_has_name ?name }
+    FILTER (YEAR(?date) = 1450)
+}
+```
+
+#### Query 3: Find Persons with Attestation Period
+
+```sparql
+PREFIX gmn: <http://genoa-medieval-notarial.org/ontology#>
+
+SELECT ?person ?name ?earliest ?latest 
+       ((?latest - ?earliest) / 365 AS ?documentedYears)
+WHERE {
+    ?person gmn:P11i_1_earliest_attestation_date ?earliest ;
+            gmn:P11i_2_latest_attestation_date ?latest .
+    OPTIONAL { ?person gmn:P1_1_has_name ?name }
+}
+ORDER BY DESC(?documentedYears)
+```
+
+#### Query 4: Validate Chronological Consistency
+
+```sparql
+# Find persons where attestation precedes birth (data error)
+PREFIX gmn: <http://genoa-medieval-notarial.org/ontology#>
+
+SELECT ?person ?name ?birth ?attestation
+WHERE {
+    ?person gmn:P98i_1_has_birth_date ?birth ;
+            gmn:P11i_1_earliest_attestation_date ?attestation .
+    OPTIONAL { ?person gmn:P1_1_has_name ?name }
+    FILTER (?attestation < ?birth)
+}
+```
+
+#### Query 5: Count Attestations by Decade
+
+```sparql
+PREFIX gmn: <http://genoa-medieval-notarial.org/ontology#>
+
+SELECT (FLOOR(YEAR(?date) / 10) * 10 AS ?decade) 
+       (COUNT(?person) AS ?attestations)
+WHERE {
+    ?person gmn:P11i_1_earliest_attestation_date ?date .
+}
+GROUP BY (FLOOR(YEAR(?date) / 10) * 10)
+ORDER BY ?decade
+```
+
+================================================================================
+SECTION 7: BEST PRACTICES
+================================================================================
+
+Add these best practices to your documentation:
+
+### Best Practices for Using P11i.1 Earliest Attestation Date
+
+1. **Source Documentation**
+   - Always link attestation dates to source documents
+   - Use `cidoc:P70i_is_documented_in` to reference the document
+   - Ensure document date matches attestation date
+
+2. **Multiple Attestations**
+   - Record all early attestations from different sources
+   - Typical: 1-3 early attestation dates
+   - Multiple dates provide corroboration and verification
+
+3. **Date Format**
+   - Use ISO 8601 format: YYYY-MM-DD
+   - For partial dates use: YYYY-MM or YYYY
+   - Always include `^^xsd:date` type annotation
+
+4. **Distinguish from Birth Date**
+   - Attestation ≠ Birth
+   - Use `gmn:P98i_1_has_birth_date` for actual birth dates
+   - Attestation is about documentary evidence, not biological events
+
+5. **Chronological Validation**
+   - Earliest attestation should precede latest attestation
+   - Attestation should fall between birth and death dates (if known)
+   - Validate parent/child attestation chronology
+
+6. **Data Quality**
+   - Verify dates against original sources
+   - Use precise dates when available
+   - Document uncertainty in editorial notes
+
+================================================================================
+SECTION 8: COMMON PITFALLS
+================================================================================
+
+Add this section about common mistakes:
+
+### Common Pitfalls and How to Avoid Them
+
+❌ **WRONG: Using for estimated dates**
+```turtle
+<person/giovanni> 
+    gmn:P11i_1_earliest_attestation_date "1425-01-01"^^xsd:date .
+    # This is just an estimate based on father's age
+```
+
+✅ **CORRECT: Only use for actual documentary attestation**
+```turtle
+<person/giovanni> 
+    gmn:P11i_1_earliest_attestation_date "1450-03-15"^^xsd:date ;
+    cidoc:P70i_is_documented_in <document/ASG_Not_843_f12r> .
+```
+
+---
+
+❌ **WRONG: Using for birth date**
+```turtle
+<person/maria> 
+    gmn:P11i_1_earliest_attestation_date "1430-05-10"^^xsd:date .
+    # Parish records show she was born on this date
+```
+
+✅ **CORRECT: Use proper birth date property**
+```turtle
+<person/maria> 
+    gmn:P98i_1_has_birth_date "1430-05-10"^^xsd:date ;
+    gmn:P11i_1_earliest_attestation_date "1450-07-15"^^xsd:date .
+```
+
+---
+
+❌ **WRONG: Inconsistent date format**
+```turtle
+<person/luca> 
+    gmn:P11i_1_earliest_attestation_date "March 15, 1450" .
+```
+
+✅ **CORRECT: ISO 8601 format**
+```turtle
+<person/luca> 
+    gmn:P11i_1_earliest_attestation_date "1450-03-15"^^xsd:date .
+```
+
+---
+
+❌ **WRONG: Attestation date without source**
+```turtle
+<person/caterina> 
+    gmn:P11i_1_earliest_attestation_date "1450-03-15"^^xsd:date .
+    # Where does this date come from?
+```
+
+✅ **CORRECT: Always link to source document**
+```turtle
+<person/caterina> 
+    gmn:P11i_1_earliest_attestation_date "1450-03-15"^^xsd:date ;
+    cidoc:P70i_is_documented_in <document/ASG_Not_843_f12r> .
+```
+
+================================================================================
+SECTION 9: PROPERTY HIERARCHY DIAGRAM
+================================================================================
+
+Add this diagram to show property relationships:
+
+### Property Hierarchy for Person Participation
+
+```
+cidoc:P11i_participated_in (participated in)
+├── gmn:P11i_1_earliest_attestation_date [earliest attestation]
+├── gmn:P11i_2_latest_attestation_date [latest attestation]
+└── gmn:P11i_3_has_spouse [marriage event]
+```
+
+**Explanation:**
+- All three GMN properties are subproperties of `cidoc:P11i_participated_in`
+- They all involve persons participating in events
+- The distinction is in the type and timing of the event:
+  - P11i.1: Event at earliest attestation time
+  - P11i.2: Event at latest attestation time  
+  - P11i.3: Marriage event
+
+================================================================================
+SECTION 10: INTEGRATION WITH OTHER PROPERTIES
+================================================================================
+
+Add this section about property integration:
+
+### Integration with Other Person Properties
+
+The `gmn:P11i_1_earliest_attestation_date` property works in concert with other person properties to create complete biographical records:
+
+#### Core Person Properties
+```turtle
+<person/complete_record> a cidoc:E21_Person ;
+    # Identity
+    gmn:P1_1_has_name "Giovanni de Amandolesio" ;
+    gmn:P1_3_has_patronymic "son of Bartolomeo" ;
+    gmn:P1_4_has_loconym <place/amandolesio> ;
+    
+    # Biological characteristics
+    gmn:P2_1_gender <http://vocab.getty.edu/page/aat/300189559> ;
+    
+    # Family relationships
+    gmn:P96_1_has_mother <person/maria_grimaldi> ;
+    gmn:P97_1_has_father <person/bartolomeo_amandolesio> ;
+    gmn:P11i_3_has_spouse <person/caterina_spinola> ;
+    
+    # Temporal properties
+    gmn:P98i_1_has_birth_date "1425-01-01"^^xsd:date ;
+    gmn:P11i_1_earliest_attestation_date "1445-06-15"^^xsd:date ;
+    gmn:P11i_2_latest_attestation_date "1485-10-20"^^xsd:date ;
+    gmn:P100i_1_has_death_date "1490-03-12"^^xsd:date ;
+    
+    # Social properties
+    gmn:P107i_1_has_regional_provenance <place/genoa> ;
+    gmn:P107i_2_has_social_category <category/patrician> ;
+    gmn:P107i_3_has_occupation <occupation/notary> ;
+    
+    # Documentation
+    cidoc:P70i_is_documented_in 
+        <document/ASG_Not_841_f5r>,
+        <document/ASG_Not_843_f12r> .
+```
+
+================================================================================
+SECTION 11: REFERENCE TABLE
+================================================================================
+
+Add this quick reference table:
+
+### Quick Reference: gmn:P11i_1_earliest_attestation_date
+
+| Aspect | Details |
+|--------|---------|
+| **IRI** | gmn:P11i_1_earliest_attestation_date |
+| **Type** | owl:DatatypeProperty |
+| **Label** | "P11i.1 earliest attestation date"@en |
+| **Domain** | cidoc:E21_Person |
+| **Range** | xsd:date |
+| **Superproperty** | cidoc:P11i_participated_in |
+| **Cardinality** | 0 to many (typically 1-3) |
+| **Date Format** | ISO 8601 (YYYY-MM-DD) |
+| **CIDOC-CRM Path** | P11i_participated_in > E5_Event > P4_has_time-span > E52_Time-Span > P82a_begin_of_the_begin |
+| **Created** | 2025-10-16 |
+| **Transformation** | Required for CIDOC-CRM compliance |
+| **Related Properties** | P11i_2_latest_attestation_date, P98i_1_has_birth_date, P100i_1_has_death_date |
+| **Example** | `"1450-03-15"^^xsd:date` |
+
+================================================================================
+END OF DOCUMENTATION ADDITIONS
+================================================================================
+
+Instructions for Integration:
+1. Choose appropriate sections from above based on your documentation structure
+2. Adjust section headings to match your existing style
+3. Update cross-references to match your document structure
+4. Add any project-specific examples or notes
+5. Update table of contents if needed
+6. Ensure consistent formatting with rest of documentation
