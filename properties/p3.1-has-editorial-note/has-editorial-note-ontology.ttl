@@ -1,0 +1,306 @@
+# GMN P3.1 has editorial note - TTL Ontology Additions
+# 
+# This file contains the complete TTL definition for the gmn:P3_1_has_editorial_note property.
+# This property is ALREADY IMPLEMENTED in the main gmn_ontology.ttl file.
+# This file is provided for reference and documentation purposes.
+#
+# Property URI: gmn:P3_1_has_editorial_note
+# Version: 1.0
+# Date: October 26, 2025
+# Status: ✅ Already Implemented
+#
+# =============================================================================
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix gmn: <http://www.genoesemerchantnetworks.com/ontology#> .
+@prefix aat: <http://vocab.getty.edu/aat/> .
+
+# =============================================================================
+# MAIN PROPERTY DEFINITION
+# =============================================================================
+
+# Property: P3.1 has editorial note
+gmn:P3_1_has_editorial_note 
+    a owl:DatatypeProperty ;
+    a rdf:Property ;
+    rdfs:label "P3.1 has editorial note"@en ;
+    rdfs:comment "Simplified property for expressing editorial notes, comments, and internal documentation about an entity. Represents the full CIDOC-CRM path: P67i_is_referred_to_by > E33_Linguistic_Object > P2_has_type <http://vocab.getty.edu/aat/300456627> > P190_has_symbolic_content. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The linguistic object type is automatically set to AAT 300456627. This property is intended for internal project use and may be excluded from public data exports."@en ;
+    rdfs:subPropertyOf cidoc:P3_has_note ;
+    rdfs:domain cidoc:E1_CRM_Entity ;
+    rdfs:range cidoc:E62_String ;
+    dcterms:created "2025-10-16"^^xsd:date ;
+    rdfs:seeAlso cidoc:P3_has_note, cidoc:P67i_is_referred_to_by, cidoc:P190_has_symbolic_content, aat:300456627 ;
+    gmn:hasImplicitType aat:300456627 ;
+    gmn:isInternalOnly true .
+
+# =============================================================================
+# ADDITIONAL CONTEXT AND DOCUMENTATION
+# =============================================================================
+
+# Getty AAT Concept Reference
+# AAT 300456627: editorial notes
+# Preferred term: editorial notes
+# Alternate terms: editor's notes, editorial annotations
+# Scope: Notes written by editors that provide context, explanation, 
+#        or clarification of the content of a document or publication.
+
+# =============================================================================
+# EXAMPLE USAGE IN TTL
+# =============================================================================
+
+# Example 1: Person with Editorial Note about Name Variation
+# -----------------------------------------------------------
+<http://example.org/person/giacomo_spinola_001>
+    a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Giacomo Spinola q. Antonio" ;
+    gmn:P3_1_has_editorial_note "Name appears as 'Iacopo Spinola' in ASG Not. 234, f. 12v. Both spellings refer to same individual based on shared patronymic and property references." .
+
+# Example 2: Contract with Source Issue Note
+# -----------------------------------------------------------
+<http://example.org/contract/sale_045>
+    a gmn:E31_2_Sales_Contract ;
+    gmn:P102_1_has_title "Sale of Vineyard in Vignolo" ;
+    gmn:P3_1_has_editorial_note "Document partially damaged. Sale price illegible but context suggests 100-150 lire based on comparable properties." .
+
+# Example 3: Place with Modern Geographic Context
+# -----------------------------------------------------------
+<http://example.org/place/vignolo>
+    a cidoc:E53_Place ;
+    gmn:P1_1_has_name "Vignolo" ;
+    gmn:P3_1_has_editorial_note "Modern location: frazione of Serra Riccò, province of Genoa. GPS: 44.4833°N, 8.9167°E" .
+
+# Example 4: Entity with Multiple Editorial Notes
+# -----------------------------------------------------------
+<http://example.org/person/bartolomeo_de_vignolo>
+    a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Bartolomeo de Vignolo" ;
+    gmn:P3_1_has_editorial_note 
+        "Primary attestation: ASG Not. 456, f. 78r, dated 1455-03-12." ,
+        "Loconym suggests origin from Vignolo near Serra Riccò." ,
+        "Possible relation to Giovanni de Vignolo requires investigation." .
+
+# Example 5: Arbitration Agreement with Procedural Note
+# -----------------------------------------------------------
+<http://example.org/contract/arbitration_012>
+    a gmn:E31_3_Arbitration_Agreement ;
+    gmn:P102_1_has_title "Arbitration - Spinola Property Dispute" ;
+    gmn:P70_18_documents_disputing_party 
+        <http://example.org/person/spinola_party1> ,
+        <http://example.org/person/rival_party2> ;
+    gmn:P3_1_has_editorial_note "Outcome recorded in separate document ASG Not. 567, f. 23r. Parties settled before formal decision." .
+
+# =============================================================================
+# TRANSFORMATION PATTERN
+# =============================================================================
+
+# BEFORE TRANSFORMATION (Simplified Form):
+# -----------------------------------------
+# <subject> gmn:P3_1_has_editorial_note "Editorial note text here." .
+
+# AFTER TRANSFORMATION (Full CIDOC-CRM with --include-internal flag):
+# --------------------------------------------------------------------
+# <subject> cidoc:P67i_is_referred_to_by <subject/note/hash> .
+# <subject/note/hash> a cidoc:E33_Linguistic_Object ;
+#     cidoc:P2_has_type <http://vocab.getty.edu/aat/300456627> ;
+#     cidoc:P190_has_symbolic_content "Editorial note text here." .
+
+# AFTER TRANSFORMATION (Public Export - default, no --include-internal):
+# -----------------------------------------------------------------------
+# The property is completely removed from the output.
+
+# =============================================================================
+# COMPLETE TRANSFORMATION EXAMPLE
+# =============================================================================
+
+# INPUT (Simplified):
+# -------------------
+<http://example.org/person/giovanni_test>
+    a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Giovanni Rossi" ;
+    gmn:P3_1_has_editorial_note "Identity requires verification against parish records." .
+
+# OUTPUT WITH --include-internal FLAG (Full CIDOC-CRM):
+# ------------------------------------------------------
+<http://example.org/person/giovanni_test>
+    a cidoc:E21_Person ;
+    cidoc:P1_is_identified_by <http://example.org/person/giovanni_test/appellation/abc123> ;
+    cidoc:P67i_is_referred_to_by <http://example.org/person/giovanni_test/note/def456> .
+
+<http://example.org/person/giovanni_test/appellation/abc123>
+    a cidoc:E41_Appellation ;
+    cidoc:P2_has_type <http://vocab.getty.edu/aat/300404650> ;
+    cidoc:P190_has_symbolic_content "Giovanni Rossi" .
+
+<http://example.org/person/giovanni_test/note/def456>
+    a cidoc:E33_Linguistic_Object ;
+    cidoc:P2_has_type <http://vocab.getty.edu/aat/300456627> ;
+    cidoc:P190_has_symbolic_content "Identity requires verification against parish records." .
+
+# OUTPUT WITHOUT --include-internal FLAG (Public Export - default):
+# ------------------------------------------------------------------
+<http://example.org/person/giovanni_test>
+    a cidoc:E21_Person ;
+    cidoc:P1_is_identified_by <http://example.org/person/giovanni_test/appellation/abc123> .
+
+<http://example.org/person/giovanni_test/appellation/abc123>
+    a cidoc:E41_Appellation ;
+    cidoc:P2_has_type <http://vocab.getty.edu/aat/300404650> ;
+    cidoc:P190_has_symbolic_content "Giovanni Rossi" .
+
+# Note: The editorial note is completely removed for public export.
+
+# =============================================================================
+# PROPERTY CHARACTERISTICS
+# =============================================================================
+
+# Domain: cidoc:E1_CRM_Entity
+# - Can be applied to ANY entity in the ontology
+# - Includes: E21_Person, E31_Document, E53_Place, E74_Group, etc.
+
+# Range: cidoc:E62_String
+# - Textual content only
+# - No structured data in the note itself
+
+# Cardinality: 0..*
+# - Optional property (minimum 0)
+# - Multiple notes allowed per entity (unbounded maximum)
+
+# Type: owl:DatatypeProperty
+# - Links entity directly to string value
+# - Transforms to object property pattern during conversion
+
+# Internal Only: true
+# - Marked with gmn:isInternalOnly
+# - Intended for internal project use
+# - Should be excluded from public exports by default
+
+# =============================================================================
+# INTEGRATION WITH OTHER GMN PROPERTIES
+# =============================================================================
+
+# Common patterns for using editorial notes with other properties:
+
+# Pattern 1: With Name Properties
+# --------------------------------
+<http://example.org/person/example>
+    gmn:P1_1_has_name "Normalized Name" ;
+    gmn:P1_2_has_name_from_source "Original Name Form" ;
+    gmn:P3_1_has_editorial_note "Name normalization based on frequency analysis of source corpus." .
+
+# Pattern 2: With Date Properties
+# --------------------------------
+<http://example.org/person/example>
+    gmn:P11i_1_earliest_attestation_date "1445-06-15"^^xsd:date ;
+    gmn:P11i_2_latest_attestation_date "1478-11-22"^^xsd:date ;
+    gmn:P3_1_has_editorial_note "33-year active period suggests long life. Latest attestation is property sale as widow." .
+
+# Pattern 3: With Contract Properties
+# ------------------------------------
+<http://example.org/contract/example>
+    gmn:P94i_1_was_created_by <http://example.org/notary/giovanni> ;
+    gmn:P94i_2_has_enactment_date "1450-03-15"^^xsd:date ;
+    gmn:P3_1_has_editorial_note "Notary signature illegible but identified through seal and witness testimony." .
+
+# Pattern 4: With Geographic Properties
+# --------------------------------------
+<http://example.org/place/example>
+    gmn:P1_1_has_name "Historical Place Name" ;
+    gmn:P3_1_has_editorial_note "Modern location differs from historical boundaries. See attached GIS data for reconstruction." .
+
+# =============================================================================
+# VALIDATION AND CONSTRAINTS
+# =============================================================================
+
+# Recommended validation constraints (SHACL):
+#
+# 1. Non-empty strings:
+#    Editorial notes should contain actual content
+#
+# 2. String datatype:
+#    Must be xsd:string or compatible type
+#
+# 3. Domain constraint:
+#    Only applicable to E1_CRM_Entity instances
+#
+# 4. Length guidance (optional):
+#    Recommended maximum length for readability: 500 characters
+#    Very short notes (< 10 characters) may indicate data entry errors
+
+# =============================================================================
+# BEST PRACTICES
+# =============================================================================
+
+# DO use editorial notes for:
+# ✓ Documenting source uncertainties
+# ✓ Explaining editorial decisions
+# ✓ Recording interpretation rationale
+# ✓ Flagging items requiring further research
+# ✓ Noting discrepancies between sources
+# ✓ Providing modern context for historical entities
+# ✓ Cross-referencing related entities or sources
+
+# DO NOT use editorial notes for:
+# ✗ Public-facing descriptions (use cidoc:P3_has_note)
+# ✗ Bibliographic citations (use proper citation properties)
+# ✗ Structured data (use appropriate semantic properties)
+# ✗ Permanent scholarly annotations (use cidoc:P70_documents)
+
+# =============================================================================
+# RELATED PROPERTIES
+# =============================================================================
+
+# Parent property:
+# - cidoc:P3_has_note (general notes property)
+
+# Alternative properties for different use cases:
+# - cidoc:P3_has_note (public general notes)
+# - cidoc:P70_documents (formal documentation)
+# - cidoc:P67_refers_to (references to external descriptions)
+# - cidoc:P129_is_about (subject matter references)
+
+# =============================================================================
+# TECHNICAL NOTES
+# =============================================================================
+
+# URI Generation Pattern:
+# {subject_uri}/note/{hash}
+# where {hash} is the last 8 characters of hash(note_content)
+
+# AAT Type URI:
+# http://vocab.getty.edu/aat/300456627
+
+# Transformation Function:
+# transform_p3_1_has_editorial_note(data, include_internal=False)
+
+# Command Line Flag:
+# --include-internal (to include notes in transformation)
+
+# =============================================================================
+# VERSION HISTORY
+# =============================================================================
+
+# Version 1.0 (2025-10-16):
+# - Initial property definition
+# - Added to main ontology file
+# - Transformation function implemented
+# - AAT type 300456627 selected
+# - Internal-only flag added
+
+# =============================================================================
+# REFERENCES
+# =============================================================================
+
+# CIDOC-CRM: http://www.cidoc-crm.org/cidoc-crm/
+# Getty AAT: http://vocab.getty.edu/aat/
+# GMN Ontology: http://www.genoesemerchantnetworks.com/ontology
+# Property Created: 2025-10-16
+# Implementation Status: ✅ Fully Implemented
+
+# =============================================================================
+# END OF FILE
+# =============================================================================

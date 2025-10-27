@@ -1,0 +1,671 @@
+GMN P3.1 has editorial note - Documentation Additions
+=====================================================
+
+This file contains ready-to-copy text, examples, and tables to add to the main 
+GMN project documentation files.
+
+Property: gmn:P3_1_has_editorial_note
+Version: 1.0
+Date: October 26, 2025
+Status: ✅ Already Implemented
+
+=============================================================================
+SECTION 1: PROPERTY OVERVIEW (Add to main ontology documentation)
+=============================================================================
+
+P3.1 has editorial note (gmn:P3_1_has_editorial_note)
+------------------------------------------------------
+
+**Purpose:** Simplified property for expressing editorial notes, comments, and 
+internal documentation about any entity in the database.
+
+**Type:** Datatype Property (owl:DatatypeProperty)
+**Domain:** cidoc:E1_CRM_Entity (applicable to any entity)
+**Range:** cidoc:E62_String
+**Subproperty of:** cidoc:P3_has_note
+**AAT Type:** aat:300456627 (editorial notes)
+**Internal Only:** Yes (gmn:isInternalOnly true)
+
+**CIDOC-CRM Path:**
+Subject Entity → P67i_is_referred_to_by → E33_Linguistic_Object → P2_has_type → 
+E55_Type (aat:300456627) → P190_has_symbolic_content → E62_String
+
+**Transformation Behavior:**
+- Default (public export): Property is removed completely
+- With --include-internal flag: Transforms to full CIDOC-CRM structure
+
+**Use Cases:**
+- Document source uncertainties or ambiguities
+- Explain editorial decisions and interpretations
+- Record temporary working hypotheses
+- Flag items requiring further research
+- Note discrepancies between multiple sources
+- Provide modern context for historical entities
+
+=============================================================================
+SECTION 2: PROPERTY TABLE (Add to properties table in documentation)
+=============================================================================
+
+| Property | Label | Type | Domain | Range | Description |
+|----------|-------|------|--------|-------|-------------|
+| gmn:P3_1_has_editorial_note | P3.1 has editorial note | DatatypeProperty | E1_CRM_Entity | E62_String | Editorial notes and internal documentation about an entity. Transforms to P67i_is_referred_to_by → E33_Linguistic_Object with AAT type 300456627. Internal use only - excluded from public exports by default. |
+
+=============================================================================
+SECTION 3: USAGE EXAMPLES (Add to examples section)
+=============================================================================
+
+Example 1: Person with Name Variation Note
+-------------------------------------------
+
+Scenario: A person whose name appears differently in various historical sources.
+
+JSON-LD (Simplified):
+```json
+{
+  "@id": "http://example.org/person/giacomo_spinola_001",
+  "@type": "cidoc:E21_Person",
+  "gmn:P1_1_has_name": [
+    {"@value": "Giacomo Spinola q. Antonio"}
+  ],
+  "gmn:P3_1_has_editorial_note": [
+    {"@value": "Name appears as 'Iacopo Spinola' in ASG Not. 234, f. 12v. Both spellings refer to same individual based on shared patronymic and property references."}
+  ]
+}
+```
+
+Turtle (Simplified):
+```turtle
+<http://example.org/person/giacomo_spinola_001>
+    a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Giacomo Spinola q. Antonio" ;
+    gmn:P3_1_has_editorial_note "Name appears as 'Iacopo Spinola' in ASG Not. 234, f. 12v. Both spellings refer to same individual based on shared patronymic and property references." .
+```
+
+---
+
+Example 2: Contract with Source Damage Note
+--------------------------------------------
+
+Scenario: A sales contract where the document is partially damaged.
+
+JSON-LD (Simplified):
+```json
+{
+  "@id": "http://example.org/contract/sale_045",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "gmn:P102_1_has_title": [
+    {"@value": "Sale of Vineyard in Vignolo"}
+  ],
+  "gmn:P3_1_has_editorial_note": [
+    {"@value": "Document partially damaged. Sale price illegible but context suggests 100-150 lire based on comparable properties in same period and location."}
+  ]
+}
+```
+
+---
+
+Example 3: Place with Modern Geographic Context
+------------------------------------------------
+
+Scenario: Historical place mapped to modern location.
+
+JSON-LD (Simplified):
+```json
+{
+  "@id": "http://example.org/place/vignolo",
+  "@type": "cidoc:E53_Place",
+  "gmn:P1_1_has_name": [
+    {"@value": "Vignolo"}
+  ],
+  "gmn:P3_1_has_editorial_note": [
+    {"@value": "Modern location: frazione of Serra Riccò, province of Genoa. GPS coordinates: 44.4833°N, 8.9167°E. Historical boundaries uncertain but centered on modern village."}
+  ]
+}
+```
+
+---
+
+Example 4: Entity with Multiple Editorial Notes
+------------------------------------------------
+
+Scenario: A person with multiple observations requiring different notes.
+
+JSON-LD (Simplified):
+```json
+{
+  "@id": "http://example.org/person/bartolomeo_de_vignolo",
+  "@type": "cidoc:E21_Person",
+  "gmn:P1_1_has_name": [
+    {"@value": "Bartolomeo de Vignolo"}
+  ],
+  "gmn:P3_1_has_editorial_note": [
+    {"@value": "Primary attestation: ASG Not. 456, f. 78r, dated 1455-03-12."},
+    {"@value": "Loconym 'de Vignolo' suggests origin from Vignolo near Serra Riccò based on comparative naming patterns."},
+    {"@value": "Possible familial relation to Giovanni de Vignolo (ASG Not. 789, f. 34v) - requires further investigation of genealogical records."}
+  ]
+}
+```
+
+=============================================================================
+SECTION 4: TRANSFORMATION EXAMPLES (Add to transformation documentation)
+=============================================================================
+
+Transformation Example: Editorial Note Property
+------------------------------------------------
+
+**Input (Simplified GMN):**
+```json
+{
+  "@id": "http://example.org/person/giovanni_001",
+  "@type": "cidoc:E21_Person",
+  "gmn:P1_1_has_name": [
+    {"@value": "Giovanni Rossi"}
+  ],
+  "gmn:P3_1_has_editorial_note": [
+    {"@value": "Identity requires verification against parish records."}
+  ]
+}
+```
+
+**Output 1 - Public Export (default, without --include-internal):**
+```json
+{
+  "@id": "http://example.org/person/giovanni_001",
+  "@type": "cidoc:E21_Person",
+  "cidoc:P1_is_identified_by": [
+    {
+      "@id": "http://example.org/person/giovanni_001/appellation/abc123",
+      "@type": "cidoc:E41_Appellation",
+      "cidoc:P2_has_type": {
+        "@id": "http://vocab.getty.edu/aat/300404650",
+        "@type": "cidoc:E55_Type"
+      },
+      "cidoc:P190_has_symbolic_content": "Giovanni Rossi"
+    }
+  ]
+}
+```
+*Note: The editorial note is completely removed from public exports.*
+
+**Output 2 - Internal Export (with --include-internal):**
+```json
+{
+  "@id": "http://example.org/person/giovanni_001",
+  "@type": "cidoc:E21_Person",
+  "cidoc:P1_is_identified_by": [
+    {
+      "@id": "http://example.org/person/giovanni_001/appellation/abc123",
+      "@type": "cidoc:E41_Appellation",
+      "cidoc:P2_has_type": {
+        "@id": "http://vocab.getty.edu/aat/300404650",
+        "@type": "cidoc:E55_Type"
+      },
+      "cidoc:P190_has_symbolic_content": "Giovanni Rossi"
+    }
+  ],
+  "cidoc:P67i_is_referred_to_by": [
+    {
+      "@id": "http://example.org/person/giovanni_001/note/def456",
+      "@type": "cidoc:E33_Linguistic_Object",
+      "cidoc:P2_has_type": {
+        "@id": "http://vocab.getty.edu/aat/300456627",
+        "@type": "cidoc:E55_Type"
+      },
+      "cidoc:P190_has_symbolic_content": "Identity requires verification against parish records."
+    }
+  ]
+}
+```
+*Note: The editorial note is transformed to full CIDOC-CRM structure with internal exports.*
+
+=============================================================================
+SECTION 5: BEST PRACTICES GUIDE (Add to best practices documentation)
+=============================================================================
+
+Best Practices for Editorial Notes
+-----------------------------------
+
+### When to Use Editorial Notes
+
+✅ **DO use gmn:P3_1_has_editorial_note for:**
+
+1. **Source Uncertainties**
+   - Example: "Name spelling varies between sources. 'Giacomo' in notarial records, 'Jacopo' in merchant ledgers."
+
+2. **Editorial Decisions**
+   - Example: "Date estimated as 1450-1455 based on contextual evidence from related contracts."
+
+3. **Interpretation Rationale**
+   - Example: "Loconym 'de Vignolo' interpreted as place of origin rather than property ownership based on comparative analysis."
+
+4. **Research Flags**
+   - Example: "REQUIRES VERIFICATION: Sale price partially illegible. Tentative reading: 150 lire."
+
+5. **Source Discrepancies**
+   - Example: "Birthdate conflicts: ASG Not. 123 indicates 1420, parish records suggest 1422."
+
+6. **Modern Context**
+   - Example: "Modern location: 44.4833°N, 8.9167°E (frazione of Serra Riccò, Genoa province)."
+
+7. **Cross-References**
+   - Example: "See related arbitration agreement in ASG Not. 567, f. 23r for outcome of this dispute."
+
+### When NOT to Use Editorial Notes
+
+❌ **DO NOT use gmn:P3_1_has_editorial_note for:**
+
+1. **Public Descriptions** → Use cidoc:P3_has_note instead
+2. **Bibliographic Citations** → Use proper citation properties
+3. **Structured Data** → Use appropriate semantic properties
+4. **Permanent Scholarly Annotations** → Use cidoc:P70_documents
+
+### Editorial Note Guidelines
+
+**Content Guidelines:**
+- Be specific and concise
+- State facts clearly, mark interpretations explicitly
+- Include relevant source references when applicable
+- Use consistent terminology across the project
+- Date time-sensitive observations when relevant
+
+**Length Recommendations:**
+- Aim for 50-200 characters for simple notes
+- Maximum 500 characters for detailed notes
+- Split very long observations into multiple notes
+
+**Quality Indicators:**
+- Use "REQUIRES VERIFICATION:" prefix for uncertain data
+- Use "TENTATIVE:" for working hypotheses
+- Use "CONFIRMED:" when verification is complete
+- Include confidence levels when relevant: "HIGH/MEDIUM/LOW CONFIDENCE:"
+
+=============================================================================
+SECTION 6: WORKFLOW INTEGRATION (Add to project workflow documentation)
+=============================================================================
+
+Editorial Notes in the GMN Workflow
+------------------------------------
+
+### Data Entry Phase
+
+1. **Initial Documentation**
+   - Add editorial notes during initial data entry
+   - Flag all uncertainties immediately
+   - Document source issues as encountered
+
+2. **Standard Phrases**
+   - "Name spelling uncertain - requires verification"
+   - "Date estimated based on context"
+   - "Identity tentative - needs cross-reference"
+   - "Document damaged - partial reading only"
+
+### Review Phase
+
+1. **Note Review**
+   - Periodically extract all editorial notes
+   - Prioritize items flagged for verification
+   - Update notes as research progresses
+
+2. **Resolution Tracking**
+   - Add resolution notes: "RESOLVED: Identity confirmed via..."
+   - Keep original note + resolution note for audit trail
+   - Remove notes only when fully resolved and documented elsewhere
+
+### Export Phase
+
+1. **Public Exports** (default)
+   ```bash
+   python gmn_to_cidoc_transform.py input.json public_export.json
+   ```
+   - Editorial notes automatically removed
+   - Clean dataset for public consumption
+
+2. **Internal Exports** (research use)
+   ```bash
+   python gmn_to_cidoc_transform.py input.json internal_export.json --include-internal
+   ```
+   - Editorial notes transformed to CIDOC-CRM
+   - Full research context preserved
+
+3. **Archive Exports** (complete record)
+   - Use internal export format
+   - Include all metadata and notes
+   - Maintain complete audit trail
+
+=============================================================================
+SECTION 7: SPARQL QUERY EXAMPLES (Add to query documentation)
+=============================================================================
+
+SPARQL Queries for Editorial Notes
+-----------------------------------
+
+### Query 1: Find All Entities with Editorial Notes
+
+```sparql
+PREFIX gmn: <http://www.genoesemerchantnetworks.com/ontology#>
+
+SELECT ?entity ?entityType ?note
+WHERE {
+    ?entity a ?entityType ;
+            gmn:P3_1_has_editorial_note ?note .
+}
+ORDER BY ?entity
+```
+
+### Query 2: Find Notes Requiring Verification
+
+```sparql
+PREFIX gmn: <http://www.genoesemerchantnetworks.com/ontology#>
+
+SELECT ?entity ?note
+WHERE {
+    ?entity gmn:P3_1_has_editorial_note ?note .
+    FILTER(
+        CONTAINS(LCASE(STR(?note)), "requires verification") ||
+        CONTAINS(LCASE(STR(?note)), "needs review") ||
+        CONTAINS(LCASE(STR(?note)), "uncertain") ||
+        CONTAINS(LCASE(STR(?note)), "tentative")
+    )
+}
+```
+
+### Query 3: Count Notes by Entity Type
+
+```sparql
+PREFIX gmn: <http://www.genoesemerchantnetworks.com/ontology#>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?type (COUNT(DISTINCT ?entity) AS ?entityCount) (COUNT(?note) AS ?noteCount)
+WHERE {
+    ?entity a ?type ;
+            gmn:P3_1_has_editorial_note ?note .
+}
+GROUP BY ?type
+ORDER BY DESC(?noteCount)
+```
+
+### Query 4: Find Entities with Multiple Notes
+
+```sparql
+PREFIX gmn: <http://www.genoesemerchantnetworks.com/ontology#>
+
+SELECT ?entity (COUNT(?note) AS ?noteCount)
+WHERE {
+    ?entity gmn:P3_1_has_editorial_note ?note .
+}
+GROUP BY ?entity
+HAVING (COUNT(?note) > 1)
+ORDER BY DESC(?noteCount)
+```
+
+### Query 5: Find Notes by Keyword
+
+```sparql
+PREFIX gmn: <http://www.genoesemerchantnetworks.com/ontology#>
+
+SELECT ?entity ?note
+WHERE {
+    ?entity gmn:P3_1_has_editorial_note ?note .
+    FILTER(CONTAINS(LCASE(STR(?note)), "vignolo"))
+}
+```
+
+### Query 6: Search Transformed Notes (After --include-internal)
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX aat: <http://vocab.getty.edu/aat/>
+
+SELECT ?entity ?noteText
+WHERE {
+    ?entity cidoc:P67i_is_referred_to_by ?noteURI .
+    ?noteURI a cidoc:E33_Linguistic_Object ;
+             cidoc:P2_has_type aat:300456627 ;
+             cidoc:P190_has_symbolic_content ?noteText .
+}
+```
+
+=============================================================================
+SECTION 8: COMPARISON TABLE (Add to property comparison section)
+=============================================================================
+
+Comparison: Editorial Notes vs. Other Annotation Properties
+------------------------------------------------------------
+
+| Aspect | gmn:P3_1_has_editorial_note | cidoc:P3_has_note | cidoc:P70_documents |
+|--------|----------------------------|-------------------|---------------------|
+| **Purpose** | Internal research notes | General notes | Formal documentation |
+| **Audience** | Research team | Public/anyone | Scholarly community |
+| **Structure** | Transforms to E33 + type | Direct string | Links to entities |
+| **Privacy** | Can be excluded | Always included | Always included |
+| **Domain** | E1_CRM_Entity | E1_CRM_Entity | E89_Propositional_Object |
+| **Range** | E62_String | E62_String | E1_CRM_Entity |
+| **AAT Typing** | Automatic (300456627) | None | Varies |
+| **Use Case** | Working notes, flags | Public descriptions | Published scholarship |
+| **Formality** | Informal | Moderate | Formal |
+| **Transformation** | Optional via flag | Direct | Direct |
+
+### Recommended Usage by Context
+
+**Internal Research:**
+- Use `gmn:P3_1_has_editorial_note` for all working notes
+- Use `cidoc:P70_documents` for formal scholarly references
+
+**Public Presentation:**
+- Use `cidoc:P3_has_note` for public-facing descriptions
+- Exclude `gmn:P3_1_has_editorial_note` (automatic in default export)
+
+**Academic Publication:**
+- Transform `gmn:P3_1_has_editorial_note` to proper scholarly format
+- Use `cidoc:P70_documents` for formal citations
+
+=============================================================================
+SECTION 9: COMMON SCENARIOS (Add to user guide)
+=============================================================================
+
+Common Scenarios for Editorial Notes
+-------------------------------------
+
+### Scenario 1: Uncertain Name Spelling
+
+**Situation:** Historical sources show variation in name spelling.
+
+**Editorial Note:**
+```
+"Name appears as both 'Giacomo' and 'Iacopo' in contemporary sources. 
+ASG Not. 234 uses 'Iacopo'; merchant ledgers use 'Giacomo'. 
+Same individual confirmed via patronymic 'q. Antonio' and shared property references."
+```
+
+**Properties Involved:**
+- `gmn:P1_1_has_name` (normalized form)
+- `gmn:P1_2_has_name_from_source` (variant forms)
+- `gmn:P3_1_has_editorial_note` (explanation)
+
+---
+
+### Scenario 2: Damaged Document
+
+**Situation:** Sales contract is partially illegible.
+
+**Editorial Note:**
+```
+"REQUIRES VERIFICATION: Document water-damaged in lower third. 
+Sale price partially illegible - tentative reading '150 lire' based on visible digits and comparable sales. 
+Buyer name confirmed via witness testimony."
+```
+
+**Properties Involved:**
+- Contract properties (sale, price, parties)
+- `gmn:P3_1_has_editorial_note` (document condition)
+
+---
+
+### Scenario 3: Date Estimation
+
+**Situation:** Exact date unknown but can be estimated from context.
+
+**Editorial Note:**
+```
+"Date estimated as 1450-1455 based on: (1) reference to still-living Doge Pietro Fregoso (d. 1459); 
+(2) witness Giovanni Spinola's active period; (3) property sale sequence in same archive."
+```
+
+**Properties Involved:**
+- Date properties (attestation, enactment)
+- `gmn:P3_1_has_editorial_note` (estimation rationale)
+
+---
+
+### Scenario 4: Geographic Identification
+
+**Situation:** Historical place name needs modern identification.
+
+**Editorial Note:**
+```
+"Modern location: frazione of Serra Riccò, Metropolitan City of Genoa, Liguria. 
+GPS: 44.4833°N, 8.9167°E. Historical boundaries uncertain but centered on current village. 
+Name unchanged since medieval period."
+```
+
+**Properties Involved:**
+- Place properties
+- `gmn:P3_1_has_editorial_note` (modern context)
+
+---
+
+### Scenario 5: Identity Disambiguation
+
+**Situation:** Multiple people with same name need to be distinguished.
+
+**Editorial Note:**
+```
+"Distinguished from Giovanni Rossi q. Marco (active 1445-1470) by different patronymic. 
+This Giovanni q. Pietro primarily active in Sampierdarena; 
+the other in central Genoa. Property holdings confirm separate individuals."
+```
+
+**Properties Involved:**
+- Person identification properties
+- `gmn:P3_1_has_editorial_note` (disambiguation)
+
+=============================================================================
+SECTION 10: TROUBLESHOOTING GUIDE (Add to technical documentation)
+=============================================================================
+
+Troubleshooting Editorial Notes
+--------------------------------
+
+### Issue 1: Notes Appearing in Public Export
+
+**Symptom:** Editorial notes visible in public JSON-LD export
+
+**Cause:** `--include-internal` flag was used incorrectly
+
+**Solution:**
+```bash
+# WRONG (includes notes):
+python gmn_to_cidoc_transform.py data.json public.json --include-internal
+
+# CORRECT (removes notes):
+python gmn_to_cidoc_transform.py data.json public.json
+```
+
+---
+
+### Issue 2: Notes Not Transforming with Internal Flag
+
+**Symptom:** Notes removed even with `--include-internal`
+
+**Diagnosis Steps:**
+1. Check command: `--include-internal` flag present?
+2. Check function: `transform_p3_1_has_editorial_note` called with flag?
+3. Check property name: Exactly `gmn:P3_1_has_editorial_note`?
+
+**Solution:** Verify transformation pipeline passes flag correctly
+
+---
+
+### Issue 3: Empty or Missing Note URIs
+
+**Symptom:** Transformed notes have malformed URIs
+
+**Cause:** Subject entity missing `@id` field
+
+**Solution:** Ensure all entities have valid URI in `@id` field
+
+---
+
+### Issue 4: AAT Type Not Applied
+
+**Symptom:** E33_Linguistic_Object missing P2_has_type
+
+**Cause:** AAT_EDITORIAL_NOTE constant incorrect or not used
+
+**Solution:** 
+```python
+# Verify constant:
+AAT_EDITORIAL_NOTE = "http://vocab.getty.edu/aat/300456627"
+
+# Verify usage in transformation:
+'cidoc:P2_has_type': {
+    '@id': AAT_EDITORIAL_NOTE,
+    '@type': 'cidoc:E55_Type'
+}
+```
+
+=============================================================================
+SECTION 11: QUICK REFERENCE CARD (Add to quick reference materials)
+=============================================================================
+
+QUICK REFERENCE: gmn:P3_1_has_editorial_note
+=============================================
+
+**Purpose:** Internal research notes and documentation
+
+**Syntax:**
+```json
+"gmn:P3_1_has_editorial_note": [
+  {"@value": "Your note text here"}
+]
+```
+
+**Key Features:**
+✓ Universal - applies to any entity
+✓ Internal-only - excluded from public exports by default
+✓ Multiple notes supported
+✓ Auto-typed with AAT 300456627
+
+**Common Uses:**
+• Document source uncertainties
+• Flag items for review
+• Explain editorial decisions
+• Note discrepancies
+• Provide modern context
+
+**Export Behavior:**
+• Default: Removed
+• With --include-internal: Transforms to E33
+
+**Best Practices:**
+• Be specific and concise
+• Use consistent phrasing
+• Flag verification needs
+• Date time-sensitive notes
+• Keep under 500 characters
+
+**Related Properties:**
+• cidoc:P3_has_note (public notes)
+• cidoc:P70_documents (formal docs)
+
+=============================================================================
+END OF DOCUMENT ADDITIONS FILE
+=============================================================================
+
+This file contains ready-to-copy content for various documentation contexts.
+Copy the relevant sections into your main project documentation files.
+
+Property: gmn:P3_1_has_editorial_note
+Version: 1.0
+Date: October 26, 2025
+Status: ✅ Already Implemented
