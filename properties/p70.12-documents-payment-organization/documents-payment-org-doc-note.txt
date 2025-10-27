@@ -1,0 +1,582 @@
+# GMN Ontology: P70.12 Documents Payment Through Organization
+## Documentation Additions
+
+This file contains examples, tables, and text snippets to add to the main documentation files (correspondence-documentation.md, donation-documentation.md, dowry-documentation.md, or sales contract documentation).
+
+---
+
+## PROPERTY DEFINITION SECTION
+
+Add this section to the appropriate documentation file in the P70 properties section:
+
+---
+
+### P70.12 documents payment through organization
+
+**URI:** `http://www.genoesemerchantnetworks.com/ontology#P70_12_documents_payment_through_organization`
+
+**Label:** P70.12 documents payment through organization
+
+**Definition:** Simplified property for associating a sales contract with an organization (typically a bank) through which payment for the transaction is made or facilitated.
+
+**Domain:** gmn:E31_2_Sales_Contract
+
+**Range:** cidoc:E74_Group
+
+**Superproperty:** cidoc:P70_documents
+
+**Full CIDOC-CRM Path:**
+```
+E31_Document 
+  → P70_documents 
+    → E8_Acquisition 
+      → P9_consists_of 
+        → E7_Activity (payment facilitation)
+          → P14_carried_out_by 
+            → E74_Group
+```
+
+**Current Implementation:**
+```
+E31_Document 
+  → P67_refers_to 
+    → E74_Group
+```
+
+**Cardinality:** Zero or many (multiple organizations may be involved)
+
+**Usage Notes:**
+
+This property captures financial institutions that serve as intermediaries in the payment process for documented sales transactions. These organizations facilitate payment without being principal parties (buyer/seller) or individual agents (procurators/guarantors).
+
+**Types of Organizations Captured:**
+- Banks holding deposits for the transaction
+- Financial institutions making payment transfers
+- Credit houses providing financing
+- Merchant banks managing funds
+- Deposit organizations holding earnest money
+
+**Key Distinctions:**
+- **Individual Payment Providers (P70.9):** Person who supplies funds on behalf of buyer
+- **Individual Payment Recipients (P70.10):** Person who receives funds on behalf of seller
+- **Payment Organizations (P70.12):** Institution facilitating the payment mechanism
+
+**Transformation Behavior:**
+
+When transformed to full CIDOC-CRM, this property:
+1. Creates or appends to the `cidoc:P67_refers_to` property
+2. Ensures each organization has `@type` of `cidoc:E74_Group`
+3. Preserves all additional organization properties (names, identifiers, locations)
+4. Removes the original GMN shortcut property
+
+**Example 1: Simple Bank Reference**
+
+```turtle
+:contract_001 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_12_documents_payment_through_organization :banco_san_giorgio .
+
+:banco_san_giorgio a cidoc:E74_Group ;
+    cidoc:P1_is_identified_by [
+        a cidoc:E41_Appellation ;
+        cidoc:P190_has_symbolic_content "Banco di San Giorgio"
+    ] .
+```
+
+**Example 2: Multiple Financial Institutions**
+
+```turtle
+:contract_002 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_1_documents_seller :giovanni_doria ;
+    gmn:P70_2_documents_buyer :pietro_spinola ;
+    gmn:P70_12_documents_payment_through_organization :banco_san_giorgio ,
+                                                        :casa_credito_genova .
+```
+
+**Example 3: Payment Organization with Provider**
+
+```turtle
+:contract_003 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_2_documents_buyer :pietro_spinola ;
+    gmn:P70_9_documents_payment_provider_for_buyer :luca_spinola ;
+    gmn:P70_12_documents_payment_through_organization :banco_san_giorgio .
+```
+
+In this example:
+- Pietro Spinola is the buyer
+- Luca Spinola provides the funds on Pietro's behalf
+- Banco di San Giorgio facilitates the payment transfer
+
+**Design Rationale:**
+
+This property uses **P67_refers_to** (reference) rather than creating activity structures because:
+- Organizations are mentioned in the contract text
+- They provide payment mechanisms but don't participate in the documented transaction
+- The contract references them without claiming active involvement
+- This aligns with referenced persons (P70.11) and referenced places (P70.13)
+
+---
+
+## PROPERTY COMPARISON TABLE
+
+Add this table to show relationships between payment-related properties:
+
+### Payment Role Properties Comparison
+
+| Property | Label | Range | Role Type | Transformation |
+|----------|-------|-------|-----------|----------------|
+| P70.9 | documents payment provider for buyer | E21_Person | Individual funding source | P9_consists_of → E7_Activity |
+| P70.10 | documents payment recipient for seller | E21_Person | Individual fund receiver | P9_consists_of → E7_Activity |
+| P70.12 | documents payment through organization | E74_Group | Institutional payment mechanism | P67_refers_to |
+
+**Key Insights:**
+- **P70.9 and P70.10** model active participation through activity nodes
+- **P70.12** models textual reference without participation claim
+- All three can co-exist in a single contract
+- Individual roles (P70.9, P70.10) are distinct from institutional role (P70.12)
+
+---
+
+## EXTENDED EXAMPLE WITH CONTEXT
+
+Add this comprehensive example showing multiple property interactions:
+
+### Complete Sales Contract with Payment Roles
+
+```turtle
+@prefix gmn: <http://www.genoesemerchantnetworks.com/ontology#> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix aat: <http://vocab.getty.edu/aat/> .
+@prefix : <http://example.org/> .
+
+# Contract document
+:contract_1456_05_20 a gmn:E31_2_Sales_Contract ;
+    cidoc:P1_is_identified_by [
+        a cidoc:E41_Appellation ;
+        cidoc:P190_has_symbolic_content "Sale of house in Genoa, 20 May 1456"
+    ] ;
+    gmn:P94i_2_has_enactment_date "1456-05-20"^^xsd:date ;
+    gmn:P94i_3_has_place_of_enactment :genoa ;
+    
+    # Principal parties
+    gmn:P70_1_documents_seller :giovanni_doria ;
+    gmn:P70_2_documents_buyer :pietro_spinola ;
+    gmn:P70_3_documents_transfer_of :house_piazza_banchi ;
+    
+    # Payment details
+    gmn:P70_16_documents_sale_price_amount "5000"^^xsd:decimal ;
+    gmn:P70_17_documents_sale_price_currency aat:300037222 ; # Genoese lire
+    
+    # Payment roles
+    gmn:P70_9_documents_payment_provider_for_buyer :luca_spinola ;
+    gmn:P70_12_documents_payment_through_organization :banco_san_giorgio ;
+    
+    # Legal representatives
+    gmn:P70_4_documents_sellers_procurator :marco_grimaldi ;
+    
+    # Witnesses
+    gmn:P70_15_documents_witness :antonio_cattaneo , :francesco_sauli .
+
+# Seller
+:giovanni_doria a cidoc:E21_Person ;
+    cidoc:P1_is_identified_by [
+        a cidoc:E41_Appellation ;
+        cidoc:P190_has_symbolic_content "Giovanni Doria"
+    ] .
+
+# Buyer
+:pietro_spinola a cidoc:E21_Person ;
+    cidoc:P1_is_identified_by [
+        a cidoc:E41_Appellation ;
+        cidoc:P190_has_symbolic_content "Pietro Spinola"
+    ] .
+
+# Payment provider (Pietro's relative)
+:luca_spinola a cidoc:E21_Person ;
+    cidoc:P1_is_identified_by [
+        a cidoc:E41_Appellation ;
+        cidoc:P190_has_symbolic_content "Luca Spinola"
+    ] ;
+    rdfs:comment "Pietro's cousin who provides the purchase funds"@en .
+
+# Financial institution
+:banco_san_giorgio a cidoc:E74_Group ;
+    cidoc:P1_is_identified_by [
+        a cidoc:E41_Appellation ;
+        cidoc:P190_has_symbolic_content "Banco di San Giorgio"
+    ] ;
+    cidoc:P2_has_type aat:300026816 ; # banks (institutions)
+    cidoc:P74_has_current_or_former_residence :genoa ;
+    rdfs:comment "Bank through which payment is transferred"@en .
+
+# Seller's procurator
+:marco_grimaldi a cidoc:E21_Person ;
+    cidoc:P1_is_identified_by [
+        a cidoc:E41_Appellation ;
+        cidoc:P190_has_symbolic_content "Marco Grimaldi"
+    ] ;
+    rdfs:comment "Legal representative acting for Giovanni"@en .
+
+# Property being sold
+:house_piazza_banchi a gmn:E22_1_Building ;
+    cidoc:P1_is_identified_by [
+        a cidoc:E41_Appellation ;
+        cidoc:P190_has_symbolic_content "House in Piazza Banchi"
+    ] ;
+    cidoc:P53_has_former_or_current_location :genoa .
+
+# Place
+:genoa a cidoc:E53_Place ;
+    cidoc:P87_is_identified_by [
+        a cidoc:E44_Place_Appellation ;
+        cidoc:P190_has_symbolic_content "Genoa"
+    ] .
+```
+
+**Interpretation:**
+
+This 1456 contract documents:
+1. **Transaction:** Giovanni Doria (seller via procurator Marco Grimaldi) sells house to Pietro Spinola (buyer)
+2. **Payment source:** Luca Spinola provides the 5000 lire on Pietro's behalf
+3. **Payment mechanism:** Transfer facilitated through Banco di San Giorgio
+4. **Witnesses:** Antonio Cattaneo and Francesco Sauli witness the contract
+
+**Payment Flow:**
+```
+Luca Spinola (payment provider)
+    → provides funds →
+Banco di San Giorgio (payment facilitator)
+    → transfers to →
+Giovanni Doria (via procurator Marco Grimaldi)
+```
+
+---
+
+## USE CASE SCENARIOS
+
+Add these scenario descriptions to help users understand when to use P70.12:
+
+### Scenario 1: Direct Bank Transfer
+
+**Contract Text:** "The buyer shall pay the purchase price of 3000 lire through transfer at the Banco di San Giorgio."
+
+**Modeling:**
+```turtle
+:contract a gmn:E31_2_Sales_Contract ;
+    gmn:P70_16_documents_sale_price_amount "3000"^^xsd:decimal ;
+    gmn:P70_12_documents_payment_through_organization :banco_san_giorgio .
+```
+
+**Explanation:** The bank is the payment mechanism. Use P70.12 to capture the institution.
+
+---
+
+### Scenario 2: Deposit Held at Bank
+
+**Contract Text:** "The earnest money of 500 lire is held on deposit at the Casa di Credito di Genova pending completion of the sale."
+
+**Modeling:**
+```turtle
+:contract a gmn:E31_2_Sales_Contract ;
+    gmn:P70_12_documents_payment_through_organization :casa_credito_genova .
+```
+
+**Explanation:** The credit house holds funds as part of the transaction mechanism.
+
+---
+
+### Scenario 3: Credit Facility
+
+**Contract Text:** "The purchase shall be financed through credit arrangements with the Banco di Santa Maria."
+
+**Modeling:**
+```turtle
+:contract a gmn:E31_2_Sales_Contract ;
+    gmn:P70_12_documents_payment_through_organization :banco_santa_maria .
+```
+
+**Explanation:** The bank provides credit as the financing mechanism.
+
+---
+
+### Scenario 4: Third-Party Provider + Bank
+
+**Contract Text:** "Marco Spinola shall provide the purchase funds on behalf of his brother Pietro, with payment to be made through the Banco di San Giorgio."
+
+**Modeling:**
+```turtle
+:contract a gmn:E31_2_Sales_Contract ;
+    gmn:P70_2_documents_buyer :pietro_spinola ;
+    gmn:P70_9_documents_payment_provider_for_buyer :marco_spinola ;
+    gmn:P70_12_documents_payment_through_organization :banco_san_giorgio .
+```
+
+**Explanation:** Marco provides funds (P70.9), bank handles transfer (P70.12). Both properties needed.
+
+---
+
+### Scenario 5: Multiple Banks
+
+**Contract Text:** "Half the purchase price shall be paid through the Banco di San Giorgio and half through the Casa di Credito di Genova."
+
+**Modeling:**
+```turtle
+:contract a gmn:E31_2_Sales_Contract ;
+    gmn:P70_12_documents_payment_through_organization :banco_san_giorgio ,
+                                                        :casa_credito_genova .
+```
+
+**Explanation:** Multiple financial institutions involved in payment mechanism.
+
+---
+
+## COMMON QUESTIONS AND ANSWERS
+
+Add this Q&A section to documentation:
+
+### Frequently Asked Questions: P70.12
+
+**Q: When should I use P70.12 vs P70.9?**
+
+A: Use **P70.12** for organizations (banks, financial houses) that facilitate payment. Use **P70.9** for individual persons who provide funds on behalf of the buyer. These can co-exist in the same contract.
+
+Example:
+- P70.9: "Giovanni's father provides the money"
+- P70.12: "Payment made through Banco di San Giorgio"
+
+---
+
+**Q: Can a contract have both P70.9 and P70.12?**
+
+A: Yes! P70.9 identifies who provides the funds (individual person), while P70.12 identifies how the payment is facilitated (institutional mechanism). Many contracts specify both.
+
+---
+
+**Q: What if the bank is also receiving payment on behalf of a seller?**
+
+A: If the bank is a creditor receiving funds on behalf of the seller, use **P70.10** (payment recipient). If the bank is the transfer mechanism, use **P70.12**. If both apply, use both properties.
+
+---
+
+**Q: Should I use P70.12 for guarantors who are organizations?**
+
+A: No. Use **P70.6** or **P70.7** for guarantors (whether person or organization). P70.12 is specifically for payment facilitation, not security provision.
+
+---
+
+**Q: What if the contract just mentions a bank but doesn't specify its role?**
+
+A: If unclear whether the bank is:
+- A payment mechanism → Use P70.12
+- A guarantor → Use P70.6 or P70.7
+- Just referenced → Use P70.11 (if person) or document in notes
+
+When in doubt, P70.12 is appropriate if the bank has any payment-related function.
+
+---
+
+**Q: How do I model a merchant bank that's both a party and a facilitator?**
+
+A: If the organization is a principal party (buyer/seller), use P70.1 or P70.2. If it's facilitating payment as a service, use P70.12. An organization can have multiple roles—use appropriate properties for each role.
+
+---
+
+## PROPERTY INDEX ENTRY
+
+Add this entry to your property index table:
+
+| Property ID | Property Label | Domain | Range | Description |
+|-------------|----------------|---------|-------|-------------|
+| P70.12 | documents payment through organization | E31_2_Sales_Contract | E74_Group | Organization (typically bank) facilitating payment mechanism |
+
+---
+
+## TRANSFORMATION VISUALIZATION
+
+Add this diagram to show the transformation process:
+
+### P70.12 Transformation Flow
+
+```
+INPUT (GMN Shortcut):
+┌─────────────────────────────────────────────────────┐
+│ :contract_001                                        │
+│   gmn:P70_12_documents_payment_through_organization │
+│     → :banco_san_giorgio                            │
+└─────────────────────────────────────────────────────┘
+
+TRANSFORMATION:
+┌─────────────────────────────────────────────────────┐
+│ 1. Extract organization(s) from P70.12 property     │
+│ 2. Create/append to cidoc:P67_refers_to array      │
+│ 3. Ensure E74_Group type on each organization       │
+│ 4. Preserve all additional organization properties  │
+│ 5. Remove original P70.12 property                  │
+└─────────────────────────────────────────────────────┘
+
+OUTPUT (CIDOC-CRM):
+┌─────────────────────────────────────────────────────┐
+│ :contract_001                                        │
+│   cidoc:P67_refers_to                               │
+│     → :banco_san_giorgio                            │
+│         @type: cidoc:E74_Group                      │
+└─────────────────────────────────────────────────────┘
+```
+
+---
+
+## HISTORICAL CONTEXT NOTE
+
+Add this contextual note about Genoese banking practices:
+
+### Historical Context: Banking in Medieval Genoa
+
+The `P70_12_documents_payment_through_organization` property is particularly relevant for Genoese merchant documents because of the sophisticated banking system that developed in medieval and early modern Genoa.
+
+**Key Financial Institutions:**
+
+1. **Banco di San Giorgio (1407-1805)**
+   - Most famous Genoese bank
+   - Held government debt and managed tax revenue
+   - Facilitated merchant transactions
+   - Frequently mentioned in contracts
+
+2. **Casa di San Giorgio**
+   - Predecessor/variant of Banco di San Giorgio
+   - Similar functions in earlier period
+
+3. **Private Banking Houses**
+   - Merchant families operating as banks
+   - Provided credit and transfer services
+   - Examples: various *alberghi* (clan associations)
+
+**Common Banking Services in Contracts:**
+
+- **Transfer services:** Moving funds between parties
+- **Deposit accounts:** Holding earnest money or purchase price
+- **Credit facilities:** Financing purchases
+- **Foreign exchange:** Converting currencies for international trade
+- **Letters of credit:** Guaranteeing payment for distant transactions
+
+**Why This Matters:**
+
+Many Genoese contracts specify payment "through" or "at" a particular bank, reflecting the central role of financial institutions in medieval commerce. The P70.12 property captures this institutional infrastructure that underpinned the merchant network.
+
+**Research Questions Enabled:**
+
+- Which banks were most frequently used in property transactions?
+- How did banking practices change over time?
+- What was the geographic distribution of contracts using different banks?
+- How did bank usage correlate with transaction value or property type?
+
+---
+
+## SPARQL QUERY EXAMPLES
+
+Add these query examples to documentation:
+
+### Example Queries Using P70.12
+
+**Query 1: Find all contracts using Banco di San Giorgio**
+
+```sparql
+PREFIX gmn: <http://www.genoesemerchantnetworks.com/ontology#>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?contract ?date ?buyer ?seller
+WHERE {
+  ?contract a gmn:E31_2_Sales_Contract ;
+            cidoc:P67_refers_to ?bank .
+  
+  ?bank a cidoc:E74_Group ;
+        cidoc:P1_is_identified_by/cidoc:P190_has_symbolic_content "Banco di San Giorgio" .
+  
+  OPTIONAL { ?contract gmn:P94i_2_has_enactment_date ?date }
+  OPTIONAL { ?contract cidoc:P70_documents/cidoc:P22_transferred_title_to ?buyer }
+  OPTIONAL { ?contract cidoc:P70_documents/cidoc:P23_transferred_title_from ?seller }
+}
+ORDER BY ?date
+```
+
+**Query 2: Count contracts by financial institution**
+
+```sparql
+PREFIX gmn: <http://www.genoesemerchantnetworks.com/ontology#>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?bank_name (COUNT(?contract) AS ?contract_count)
+WHERE {
+  ?contract a gmn:E31_2_Sales_Contract ;
+            cidoc:P67_refers_to ?bank .
+  
+  ?bank a cidoc:E74_Group ;
+        cidoc:P1_is_identified_by/cidoc:P190_has_symbolic_content ?bank_name .
+}
+GROUP BY ?bank_name
+ORDER BY DESC(?contract_count)
+```
+
+**Query 3: Find contracts with both payment provider and organization**
+
+```sparql
+PREFIX gmn: <http://www.genoesemerchantnetworks.com/ontology#>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?contract ?provider_name ?bank_name
+WHERE {
+  # Contract has payment provider
+  ?contract cidoc:P70_documents/cidoc:P9_consists_of ?activity .
+  ?activity cidoc:P14_carried_out_by ?provider .
+  ?provider a cidoc:E21_Person ;
+            cidoc:P1_is_identified_by/cidoc:P190_has_symbolic_content ?provider_name .
+  
+  # Contract references bank
+  ?contract cidoc:P67_refers_to ?bank .
+  ?bank a cidoc:E74_Group ;
+        cidoc:P1_is_identified_by/cidoc:P190_has_symbolic_content ?bank_name .
+}
+```
+
+---
+
+## DATA ENTRY GUIDELINES
+
+Add these guidelines for catalogers:
+
+### Guidelines for Using P70.12
+
+**When to Use This Property:**
+
+✓ Contract mentions specific bank or financial institution
+✓ Payment described as "through" or "at" an organization
+✓ Deposit held at named financial house
+✓ Credit provided by banking institution
+✓ Transfer service specified
+
+**When NOT to Use This Property:**
+
+✗ General mention of banks without specific role
+✗ Organization is a principal party (use P70.1 or P70.2)
+✗ Organization is a guarantor (use P70.6 or P70.7)
+✗ Individual person provides funds (use P70.9 or P70.10)
+
+**Data Entry Checklist:**
+
+1. [ ] Verify the entity is an organization, not a person
+2. [ ] Confirm the organization has a payment-related role
+3. [ ] Create or link to E74_Group entity
+4. [ ] Add organization name via P1_is_identified_by
+5. [ ] Add organization type (AAT bank term) if known
+6. [ ] Add location if mentioned
+7. [ ] Consider if other payment properties also apply
+
+**Best Practices:**
+
+- Use standard organization names when possible
+- Disambiguate multiple banks with same name by location
+- Document source text in notes if payment role is ambiguous
+- Link to existing organization entities when available
+- Add temporal information about organization existence if known
+
+---
+
+*Documentation Additions Version 1.0 - Created 2025-10-27*

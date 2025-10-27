@@ -1,0 +1,402 @@
+# GMN Ontology: P70.12 Documents Payment Through Organization
+## TTL Additions for gmn_ontology.ttl
+
+This file contains ready-to-copy TTL snippets to add to the main ontology file.
+
+---
+
+## INSTRUCTIONS FOR USE
+
+1. Open the file `gmn_ontology.ttl`
+2. Locate the section with P70 property definitions
+3. Find the P70.11 property definition (documents referenced person)
+4. Insert the following TTL immediately after P70.11
+5. Validate the TTL syntax
+6. Save and commit changes
+
+---
+
+## PROPERTY DEFINITION
+
+Copy and paste this entire block into `gmn_ontology.ttl`:
+
+```turtle
+# Property: P70.12 documents payment through organization
+gmn:P70_12_documents_payment_through_organization
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.12 documents payment through organization"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with an organization (typically a bank) through which payment for the transaction is made or facilitated. This captures financial institutions that serve as intermediaries in the payment process, such as banks holding deposits, making transfers, or providing credit facilities for the transaction. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P9_consists_of > E7_Activity > P14_carried_out_by > E74_Group, where the E7_Activity represents the payment facilitation activity. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The organization facilitates the financial aspects of the transaction without being a principal party (buyer/seller) or individual agent (procurator/guarantor)."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E74_Group ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by .
+```
+
+---
+
+## CONTEXT PLACEMENT
+
+The property should be inserted in this location:
+
+```turtle
+# ... previous properties ...
+
+# Property: P70.11 documents referenced person
+gmn:P70_11_documents_referenced_person
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.11 documents referenced person"@en ;
+    rdfs:comment "..." ;
+    rdfs:subPropertyOf cidoc:P67_refers_to ;
+    rdfs:domain cidoc:E31_Document ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P67_refers_to .
+
+# Property: P70.12 documents payment through organization
+gmn:P70_12_documents_payment_through_organization
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.12 documents payment through organization"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with an organization (typically a bank) through which payment for the transaction is made or facilitated. This captures financial institutions that serve as intermediaries in the payment process, such as banks holding deposits, making transfers, or providing credit facilities for the transaction. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P9_consists_of > E7_Activity > P14_carried_out_by > E74_Group, where the E7_Activity represents the payment facilitation activity. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The organization facilitates the financial aspects of the transaction without being a principal party (buyer/seller) or individual agent (procurator/guarantor)."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E74_Group ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by .
+
+# Property: P70.13 documents referenced place
+gmn:P70_13_documents_referenced_place
+    a owl:ObjectProperty ;
+    ...
+
+# ... following properties ...
+```
+
+---
+
+## PROPERTY BREAKDOWN
+
+### Property Declaration
+```turtle
+gmn:P70_12_documents_payment_through_organization
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+```
+- Declares as both OWL ObjectProperty and RDF Property
+- Follows standard pattern for GMN properties
+
+### Label
+```turtle
+    rdfs:label "P70.12 documents payment through organization"@en ;
+```
+- English language label
+- Follows P70.{number} naming convention
+- Descriptive of the property's function
+
+### Comment (Definition)
+```turtle
+    rdfs:comment "Simplified property for associating a sales contract with an organization (typically a bank) through which payment for the transaction is made or facilitated. This captures financial institutions that serve as intermediaries in the payment process, such as banks holding deposits, making transfers, or providing credit facilities for the transaction. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P9_consists_of > E7_Activity > P14_carried_out_by > E74_Group, where the E7_Activity represents the payment facilitation activity. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The organization facilitates the financial aspects of the transaction without being a principal party (buyer/seller) or individual agent (procurator/guarantor)."@en ;
+```
+- Complete semantic definition
+- Explains purpose and scope
+- Documents CIDOC-CRM alignment
+- Notes transformation requirement
+- Distinguishes from related properties
+
+### Subproperty Declaration
+```turtle
+    rdfs:subPropertyOf cidoc:P70_documents ;
+```
+- Declares as subproperty of CIDOC-CRM P70
+- Enables property hierarchy reasoning
+- Groups with other documentation properties
+
+### Domain
+```turtle
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+```
+- Restricts to sales contract documents
+- Ensures type safety
+- Aligns with other sales contract properties
+
+### Range
+```turtle
+    rdfs:range cidoc:E74_Group ;
+```
+- Specifies organizations as objects
+- Excludes individual persons (E21_Person)
+- Aligns with CIDOC-CRM group class
+
+### Creation Date
+```turtle
+    dcterms:created "2025-10-17"^^xsd:date ;
+```
+- Documents when property was defined
+- Uses Dublin Core terms
+- Follows ISO 8601 date format
+
+### See Also References
+```turtle
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by .
+```
+- Links to related CIDOC-CRM properties
+- Helps users understand context
+- Documents ontological relationships
+
+---
+
+## VALIDATION CHECKLIST
+
+Before committing changes, verify:
+
+- [ ] Property URI uses correct namespace (gmn:)
+- [ ] Property number is P70.12 (not already used)
+- [ ] Label includes property number
+- [ ] Comment is comprehensive and clear
+- [ ] SubPropertyOf points to cidoc:P70_documents
+- [ ] Domain is gmn:E31_2_Sales_Contract
+- [ ] Range is cidoc:E74_Group (not E21_Person or E39_Actor)
+- [ ] Date is in correct format (YYYY-MM-DD^^xsd:date)
+- [ ] See also references are correct
+- [ ] All statements end with proper punctuation (; or .)
+- [ ] No syntax errors (validate with TTL parser)
+
+---
+
+## NAMESPACE DECLARATIONS
+
+Ensure these namespace prefixes are declared at the top of your ontology file:
+
+```turtle
+@prefix gmn: <http://www.genoesemerchantnetworks.com/ontology#> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+```
+
+---
+
+## EXAMPLE USAGE IN TTL
+
+### Example 1: Simple Bank Reference
+```turtle
+@prefix gmn: <http://www.genoesemerchantnetworks.com/ontology#> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix : <http://example.org/> .
+
+:contract_001 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_12_documents_payment_through_organization :banco_san_giorgio .
+
+:banco_san_giorgio a cidoc:E74_Group ;
+    cidoc:P1_is_identified_by [
+        a cidoc:E41_Appellation ;
+        cidoc:P190_has_symbolic_content "Banco di San Giorgio"
+    ] .
+```
+
+### Example 2: Multiple Organizations
+```turtle
+:contract_002 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_12_documents_payment_through_organization :banco_san_giorgio ,
+                                                        :casa_credito_genova .
+
+:banco_san_giorgio a cidoc:E74_Group ;
+    cidoc:P1_is_identified_by [
+        a cidoc:E41_Appellation ;
+        cidoc:P190_has_symbolic_content "Banco di San Giorgio"
+    ] .
+
+:casa_credito_genova a cidoc:E74_Group ;
+    cidoc:P1_is_identified_by [
+        a cidoc:E41_Appellation ;
+        cidoc:P190_has_symbolic_content "Casa di Credito di Genova"
+    ] .
+```
+
+### Example 3: Bank with Type and Location
+```turtle
+:contract_003 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_12_documents_payment_through_organization :banco_san_giorgio .
+
+:banco_san_giorgio a cidoc:E74_Group ;
+    cidoc:P1_is_identified_by [
+        a cidoc:E41_Appellation ;
+        cidoc:P190_has_symbolic_content "Banco di San Giorgio"
+    ] ;
+    cidoc:P2_has_type <http://vocab.getty.edu/aat/300026816> ; # banks (institutions)
+    cidoc:P74_has_current_or_former_residence :genoa .
+
+:genoa a cidoc:E53_Place ;
+    cidoc:P87_is_identified_by [
+        a cidoc:E44_Place_Appellation ;
+        cidoc:P190_has_symbolic_content "Genoa"
+    ] .
+```
+
+### Example 4: Complete Transaction Context
+```turtle
+:contract_004 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_1_documents_seller :giovanni_doria ;
+    gmn:P70_2_documents_buyer :pietro_spinola ;
+    gmn:P70_3_documents_transfer_of :house_001 ;
+    gmn:P70_9_documents_payment_provider_for_buyer :luca_spinola ;
+    gmn:P70_12_documents_payment_through_organization :banco_san_giorgio ;
+    gmn:P70_16_documents_sale_price_amount "5000"^^xsd:decimal ;
+    gmn:P70_17_documents_sale_price_currency <http://vocab.getty.edu/aat/300037222> .
+
+:giovanni_doria a cidoc:E21_Person .
+:pietro_spinola a cidoc:E21_Person .
+:luca_spinola a cidoc:E21_Person .
+:house_001 a gmn:E22_1_Building .
+:banco_san_giorgio a cidoc:E74_Group .
+```
+
+---
+
+## VALIDATION COMMANDS
+
+### Using Rapper (command line)
+```bash
+rapper -i turtle -o ntriples gmn_ontology.ttl > /dev/null
+```
+
+### Using Python rdflib
+```python
+from rdflib import Graph
+
+g = Graph()
+try:
+    g.parse("gmn_ontology.ttl", format="turtle")
+    print("✓ TTL syntax is valid")
+except Exception as e:
+    print(f"✗ Syntax error: {e}")
+```
+
+### Using Apache Jena
+```bash
+riot --validate gmn_ontology.ttl
+```
+
+---
+
+## COMMON MISTAKES TO AVOID
+
+1. **Wrong Domain:**
+   ```turtle
+   # WRONG - too general
+   rdfs:domain cidoc:E31_Document ;
+   
+   # CORRECT - specific to sales contracts
+   rdfs:domain gmn:E31_2_Sales_Contract ;
+   ```
+
+2. **Wrong Range:**
+   ```turtle
+   # WRONG - too general
+   rdfs:range cidoc:E39_Actor ;
+   
+   # CORRECT - specific to organizations
+   rdfs:range cidoc:E74_Group ;
+   ```
+
+3. **Wrong Subproperty:**
+   ```turtle
+   # WRONG - should not be subproperty of P67
+   rdfs:subPropertyOf cidoc:P67_refers_to ;
+   
+   # CORRECT - subproperty of P70
+   rdfs:subPropertyOf cidoc:P70_documents ;
+   ```
+
+4. **Missing Language Tag:**
+   ```turtle
+   # WRONG - no language tag
+   rdfs:label "P70.12 documents payment through organization" ;
+   
+   # CORRECT - includes @en
+   rdfs:label "P70.12 documents payment through organization"@en ;
+   ```
+
+5. **Wrong Date Format:**
+   ```turtle
+   # WRONG - missing type
+   dcterms:created "2025-10-17" ;
+   
+   # CORRECT - includes ^^xsd:date
+   dcterms:created "2025-10-17"^^xsd:date ;
+   ```
+
+---
+
+## INTEGRATION NOTES
+
+### Before P70.12
+The ontology has P70.11 which handles referenced persons:
+```turtle
+gmn:P70_11_documents_referenced_person
+    rdfs:range cidoc:E21_Person ;
+```
+
+### After P70.12
+The ontology has P70.13 which handles referenced places:
+```turtle
+gmn:P70_13_documents_referenced_place
+    rdfs:range cidoc:E53_Place ;
+```
+
+### Pattern Consistency
+All three "reference" properties (P70.11, P70.12, P70.13) follow the same pattern:
+- Use P67_refers_to in transformation
+- Capture entities mentioned in text
+- Don't imply active participation
+- Different entity types (Person, Group, Place)
+
+---
+
+## VERSION CONTROL
+
+### Git Commit Message
+```
+Add P70.12 documents payment through organization property
+
+- Add property definition for organization payment facilitation
+- Domain: gmn:E31_2_Sales_Contract
+- Range: cidoc:E74_Group
+- Subproperty of cidoc:P70_documents
+- Captures banks and financial institutions in payment process
+```
+
+### File Diff Preview
+```diff
+ # Property: P70.11 documents referenced person
+ gmn:P70_11_documents_referenced_person
+     a owl:ObjectProperty ;
+     ...
+ 
++# Property: P70.12 documents payment through organization
++gmn:P70_12_documents_payment_through_organization
++    a owl:ObjectProperty ;
++    a rdf:Property ;
++    rdfs:label "P70.12 documents payment through organization"@en ;
++    rdfs:comment "..." ;
++    rdfs:subPropertyOf cidoc:P70_documents ;
++    rdfs:domain gmn:E31_2_Sales_Contract ;
++    rdfs:range cidoc:E74_Group ;
++    dcterms:created "2025-10-17"^^xsd:date ;
++    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by .
++
+ # Property: P70.13 documents referenced place
+ gmn:P70_13_documents_referenced_place
+     a owl:ObjectProperty ;
+     ...
+```
+
+---
+
+*TTL Additions Version 1.0 - Created 2025-10-27*
