@@ -1,0 +1,130 @@
+# GMN Ontology - P70.3 Documents Transfer Of
+# TTL Additions for Main Ontology File
+# Ready to copy into gmn_ontology.ttl
+
+# =============================================================================
+# INSTRUCTIONS FOR USE
+# =============================================================================
+# 1. Open your gmn_ontology.ttl file
+# 2. Locate the sales contract properties section (after P70.2 documents buyer)
+# 3. Copy the property definition below
+# 4. Paste it in the appropriate location
+# 5. Save and validate the ontology file
+# =============================================================================
+
+# Property: P70.3 documents transfer of
+gmn:P70_3_documents_transfer_of
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.3 documents transfer of"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with the physical thing (property, object, or person) being transferred. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P24_transferred_title_of > E18_Physical_Thing. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The range includes buildings (gmn:E22_1_Building), moveable property (gmn:E22_2_Moveable_Property), and persons (E21_Person, for the historical documentation of enslaved persons or other instances where people were treated as property)."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E18_Physical_Thing ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P24_transferred_title_of .
+
+# =============================================================================
+# VALIDATION NOTES
+# =============================================================================
+# After adding this property, verify:
+# 1. No syntax errors in TTL file
+# 2. Property appears in correct sequence (between P70.2 and P70.4)
+# 3. All namespace prefixes are defined (gmn, cidoc, rdfs, owl, dcterms)
+# 4. Date format is correct (xsd:date with ^^)
+# =============================================================================
+
+# =============================================================================
+# RELATED PROPERTIES (for reference)
+# =============================================================================
+# These properties work together with P70.3:
+#
+# gmn:P70_1_documents_seller
+#   - Associates contract with seller (P23_transferred_title_from)
+#   - Domain: gmn:E31_2_Sales_Contract
+#   - Range: cidoc:E21_Person
+#
+# gmn:P70_2_documents_buyer
+#   - Associates contract with buyer (P22_transferred_title_to)
+#   - Domain: gmn:E31_2_Sales_Contract
+#   - Range: cidoc:E21_Person
+#
+# gmn:P70_3_documents_transfer_of (THIS PROPERTY)
+#   - Associates contract with thing being transferred (P24_transferred_title_of)
+#   - Domain: gmn:E31_2_Sales_Contract
+#   - Range: cidoc:E18_Physical_Thing
+#
+# gmn:P70_4_documents_sellers_procurator
+#   - Associates contract with seller's representative
+#   - Domain: gmn:E31_2_Sales_Contract
+#   - Range: cidoc:E21_Person
+#
+# gmn:P70_5_documents_buyers_procurator
+#   - Associates contract with buyer's representative
+#   - Domain: gmn:E31_2_Sales_Contract
+#   - Range: cidoc:E21_Person
+# =============================================================================
+
+# =============================================================================
+# SEMANTIC PATH DIAGRAM
+# =============================================================================
+# Simplified Property:
+#   E31_2_Sales_Contract --P70_3_documents_transfer_of--> E18_Physical_Thing
+#
+# Full CIDOC-CRM Expansion:
+#   E31_2_Sales_Contract 
+#     --P70_documents--> 
+#       E8_Acquisition 
+#         --P24_transferred_title_of--> 
+#           E18_Physical_Thing
+# =============================================================================
+
+# =============================================================================
+# RANGE SUBCLASSES
+# =============================================================================
+# The range (cidoc:E18_Physical_Thing) includes these GMN subclasses:
+#
+# gmn:E22_1_Building
+#   - Houses, shops, warehouses, land
+#   - Immovable property
+#
+# gmn:E22_2_Moveable_Property
+#   - Goods, merchandise, equipment
+#   - Transportable objects
+#
+# cidoc:E21_Person
+#   - Historical context only
+#   - Documents historical practices where persons were treated as property
+# =============================================================================
+
+# =============================================================================
+# USAGE EXAMPLE
+# =============================================================================
+# Input (simplified):
+# <https://example.org/contract/sale_1> 
+#     a gmn:E31_2_Sales_Contract ;
+#     gmn:P70_3_documents_transfer_of <https://example.org/building/house_42> .
+#
+# After transformation (full CIDOC-CRM):
+# <https://example.org/contract/sale_1> 
+#     a gmn:E31_2_Sales_Contract ;
+#     cidoc:P70_documents [
+#         a cidoc:E8_Acquisition ;
+#         cidoc:P24_transferred_title_of <https://example.org/building/house_42>
+#     ] .
+# =============================================================================
+
+# =============================================================================
+# INTEGRATION CHECKLIST
+# =============================================================================
+# After adding this property to your ontology:
+# ☐ Run TTL syntax validation
+# ☐ Check that all prefixes are defined
+# ☐ Verify property sequence (P70.1, P70.2, P70.3, P70.4, P70.5)
+# ☐ Update Python transformation script (see documents-transfer-transform.py)
+# ☐ Add to main documentation
+# ☐ Create test cases
+# ☐ Update version information
+# =============================================================================
+
+# END OF TTL ADDITIONS
