@@ -1,0 +1,540 @@
+DOCUMENTATION ADDITIONS FOR MAIN DOCUMENTATION FILE
+Property: P70.7 documents buyer's guarantor
+================================================================================
+
+This file contains ready-to-insert content for your main documentation,
+including property tables, usage examples, and explanatory text.
+
+================================================================================
+SECTION 1: PROPERTY TABLE ENTRY
+================================================================================
+
+Add this row to your P70 properties table:
+
+| Property | Label | Domain | Range | Shortcut For | Description |
+|----------|-------|--------|-------|--------------|-------------|
+| gmn:P70_7_documents_buyers_guarantor | P70.7 documents buyer's guarantor | gmn:E31_2_Sales_Contract | cidoc:E21_Person | P70>E8>P9>E7>P14, with P17 to buyer | Links the sales contract to the person(s) serving as guarantor for the buyer's obligations in the transaction |
+
+
+================================================================================
+SECTION 2: DETAILED PROPERTY DESCRIPTION
+================================================================================
+
+#### P70.7 documents buyer's guarantor
+
+**Property URI:** gmn:P70_7_documents_buyers_guarantor
+
+**Definition:** Associates a sales contract with one or more persons who serve 
+as guarantors for the buyer in the transaction. A guarantor provides security 
+or assurance by promising to fulfill the buyer's obligations if the buyer 
+defaults on their commitments.
+
+**CIDOC-CRM Semantic Path:**
+```
+E31_Document (Sales Contract)
+  → P70_documents → E8_Acquisition
+    → P9_consists_of → E7_Activity (Guaranteeing Activity)
+      ├─ P14_carried_out_by → E21_Person (Guarantor)
+      │   └─ P14.1_in_the_role_of → E55_Type (AAT: guarantor)
+      └─ P17_was_motivated_by → E21_Person (Buyer being guaranteed)
+```
+
+**Historical Context:** 
+
+Guarantors (also called sureties or securities) were a common feature of 
+property transactions throughout medieval and early modern Europe. They served 
+as a form of credit assurance when:
+
+- The buyer's financial standing was uncertain or unproven
+- The transaction involved significant value or extended payment terms
+- Local customs or legal requirements mandated additional security
+- The seller required additional assurance of the buyer's ability to pay
+
+The guarantor essentially promised to "step in" and fulfill the buyer's 
+obligations if the buyer failed to complete payment or otherwise defaulted. 
+This could mean:
+
+- Making outstanding payments if buyer failed to pay
+- Covering penalties or damages resulting from buyer's default
+- Assuming the buyer's obligations under the contract
+
+Guarantors were typically:
+- Family members (brothers, fathers, sons, uncles)
+- Business partners or associates
+- Individuals with known financial stability
+- Members of the same guild or social network
+
+**Distinction from Related Roles:**
+
+Unlike procurators who had legal authority to act on behalf of the buyer, 
+guarantors did not represent the buyer or have authority to make decisions. 
+Unlike payment providers who supplied funds at the time of transaction, 
+guarantors provided a promise of contingent future payment only if needed.
+
+**Data Entry Guidance:**
+
+Use this property when:
+- Document explicitly names someone as "guarantor," "surety," "security," or 
+  similar term for the buyer
+- Person promises to fulfill buyer's obligations if buyer defaults
+- Multiple persons jointly guarantee the buyer's obligations
+
+Do NOT use this property for:
+- Seller's guarantors (use P70.6 instead)
+- Legal representatives/procurators (use P70.5 instead)
+- Third parties who provide actual payment (use P70.9 instead)
+- Transaction facilitators (use P70.8 instead)
+- Witnesses (use P70.15 instead)
+
+**Cardinality:** 0..n (zero or more guarantors per contract)
+
+**Transformation Notes:**
+
+This shortcut property automatically transforms into the full CIDOC-CRM 
+structure during processing. Each guarantor creates a separate E7_Activity 
+node within the acquisition event, with the activity explicitly linked to 
+both the guarantor (via P14_carried_out_by) and the buyer being guaranteed 
+(via P17_was_motivated_by). The role of "guarantor" is specified using the 
+Getty AAT concept (300025614).
+
+
+================================================================================
+SECTION 3: USAGE EXAMPLES
+================================================================================
+
+### Example 1: Simple Venetian Property Sale with Family Guarantor
+
+**Historical Scenario:**
+Venice, 1467. Giovanni Mocenigo purchases a house in Cannaregio. His brother 
+Marco serves as guarantor, promising to pay if Giovanni defaults.
+
+**GMN Encoding:**
+```turtle
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix gmn: <http://example.org/gmn/ontology#> .
+
+<http://example.org/contract/venice_1467_042>
+    a gmn:E31_2_Sales_Contract ;
+    cidoc:P1_is_identified_by [
+        a cidoc:E41_Appellation ;
+        cidoc:P190_has_symbolic_content "Sale of House in Cannaregio, Venice, 1467"
+    ] ;
+    gmn:P70_1_documents_seller <http://example.org/person/lorenzo_contarini> ;
+    gmn:P70_2_documents_buyer <http://example.org/person/giovanni_mocenigo> ;
+    gmn:P70_7_documents_buyers_guarantor <http://example.org/person/marco_mocenigo> ;
+    gmn:P70_3_documents_transfer_of <http://example.org/building/venice_cannaregio_042> .
+
+<http://example.org/person/giovanni_mocenigo>
+    a cidoc:E21_Person ;
+    cidoc:P1_is_identified_by [
+        cidoc:P190_has_symbolic_content "Giovanni Mocenigo"
+    ] .
+
+<http://example.org/person/marco_mocenigo>
+    a cidoc:E21_Person ;
+    cidoc:P1_is_identified_by [
+        cidoc:P190_has_symbolic_content "Marco Mocenigo, brother of Giovanni"
+    ] .
+```
+
+**Interpretation:**
+Marco Mocenigo, identified as Giovanni's brother, provides security for the 
+transaction. If Giovanni fails to complete payment, Marco is obligated to 
+step in and fulfill the payment obligations.
+
+---
+
+### Example 2: Commercial Sale with Multiple Business Partner Guarantors
+
+**Historical Scenario:**
+Florence, 1502. Francesco de' Medici purchases a warehouse. Three business 
+associates jointly serve as guarantors: his son Giovanni, his nephew Lorenzo, 
+and his brother Antonio.
+
+**GMN Encoding:**
+```turtle
+<http://example.org/contract/florence_1502_128>
+    a gmn:E31_2_Sales_Contract ;
+    cidoc:P1_is_identified_by [
+        cidoc:P190_has_symbolic_content "Warehouse Purchase Contract, Florence, 1502"
+    ] ;
+    gmn:P70_2_documents_buyer <http://example.org/person/francesco_medici> ;
+    gmn:P70_7_documents_buyers_guarantor 
+        <http://example.org/person/giovanni_medici>,
+        <http://example.org/person/lorenzo_medici>,
+        <http://example.org/person/antonio_medici> ;
+    gmn:P70_3_documents_transfer_of <http://example.org/building/florence_warehouse_128> .
+
+<http://example.org/person/giovanni_medici>
+    cidoc:P1_is_identified_by [
+        cidoc:P190_has_symbolic_content "Giovanni de' Medici, son of Francesco"
+    ] .
+
+<http://example.org/person/lorenzo_medici>
+    cidoc:P1_is_identified_by [
+        cidoc:P190_has_symbolic_content "Lorenzo de' Medici, nephew of Francesco"
+    ] .
+
+<http://example.org/person/antonio_medici>
+    cidoc:P1_is_identified_by [
+        cidoc:P190_has_symbolic_content "Antonio de' Medici, brother of Francesco"
+    ] .
+```
+
+**Interpretation:**
+Three family members jointly guarantee Francesco's obligations. This shared 
+responsibility distributes the risk and provides stronger assurance to the 
+seller. Each guarantor could be held liable for the full obligation, or they 
+might share it proportionally depending on the contract terms.
+
+---
+
+### Example 3: Transaction with Both Buyer and Seller Guarantors
+
+**Historical Scenario:**
+Genoa, 1489. Complex transaction where both parties require guarantors. 
+Pietro buys from Marco, with guarantors on both sides.
+
+**GMN Encoding:**
+```turtle
+<http://example.org/contract/genoa_1489_067>
+    a gmn:E31_2_Sales_Contract ;
+    gmn:P70_1_documents_seller <http://example.org/person/marco_doria> ;
+    gmn:P70_2_documents_buyer <http://example.org/person/pietro_spinola> ;
+    gmn:P70_6_documents_sellers_guarantor <http://example.org/person/antonio_doria> ;
+    gmn:P70_7_documents_buyers_guarantor <http://example.org/person/giovanni_spinola> ;
+    gmn:P70_3_documents_transfer_of <http://example.org/building/genoa_warehouse_067> .
+```
+
+**Interpretation:**
+Both parties have guarantors. Antonio Doria guarantees the seller Marco's 
+obligations (likely related to clear title and delivery), while Giovanni 
+Spinola guarantees the buyer Pietro's payment obligations. This mutual 
+guarantee structure suggests a transaction where both parties had concerns 
+about the other's ability to fulfill their obligations.
+
+
+================================================================================
+SECTION 4: COMPARISON TABLE WITH RELATED ROLES
+================================================================================
+
+### Buyer-Related Roles in Sales Contracts
+
+| Role | Property | Function | Authority | Timing | Typical Relationship |
+|------|----------|----------|-----------|--------|---------------------|
+| **Buyer** | P70.2 | Receives property ownership | Full ownership rights | During/after transaction | Principal party |
+| **Buyer's Procurator** | P70.5 | Acts as legal representative | Legal authority to act for buyer | During transaction | Family, business partner, lawyer |
+| **Buyer's Guarantor** | P70.7 | Provides security/backup | Contingent payment obligation | If buyer defaults | Family, business partner |
+| **Payment Provider** | P70.9 | Supplies purchase funds | Provides actual payment | At time of transaction | Family, creditor, partner |
+
+### Understanding the Distinctions
+
+**Buyer (P70.2)**
+- The principal party receiving ownership
+- Has full rights to the property after transfer
+- Bears primary obligation for payment
+
+**Buyer's Procurator (P70.5)**  
+- Acts with buyer's authority during transaction
+- Can sign documents, make decisions for buyer
+- Active role during the negotiation and signing
+- Example: "Giovanni, acting through his procurator Marco..."
+
+**Buyer's Guarantor (P70.7)**
+- Provides security/assurance for buyer's obligations
+- Passive role unless buyer defaults
+- Contingent obligation activated only if needed
+- Example: "Giovanni purchases with Marco as guarantor..."
+
+**Payment Provider (P70.9)**
+- Actually provides the money at time of purchase
+- Active immediate financial participation
+- May be repaid by buyer later
+- Example: "Giovanni purchases, with Marco providing the funds..."
+
+
+================================================================================
+SECTION 5: SEMANTIC PATTERN EXPLANATION
+================================================================================
+
+### Why Use E7_Activity for Guarantors?
+
+The use of E7_Activity as an intermediate node serves several purposes:
+
+**1. Role Clarity**
+The activity allows us to specify the exact role (guarantor) through 
+P14.1_in_the_role_of, distinguishing this from other forms of participation.
+
+**2. Relationship Specificity**  
+P17_was_motivated_by explicitly links the guarantor to the specific party 
+(buyer) they guarantee, rather than just to the transaction as a whole.
+
+**3. Multiple Guarantors**
+Each guarantor gets their own activity node, preventing ambiguity about who 
+guarantees whom when there are multiple parties and guarantors.
+
+**4. Semantic Precision**
+The activity represents the "act of guaranteeing" as distinct from the act 
+of purchasing, the act of selling, or other activities within the acquisition.
+
+**5. Query Capability**
+The structure enables queries like:
+- "Find all persons who acted as guarantor in any transaction"
+- "Find all guarantors for a specific buyer"
+- "Find all contracts where Giovanni acted as guarantor"
+
+### Contrasting with Direct P70_documents Approach
+
+If we had used direct P70_documents without the intermediate E7_Activity:
+
+```
+E31_Document → P70_documents → E8_Acquisition → P14_carried_out_by → E21_Person
+```
+
+We would lose:
+- The explicit link to the buyer being guaranteed (no P17)
+- The distinction between guaranteeing and other forms of participation
+- The ability to represent the temporal nature of guaranteeing
+
+The E7_Activity structure is semantically richer and more precise.
+
+
+================================================================================
+SECTION 6: HISTORICAL RESEARCH GUIDANCE
+================================================================================
+
+### Identifying Guarantors in Historical Documents
+
+When transcribing historical contracts, look for these Latin and Italian terms:
+
+**Latin:**
+- fideiussor (guarantor, surety)
+- sponsor (guarantor, bondsman)
+- vindex (guarantor, security provider)
+- praes (surety, bail)
+- pleges dare (to give sureties)
+
+**Italian:**
+- mallevadore (guarantor)
+- fideiussore (guarantor)
+- sicurtà (security)
+- garante (guarantor)
+
+**Typical Phrases:**
+- "cum fideiussore [name]" (with guarantor [name])
+- "et pro eo/ea fideiussit [name]" (and for him/her guaranteed [name])
+- "[name] se fecit fideiussorem" ([name] made himself guarantor)
+- "habentem fideiussorem [name]" (having as guarantor [name])
+
+### Common Patterns in Documents
+
+1. **Family Guarantors:**
+   "Giovanni filius quondam Marci, cum fideiussore Marco fratre suo"
+   (Giovanni son of the late Marco, with his brother Marco as guarantor)
+
+2. **Multiple Guarantors:**
+   "cum fideiussoribus Petro et Antonio"
+   (with Pietro and Antonio as guarantors)
+
+3. **Guarantor Obligations:**
+   "promittens solvere si dictus emptor non solverit"
+   (promising to pay if the said buyer does not pay)
+
+4. **Mutual Guarantees:**
+   Documents sometimes specify guarantors for both buyer and seller, indicating 
+   mutual distrust or high-value transactions requiring extra security.
+
+
+================================================================================
+SECTION 7: DATA QUALITY CONSIDERATIONS
+================================================================================
+
+### Validation Checks
+
+When entering P70.7 data, verify:
+
+**Required Consistency:**
+- [ ] If guarantor specified, buyer (P70.2) should also be present
+- [ ] Guarantor should be E21_Person (not organization or thing)
+- [ ] Same person should not be both buyer and guarantor (rare but check)
+
+**Recommended Data:**
+- [ ] Guarantor has cidoc:P1_is_identified_by with name
+- [ ] Relationship to buyer noted (brother, son, partner, etc.)
+- [ ] Multiple guarantors each have unique URIs
+
+**Common Errors to Avoid:**
+- Don't confuse guarantors with procurators
+- Don't use for witnesses (even if they "guarantee" transaction validity)
+- Don't duplicate same person as guarantor
+- Don't mix buyer's and seller's guarantors in same property
+
+### Edge Cases
+
+**Case 1: Guarantor Withdraws**
+If document mentions guarantor later withdrew, create separate contract 
+revision or note in rdfs:comment rather than removing guarantor from original.
+
+**Case 2: Guarantor Called Upon**
+If historical records show guarantor had to fulfill obligations, this is a 
+separate event (E7_Activity) that should be documented independently, not in 
+the original contract.
+
+**Case 3: Conditional Guarantees**
+If guarantee is conditional ("only if payment exceeds X ducats"), note this 
+in rdfs:comment on the guarantor person or in separate documentation.
+
+
+================================================================================
+SECTION 8: SPARQL QUERY EXAMPLES
+================================================================================
+
+### Finding All Buyer's Guarantors
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX gmn: <http://example.org/gmn/ontology#>
+
+SELECT ?contract ?buyer ?guarantor ?guarantorName
+WHERE {
+  ?contract a gmn:E31_2_Sales_Contract ;
+           cidoc:P70_documents ?acquisition .
+  
+  ?acquisition cidoc:P22_transferred_title_to ?buyer ;
+              cidoc:P9_consists_of ?activity .
+  
+  ?activity cidoc:P14_carried_out_by ?guarantor ;
+           cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300025614> ;
+           cidoc:P17_was_motivated_by ?buyer .
+  
+  OPTIONAL {
+    ?guarantor cidoc:P1_is_identified_by ?appellation .
+    ?appellation cidoc:P190_has_symbolic_content ?guarantorName .
+  }
+}
+```
+
+### Finding Contracts with Multiple Guarantors
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX gmn: <http://example.org/gmn/ontology#>
+
+SELECT ?contract (COUNT(?guarantor) as ?numGuarantors)
+WHERE {
+  ?contract a gmn:E31_2_Sales_Contract ;
+           cidoc:P70_documents ?acquisition .
+  
+  ?acquisition cidoc:P9_consists_of ?activity .
+  
+  ?activity cidoc:P14_carried_out_by ?guarantor ;
+           cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300025614> .
+}
+GROUP BY ?contract
+HAVING (COUNT(?guarantor) > 1)
+```
+
+### Finding All Guarantor Relationships
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?guarantor ?guarantorName ?buyer ?buyerName ?contract
+WHERE {
+  ?contract cidoc:P70_documents ?acquisition .
+  
+  ?acquisition cidoc:P9_consists_of ?activity ;
+              cidoc:P22_transferred_title_to ?buyer .
+  
+  ?activity cidoc:P14_carried_out_by ?guarantor ;
+           cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300025614> ;
+           cidoc:P17_was_motivated_by ?buyer .
+  
+  OPTIONAL {
+    ?guarantor cidoc:P1_is_identified_by/cidoc:P190_has_symbolic_content ?guarantorName .
+  }
+  OPTIONAL {
+    ?buyer cidoc:P1_is_identified_by/cidoc:P190_has_symbolic_content ?buyerName .
+  }
+}
+```
+
+
+================================================================================
+SECTION 9: INTEGRATION WITH OTHER PROPERTIES
+================================================================================
+
+### Common Property Combinations
+
+**Minimal Contract:**
+```turtle
+<contract>
+    gmn:P70_1_documents_seller <seller> ;
+    gmn:P70_2_documents_buyer <buyer> ;
+    gmn:P70_7_documents_buyers_guarantor <guarantor> ;
+    gmn:P70_3_documents_transfer_of <property> .
+```
+
+**Full Transactional Context:**
+```turtle
+<contract>
+    gmn:P94i_1_was_created_by <notary> ;
+    gmn:P94i_2_has_enactment_date "1467-03-15"^^xsd:date ;
+    gmn:P94i_3_has_place_of_enactment <venice> ;
+    gmn:P70_1_documents_seller <seller> ;
+    gmn:P70_2_documents_buyer <buyer> ;
+    gmn:P70_5_documents_buyers_procurator <procurator> ;
+    gmn:P70_7_documents_buyers_guarantor <guarantor> ;
+    gmn:P70_3_documents_transfer_of <property> ;
+    gmn:P70_16_documents_sale_price_amount "500"^^xsd:decimal ;
+    gmn:P70_17_documents_sale_price_currency <ducats> ;
+    gmn:P70_15_documents_witness <witness1>, <witness2> .
+```
+
+**Complex Multi-Party Transaction:**
+```turtle
+<contract>
+    gmn:P70_1_documents_seller <seller> ;
+    gmn:P70_4_documents_sellers_procurator <seller_procurator> ;
+    gmn:P70_6_documents_sellers_guarantor <seller_guarantor> ;
+    gmn:P70_2_documents_buyer <buyer> ;
+    gmn:P70_5_documents_buyers_procurator <buyer_procurator> ;
+    gmn:P70_7_documents_buyers_guarantor <buyer_guarantor> ;
+    gmn:P70_8_documents_broker <broker> ;
+    gmn:P70_3_documents_transfer_of <property> .
+```
+
+
+================================================================================
+SECTION 10: ADDITIONAL NOTES
+================================================================================
+
+### Implementation Status
+- Property defined in ontology: ✓
+- Transformation function implemented: ✓
+- Integrated in transformation pipeline: ✓
+- Getty AAT role concept verified: ✓ (300025614)
+- Testing completed: ✓
+
+### Future Enhancements
+Consider adding:
+- Qualification for type of guarantee (full/partial, joint/several)
+- Temporal scope of guarantee (duration, conditions)
+- Amount of guarantee if specified
+- Links to subsequent enforcement if guarantor called upon
+
+### Related Documentation
+See also:
+- P70.6 documents seller's guarantor (parallel property for seller)
+- P70.5 documents buyer's procurator (legal representative)
+- P70.9 documents payment provider for buyer (actual funds)
+- General P70 property documentation
+- CIDOC-CRM Activity patterns documentation
+
+================================================================================
+END OF DOCUMENTATION ADDITIONS
+================================================================================
+
+Version: 1.0
+Property: gmn:P70_7_documents_buyers_guarantor
+Created: 2025-10-27

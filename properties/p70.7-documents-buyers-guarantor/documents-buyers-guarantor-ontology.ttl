@@ -1,0 +1,154 @@
+# TTL Additions for gmn_ontology.ttl
+# Property: P70.7 documents buyer's guarantor
+# Insert this after P70.6 (documents seller's guarantor) and before P70.8 (documents broker)
+
+# ============================================================================
+# COPY EVERYTHING BELOW THIS LINE
+# ============================================================================
+
+# Property: P70.7 documents buyer's guarantor
+gmn:P70_7_documents_buyers_guarantor
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.7 documents buyer's guarantor"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with the person named as the guarantor for the buyer. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P9_consists_of > E7_Activity > P14_carried_out_by > E21_Person (guarantor), with P17_was_motivated_by linking to the buyer (E21_Person). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The transformation creates an E7_Activity node that explicitly links the guarantor to the buyer they guarantee via P17_was_motivated_by. Guarantors provide security for the transaction by promising to fulfill obligations if the principal defaults."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by, cidoc:P17_was_motivated_by .
+
+# ============================================================================
+# END OF COPY SECTION
+# ============================================================================
+
+# INSERTION INSTRUCTIONS:
+# 1. Open gmn_ontology.ttl
+# 2. Find the line starting with "# Property: P70.6 documents seller's guarantor"
+# 3. Scroll down to find the end of the P70.6 property definition (look for the period)
+# 4. After the period, add a blank line
+# 5. Paste the property definition above (everything between the copy markers)
+# 6. Verify that there is proper spacing before P70.8
+# 7. Save the file
+# 8. Validate the TTL syntax
+
+# VERIFICATION:
+# After insertion, the file should have this sequence:
+# 
+# ... [P70.6 property definition] .
+#
+# # Property: P70.7 documents buyer's guarantor
+# gmn:P70_7_documents_buyers_guarantor
+#     [property definition]
+#     ... .
+#
+# # Property: P70.8 documents broker
+# gmn:P70_8_documents_broker
+#     [property definition]
+#     ... .
+
+# PROPERTY DETAILS:
+# - Property URI: gmn:P70_7_documents_buyers_guarantor
+# - Label: "P70.7 documents buyer's guarantor"@en
+# - Type: owl:ObjectProperty, rdf:Property
+# - Parent: cidoc:P70_documents
+# - Domain: gmn:E31_2_Sales_Contract
+# - Range: cidoc:E21_Person
+# - Created: 2025-10-17
+
+# SEMANTIC PATH:
+# This property transforms to:
+#   E31_Document 
+#     → P70_documents → E8_Acquisition 
+#       → P9_consists_of → E7_Activity
+#         → P14_carried_out_by → E21_Person (guarantor)
+#         → P14.1_in_the_role_of → E55_Type (AAT: guarantor)
+#         → P17_was_motivated_by → E21_Person (buyer)
+
+# RELATED PROPERTIES:
+# - gmn:P70_6_documents_sellers_guarantor (guarantor for seller)
+# - gmn:P70_5_documents_buyers_procurator (procurator for buyer)
+# - gmn:P70_2_documents_buyer (the buyer being guaranteed)
+# - gmn:P70_9_documents_payment_provider_for_buyer (payment provider)
+
+# USAGE EXAMPLES:
+#
+# Example 1: Single buyer's guarantor
+# ex:Contract_001
+#     a gmn:E31_2_Sales_Contract ;
+#     gmn:P70_2_documents_buyer ex:Giovanni ;
+#     gmn:P70_7_documents_buyers_guarantor ex:Marco .
+#
+# Example 2: Multiple guarantors for buyer
+# ex:Contract_002
+#     a gmn:E31_2_Sales_Contract ;
+#     gmn:P70_2_documents_buyer ex:Francesco ;
+#     gmn:P70_7_documents_buyers_guarantor ex:Pietro, ex:Antonio, ex:Lorenzo .
+#
+# Example 3: Guarantor with full person data
+# ex:Contract_003
+#     a gmn:E31_2_Sales_Contract ;
+#     gmn:P70_7_documents_buyers_guarantor [
+#         a cidoc:E21_Person ;
+#         cidoc:P1_is_identified_by [
+#             a cidoc:E41_Appellation ;
+#             cidoc:P190_has_symbolic_content "Marco Rossi, brother of the buyer"
+#         ]
+#     ] .
+
+# TRANSFORMATION NOTES:
+# - This property MUST be transformed before final export
+# - Transformation creates E7_Activity node with unique URI
+# - Each guarantor gets separate E7_Activity
+# - Role specification uses AAT concept 300025614 (guarantor)
+# - P17_was_motivated_by links to buyer (from P22_transferred_title_to)
+
+# VALIDATION RULES:
+# - Domain must be gmn:E31_2_Sales_Contract
+# - Range must be cidoc:E21_Person (or subclass)
+# - Cardinality: 0..n (zero or more guarantors)
+# - Should not duplicate: same person shouldn't appear twice as guarantor
+# - Consistency: If guarantor present, buyer (P70.2) should also be specified
+
+# COMMON PATTERNS:
+#
+# Pattern: Family member as guarantor
+# ex:Contract
+#     gmn:P70_2_documents_buyer ex:Son ;
+#     gmn:P70_7_documents_buyers_guarantor ex:Father .
+#
+# Pattern: Multiple family members as guarantors
+# ex:Contract
+#     gmn:P70_2_documents_buyer ex:Buyer ;
+#     gmn:P70_7_documents_buyers_guarantor ex:Brother1, ex:Brother2, ex:Nephew .
+#
+# Pattern: Business partner as guarantor
+# ex:Contract
+#     gmn:P70_2_documents_buyer ex:Merchant ;
+#     gmn:P70_7_documents_buyers_guarantor ex:BusinessPartner .
+
+# HISTORICAL CONTEXT:
+# Guarantors (also called sureties or securities) were common in historical 
+# property transactions, especially when:
+# - Buyer's financial standing was uncertain
+# - Transaction involved significant value
+# - Credit was extended (payment over time)
+# - Legal requirements mandated security
+# 
+# The guarantor promised to fulfill the buyer's obligations if the buyer 
+# defaulted, providing assurance to the seller.
+
+# DISTINGUISHED FROM:
+# - Procurator (P70.5): Legal representative with authority to act
+# - Payment Provider (P70.9): Third party who provides actual funds
+# - Broker (P70.8): Facilitator between both parties
+# - Witness (P70.15): Observer and validator of transaction
+
+# NAMESPACES REQUIRED:
+# @prefix gmn: <http://example.org/gmn/ontology#> .
+# @prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+# @prefix owl: <http://www.w3.org/2002/07/owl#> .
+# @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+# @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+# @prefix dcterms: <http://purl.org/dc/terms/> .
+# @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
