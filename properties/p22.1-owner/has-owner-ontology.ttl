@@ -1,0 +1,305 @@
+# =============================================================================
+# GMN Ontology: P22.1 Has Owner Property
+# TTL Additions File
+# =============================================================================
+#
+# This file contains ready-to-copy TTL snippets for adding the 
+# gmn:P22_1_has_owner property to the main gmn_ontology.ttl file.
+#
+# INSTRUCTIONS:
+# 1. Open gmn_ontology.ttl in your text editor
+# 2. Find the section with other simplified properties (look for P11i, P53, etc.)
+# 3. Copy the PROPERTY DEFINITION section below
+# 4. Paste it in the appropriate location
+# 5. Save and validate the file
+#
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# PROPERTY DEFINITION
+# -----------------------------------------------------------------------------
+
+# Property: P22.1 has owner
+gmn:P22_1_has_owner
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P22.1 has owner"@en ;
+    rdfs:comment "Simplified property for expressing ownership of a building or moveable property by a person. Represents the full CIDOC-CRM path: E22_Human-Made_Object > P24i_changed_ownership_through > E8_Acquisition > P22_transferred_title_to > E21_Person. This property captures ownership relationships through acquisition events. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. Applies to both buildings (E22.1) and moveable property (E22.2)."@en ;
+    rdfs:subPropertyOf cidoc:P24i_changed_ownership_through ;
+    rdfs:domain cidoc:E22_Human-Made_Object ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-16"^^xsd:date ;
+    rdfs:seeAlso cidoc:P24i_changed_ownership_through, cidoc:P22_transferred_title_to .
+
+
+# =============================================================================
+# USAGE EXAMPLES
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Example 1: Single Owner of a Building
+# -----------------------------------------------------------------------------
+
+<http://example.org/building/spinola_house> a gmn:E22_1_Building ;
+    rdfs:label "Spinola House on Vico San Giovanni"@en ;
+    gmn:P1_1_has_name "House on Vico San Giovanni" ;
+    gmn:P22_1_has_owner <http://example.org/person/antonio_spinola> .
+
+<http://example.org/person/antonio_spinola> a cidoc:E21_Person ;
+    gmn:P1_2_has_name_from_source "Antonio Spinola" .
+
+
+# -----------------------------------------------------------------------------
+# Example 2: Multiple Owners (Co-ownership)
+# -----------------------------------------------------------------------------
+
+<http://example.org/building/lomellini_warehouse> a gmn:E22_1_Building ;
+    rdfs:label "Lomellini Warehouse in Porto"@en ;
+    gmn:P1_1_has_name "Warehouse in Porto" ;
+    gmn:P22_1_has_owner 
+        <http://example.org/person/stefano_lomellini> ,
+        <http://example.org/person/giovanni_lomellini> .
+
+<http://example.org/person/stefano_lomellini> a cidoc:E21_Person ;
+    gmn:P1_2_has_name_from_source "Stefano Lomellini" .
+
+<http://example.org/person/giovanni_lomellini> a cidoc:E21_Person ;
+    gmn:P1_2_has_name_from_source "Giovanni Lomellini" .
+
+
+# -----------------------------------------------------------------------------
+# Example 3: Moveable Property Owner
+# -----------------------------------------------------------------------------
+
+<http://example.org/property/furniture_set_001> a gmn:E22_2_Moveable_Property ;
+    rdfs:label "Bedroom furniture set"@en ;
+    gmn:P1_1_has_name "Bedroom furniture set" ;
+    gmn:P22_1_has_owner <http://example.org/person/maria_doria> .
+
+<http://example.org/person/maria_doria> a cidoc:E21_Person ;
+    gmn:P1_2_has_name_from_source "Maria Doria" .
+
+
+# -----------------------------------------------------------------------------
+# Example 4: Owner with Additional Properties
+# -----------------------------------------------------------------------------
+
+<http://example.org/building/grimaldi_shop> a gmn:E22_1_Building ;
+    rdfs:label "Grimaldi Shop on Via degli Orefici"@en ;
+    gmn:P1_1_has_name "Shop on Via degli Orefici" ;
+    gmn:P89_1_falls_within <http://example.org/place/district_san_lorenzo> ;
+    gmn:P22_1_has_owner <http://example.org/person/nicolo_grimaldi> .
+
+<http://example.org/person/nicolo_grimaldi> a cidoc:E21_Person ;
+    gmn:P1_2_has_name_from_source "Nicolò Grimaldi q. Luca" ;
+    gmn:P97_1_has_father <http://example.org/person/luca_grimaldi> ;
+    gmn:P107i_1_has_regional_provenance <http://example.org/place/genoa> ;
+    gmn:P107i_2_has_social_category <http://example.org/type/nobleman> .
+
+
+# -----------------------------------------------------------------------------
+# Example 5: Owner as Embedded Blank Node
+# -----------------------------------------------------------------------------
+
+<http://example.org/building/house_ponticello> a gmn:E22_1_Building ;
+    rdfs:label "House on Vico Dritto Ponticello"@en ;
+    gmn:P1_1_has_name "House on Vico Dritto Ponticello" ;
+    gmn:P22_1_has_owner [
+        a cidoc:E21_Person ;
+        gmn:P1_2_has_name_from_source "Battista Cattaneo" ;
+        gmn:P107i_1_has_regional_provenance <http://example.org/place/genoa>
+    ] .
+
+
+# -----------------------------------------------------------------------------
+# Example 6: Ownership Combined with Occupation
+# -----------------------------------------------------------------------------
+
+<http://example.org/building/rental_house> a gmn:E22_1_Building ;
+    rdfs:label "Rental house on Strada Nuova"@en ;
+    gmn:P1_1_has_name "House on Strada Nuova" ;
+    gmn:P22_1_has_owner <http://example.org/person/landlord_paolo> ;     # Legal owner
+    gmn:P53_1_has_occupant <http://example.org/person/tenant_francesco> . # Resident
+
+<http://example.org/person/landlord_paolo> a cidoc:E21_Person ;
+    gmn:P1_2_has_name_from_source "Paolo Spinola" .
+
+<http://example.org/person/tenant_francesco> a cidoc:E21_Person ;
+    gmn:P1_2_has_name_from_source "Francesco Lomellini" .
+
+
+# =============================================================================
+# TRANSFORMATION OUTPUT EXAMPLES
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Transformed Example 1: Single Owner
+# -----------------------------------------------------------------------------
+# Input:
+#   <building001> gmn:P22_1_has_owner <person_giovanni> .
+#
+# Transforms to:
+#
+<http://example.org/building001> a gmn:E22_1_Building ;
+    cidoc:P24i_changed_ownership_through <http://example.org/building001/acquisition/ownership_a1b2c3d4> .
+
+<http://example.org/building001/acquisition/ownership_a1b2c3d4> a cidoc:E8_Acquisition ;
+    cidoc:P22_transferred_title_to <http://example.org/person/giovanni> .
+
+<http://example.org/person/giovanni> a cidoc:E21_Person .
+
+
+# -----------------------------------------------------------------------------
+# Transformed Example 2: Multiple Owners
+# -----------------------------------------------------------------------------
+# Input:
+#   <building002> gmn:P22_1_has_owner <person_A> , <person_B> .
+#
+# Transforms to:
+#
+<http://example.org/building002> a gmn:E22_1_Building ;
+    cidoc:P24i_changed_ownership_through 
+        <http://example.org/building002/acquisition/ownership_hash1> ,
+        <http://example.org/building002/acquisition/ownership_hash2> .
+
+<http://example.org/building002/acquisition/ownership_hash1> a cidoc:E8_Acquisition ;
+    cidoc:P22_transferred_title_to <http://example.org/person/person_A> .
+
+<http://example.org/building002/acquisition/ownership_hash2> a cidoc:E8_Acquisition ;
+    cidoc:P22_transferred_title_to <http://example.org/person/person_B> .
+
+
+# =============================================================================
+# VALIDATION QUERIES
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# SPARQL Query 1: Find all buildings and their owners
+# -----------------------------------------------------------------------------
+#
+# SELECT ?building ?buildingName ?owner ?ownerName
+# WHERE {
+#     ?building a gmn:E22_1_Building ;
+#               gmn:P22_1_has_owner ?owner .
+#     OPTIONAL { ?building gmn:P1_1_has_name ?buildingName }
+#     OPTIONAL { ?owner gmn:P1_2_has_name_from_source ?ownerName }
+# }
+
+
+# -----------------------------------------------------------------------------
+# SPARQL Query 2: Find all properties owned by a specific person
+# -----------------------------------------------------------------------------
+#
+# SELECT ?property ?propertyName
+# WHERE {
+#     ?property gmn:P22_1_has_owner <http://example.org/person/giovanni> .
+#     OPTIONAL { ?property gmn:P1_1_has_name ?propertyName }
+# }
+
+
+# -----------------------------------------------------------------------------
+# SPARQL Query 3: Find co-owned properties (multiple owners)
+# -----------------------------------------------------------------------------
+#
+# SELECT ?property (COUNT(?owner) as ?ownerCount)
+# WHERE {
+#     ?property gmn:P22_1_has_owner ?owner .
+# }
+# GROUP BY ?property
+# HAVING (COUNT(?owner) > 1)
+
+
+# -----------------------------------------------------------------------------
+# SPARQL Query 4: Find owners by social category
+# -----------------------------------------------------------------------------
+#
+# SELECT ?owner ?ownerName ?property ?propertyName
+# WHERE {
+#     ?property gmn:P22_1_has_owner ?owner .
+#     ?owner gmn:P107i_2_has_social_category <http://example.org/type/nobleman> .
+#     OPTIONAL { ?owner gmn:P1_2_has_name_from_source ?ownerName }
+#     OPTIONAL { ?property gmn:P1_1_has_name ?propertyName }
+# }
+
+
+# =============================================================================
+# SHACL VALIDATION SHAPE (Optional)
+# =============================================================================
+
+<http://example.org/shapes/P22_1_OwnerShape> a sh:NodeShape ;
+    sh:targetSubjectsOf gmn:P22_1_has_owner ;
+    
+    # Domain validation: subject must be E22_Human-Made_Object
+    sh:property [
+        sh:path [ sh:inversePath rdf:type ] ;
+        sh:class cidoc:E22_Human-Made_Object ;
+        sh:message "Subject of gmn:P22_1_has_owner must be an E22_Human-Made_Object"@en
+    ] ;
+    
+    # Range validation: object must be E21_Person
+    sh:property [
+        sh:path gmn:P22_1_has_owner ;
+        sh:class cidoc:E21_Person ;
+        sh:message "Object of gmn:P22_1_has_owner must be an E21_Person"@en ;
+        sh:nodeKind sh:IRI ;
+        sh:message "Owner must be specified as a URI or blank node, not a literal"@en
+    ] .
+
+
+# =============================================================================
+# RELATED PROPERTIES REFERENCE
+# =============================================================================
+
+# These properties are semantically related to gmn:P22_1_has_owner:
+#
+# gmn:P53_1_has_occupant
+#     - For documenting residence/occupation (not ownership)
+#     - Domain: gmn:E22_1_Building
+#     - Range: cidoc:E21_Person
+#
+# gmn:P70_1_documents_seller
+#     - For documenting sellers in sales contracts
+#     - Domain: gmn:E31_2_Sales_Contract
+#     - Range: cidoc:E21_Person
+#
+# gmn:P70_2_documents_buyer
+#     - For documenting buyers in sales contracts
+#     - Domain: gmn:E31_2_Sales_Contract
+#     - Range: cidoc:E21_Person
+#
+# gmn:P70_3_documents_transfer_of
+#     - For documenting property being transferred
+#     - Domain: gmn:E31_2_Sales_Contract
+#     - Range: cidoc:E18_Physical_Thing
+
+
+# =============================================================================
+# NOTES
+# =============================================================================
+
+# 1. DISTINCTION FROM P53.1 (Has Occupant):
+#    - P22.1 = Legal ownership
+#    - P53.1 = Physical residence/occupation
+#    - These are different relationships and can both apply to the same building
+
+# 2. MULTIPLE OWNERS:
+#    - Each owner gets a separate E8_Acquisition event during transformation
+#    - This allows for different acquisition contexts per owner
+
+# 3. URI GENERATION:
+#    - Acquisition URIs use hash of owner URI for uniqueness
+#    - Format: <object_uri>/acquisition/ownership_<hash>
+#    - Hash ensures consistent URIs across transformations
+
+# 4. APPLIES TO:
+#    - Buildings (gmn:E22_1_Building)
+#    - Moveable property (gmn:E22_2_Moveable_Property)
+#    - Any E22_Human-Made_Object subclass
+
+# 5. TRANSFORMATION:
+#    - Shortcut property (gmn:P22_1_has_owner) is removed during transformation
+#    - Replaced with full CIDOC-CRM structure: P24i > E8 > P22
+
+# =============================================================================
+# END OF FILE
+# =============================================================================

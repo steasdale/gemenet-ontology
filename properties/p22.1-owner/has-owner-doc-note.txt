@@ -1,0 +1,554 @@
+# =============================================================================
+# GMN Ontology: P22.1 Has Owner Property
+# Documentation Additions File
+# =============================================================================
+#
+# This file contains ready-to-copy text, examples, and tables to add to your
+# main documentation file. Each section is clearly marked and can be copied
+# directly into your documentation.
+#
+# =============================================================================
+
+# =============================================================================
+# SECTION 1: PROPERTY SUMMARY (for property reference tables)
+# =============================================================================
+
+PROPERTY REFERENCE TABLE ENTRY:
+--------------------------------
+
+| Property ID | Label | Domain | Range | Subproperty Of | Transforms To |
+|-------------|-------|--------|-------|----------------|---------------|
+| gmn:P22_1_has_owner | P22.1 has owner | E22_Human-Made_Object | E21_Person | P24i_changed_ownership_through | P24i > E8_Acquisition > P22 |
+
+
+DETAILED PROPERTY TABLE ENTRY:
+-------------------------------
+
+| Aspect | Value |
+|--------|-------|
+| **Property IRI** | gmn:P22_1_has_owner |
+| **Label** | "P22.1 has owner"@en |
+| **Definition** | Simplified property for expressing ownership of buildings or moveable property |
+| **Domain** | cidoc:E22_Human-Made_Object |
+| **Range** | cidoc:E21_Person |
+| **Subproperty of** | cidoc:P24i_changed_ownership_through |
+| **Applies to** | Buildings (E22.1), Moveable Property (E22.2) |
+| **CIDOC-CRM Path** | E22 > P24i > E8_Acquisition > P22 > E21 |
+| **Created** | 2025-10-16 |
+| **Type** | ObjectProperty |
+| **Functional** | No |
+| **Cardinality** | 0..* (multiple owners allowed) |
+
+
+# =============================================================================
+# SECTION 2: PROPERTY DESCRIPTION (for main text)
+# =============================================================================
+
+P22.1 HAS OWNER
+===============
+
+The gmn:P22_1_has_owner property provides a simplified way to express ownership
+relationships between human-made objects (buildings and moveable property) and 
+persons. This property is designed for ease of data entry while maintaining 
+semantic compatibility with CIDOC-CRM through transformation.
+
+Ownership vs. Occupation
+------------------------
+It's important to distinguish between ownership (P22.1) and occupation (P53.1):
+
+- **P22.1 Has Owner**: Expresses legal ownership or title to property
+- **P53.1 Has Occupant**: Expresses physical residence or occupation
+
+A building can have both an owner and an occupant when these are different persons
+(e.g., landlord and tenant). The properties are complementary, not mutually exclusive.
+
+Usage Pattern
+-------------
+Use gmn:P22_1_has_owner to document:
+- Current ownership of buildings or moveable property
+- Historical ownership relationships found in source documents
+- Multiple co-owners of the same property
+- Ownership by identified persons (not organizations)
+
+CIDOC-CRM Transformation
+-------------------------
+During transformation to CIDOC-CRM, the simplified ownership property is expanded
+into a full event-based structure:
+
+Input (GMN shortcut):
+  <building001> gmn:P22_1_has_owner <person_giovanni> .
+
+Output (CIDOC-CRM):
+  <building001> cidoc:P24i_changed_ownership_through <acquisition001> .
+  <acquisition001> a cidoc:E8_Acquisition ;
+      cidoc:P22_transferred_title_to <person_giovanni> .
+
+This transformation creates an E8_Acquisition event for each ownership relationship,
+allowing for future enrichment with temporal, spatial, and contextual information.
+
+
+# =============================================================================
+# SECTION 3: USAGE EXAMPLES (for examples section)
+# =============================================================================
+
+EXAMPLE 1: SINGLE BUILDING OWNER
+=================================
+
+A simple case of documenting building ownership:
+
+Turtle syntax:
+--------------
+<http://example.org/building/spinola_house> a gmn:E22_1_Building ;
+    rdfs:label "Spinola House on Vico San Giovanni"@en ;
+    gmn:P1_1_has_name "House on Vico San Giovanni" ;
+    gmn:P22_1_has_owner <http://example.org/person/antonio_spinola> .
+
+<http://example.org/person/antonio_spinola> a cidoc:E21_Person ;
+    gmn:P1_2_has_name_from_source "Antonio Spinola" .
+
+
+EXAMPLE 2: MULTIPLE OWNERS (CO-OWNERSHIP)
+==========================================
+
+Documenting joint ownership of a commercial property:
+
+Turtle syntax:
+--------------
+<http://example.org/building/warehouse_porto> a gmn:E22_1_Building ;
+    rdfs:label "Lomellini Warehouse in Porto"@en ;
+    gmn:P1_1_has_name "Warehouse in Porto" ;
+    gmn:P22_1_has_owner 
+        <http://example.org/person/stefano_lomellini> ,
+        <http://example.org/person/giovanni_lomellini> .
+
+
+EXAMPLE 3: MOVEABLE PROPERTY OWNERSHIP
+=======================================
+
+Documenting ownership of moveable property (furniture, goods, etc.):
+
+Turtle syntax:
+--------------
+<http://example.org/property/furniture_001> a gmn:E22_2_Moveable_Property ;
+    rdfs:label "Bedroom furniture set"@en ;
+    gmn:P1_1_has_name "Bedroom furniture set" ;
+    gmn:P22_1_has_owner <http://example.org/person/maria_doria> .
+
+
+EXAMPLE 4: OWNER AND OCCUPANT DISTINGUISHED
+============================================
+
+A building with separate owner and occupant (landlord/tenant scenario):
+
+Turtle syntax:
+--------------
+<http://example.org/building/rental_house> a gmn:E22_1_Building ;
+    rdfs:label "Rental house on Strada Nuova"@en ;
+    gmn:P1_1_has_name "House on Strada Nuova" ;
+    gmn:P22_1_has_owner <http://example.org/person/landlord_paolo> ;
+    gmn:P53_1_has_occupant <http://example.org/person/tenant_francesco> .
+
+Note: Paolo owns the building but Francesco lives in it.
+
+
+EXAMPLE 5: OWNER WITH DETAILED PERSON INFORMATION
+==================================================
+
+Ownership linked to a fully documented person:
+
+Turtle syntax:
+--------------
+<http://example.org/building/grimaldi_shop> a gmn:E22_1_Building ;
+    gmn:P1_1_has_name "Shop on Via degli Orefici" ;
+    gmn:P22_1_has_owner <http://example.org/person/nicolo_grimaldi> .
+
+<http://example.org/person/nicolo_grimaldi> a cidoc:E21_Person ;
+    gmn:P1_2_has_name_from_source "Nicolò Grimaldi q. Luca" ;
+    gmn:P97_1_has_father <http://example.org/person/luca_grimaldi> ;
+    gmn:P107i_1_has_regional_provenance <http://example.org/place/genoa> ;
+    gmn:P107i_2_has_social_category <http://example.org/type/nobleman> ;
+    gmn:P107i_3_has_occupation <http://example.org/type/merchant> .
+
+
+# =============================================================================
+# SECTION 4: TRANSFORMATION EXAMPLES (for technical documentation)
+# =============================================================================
+
+TRANSFORMATION EXAMPLE 1: SINGLE OWNER
+=======================================
+
+Before transformation (GMN shortcut):
+--------------------------------------
+{
+  "@context": {
+    "gmn": "http://example.org/gmn/",
+    "cidoc": "http://www.cidoc-crm.org/cidoc-crm/"
+  },
+  "@id": "http://example.org/building001",
+  "@type": "gmn:E22_1_Building",
+  "gmn:P22_1_has_owner": [
+    {
+      "@id": "http://example.org/person/giovanni",
+      "@type": "cidoc:E21_Person"
+    }
+  ]
+}
+
+After transformation (CIDOC-CRM compliant):
+-------------------------------------------
+{
+  "@context": {...},
+  "@id": "http://example.org/building001",
+  "@type": "gmn:E22_1_Building",
+  "cidoc:P24i_changed_ownership_through": [
+    {
+      "@id": "http://example.org/building001/acquisition/ownership_a1b2c3d4",
+      "@type": "cidoc:E8_Acquisition",
+      "cidoc:P22_transferred_title_to": [
+        {
+          "@id": "http://example.org/person/giovanni",
+          "@type": "cidoc:E21_Person"
+        }
+      ]
+    }
+  ]
+}
+
+
+TRANSFORMATION EXAMPLE 2: MULTIPLE OWNERS
+==========================================
+
+Before transformation:
+----------------------
+{
+  "@id": "http://example.org/building002",
+  "@type": "gmn:E22_1_Building",
+  "gmn:P22_1_has_owner": [
+    {"@id": "http://example.org/person/owner_A"},
+    {"@id": "http://example.org/person/owner_B"}
+  ]
+}
+
+After transformation:
+---------------------
+{
+  "@id": "http://example.org/building002",
+  "@type": "gmn:E22_1_Building",
+  "cidoc:P24i_changed_ownership_through": [
+    {
+      "@id": "http://example.org/building002/acquisition/ownership_hash1",
+      "@type": "cidoc:E8_Acquisition",
+      "cidoc:P22_transferred_title_to": [
+        {"@id": "http://example.org/person/owner_A"}
+      ]
+    },
+    {
+      "@id": "http://example.org/building002/acquisition/ownership_hash2",
+      "@type": "cidoc:E8_Acquisition",
+      "cidoc:P22_transferred_title_to": [
+        {"@id": "http://example.org/person/owner_B"}
+      ]
+    }
+  ]
+}
+
+Note: Each owner gets a separate E8_Acquisition event.
+
+
+# =============================================================================
+# SECTION 5: COMPARISON TABLES (for reference sections)
+# =============================================================================
+
+TABLE 1: OWNERSHIP VS. OCCUPATION
+==================================
+
+| Aspect | P22.1 Has Owner | P53.1 Has Occupant |
+|--------|-----------------|---------------------|
+| **Relationship Type** | Legal ownership | Physical residence |
+| **Rights** | Title to property | Right to occupy |
+| **Typical Subjects** | Buildings, moveable property | Buildings only |
+| **CIDOC-CRM Path** | P24i > E8_Acquisition > P22 | P53i > E9_Move > P25 |
+| **Event Type** | E8_Acquisition | E9_Move |
+| **Can Overlap** | No (exclusive for same object) | Yes (owner can also occupy) |
+| **Example** | Landlord owns building | Tenant lives in building |
+
+
+TABLE 2: OWNERSHIP-RELATED PROPERTIES
+======================================
+
+| Property | Purpose | Domain | Range | Contract Type |
+|----------|---------|--------|-------|---------------|
+| **P22.1 Has Owner** | Current ownership | E22_Human-Made_Object | E21_Person | Property record |
+| **P70.1 Documents Seller** | Seller in sale | E31_2_Sales_Contract | E21_Person | Sales contract |
+| **P70.2 Documents Buyer** | Buyer in sale | E31_2_Sales_Contract | E21_Person | Sales contract |
+| **P70.3 Documents Transfer Of** | Property sold | E31_2_Sales_Contract | E18_Physical_Thing | Sales contract |
+| **P53.1 Has Occupant** | Building resident | E22_1_Building | E21_Person | Property record |
+
+
+TABLE 3: TRANSFORMATION MAPPING
+================================
+
+| GMN Shortcut | CIDOC Property 1 | Intermediate Class | CIDOC Property 2 | Target Class |
+|--------------|------------------|--------------------|--------------------|--------------|
+| P22.1 has owner | P24i changed ownership through | E8_Acquisition | P22 transferred title to | E21_Person |
+
+
+TABLE 4: APPLICABLE DOMAINS
+============================
+
+| Class | Can Use P22.1? | Notes |
+|-------|----------------|-------|
+| **E22_Human-Made_Object** | ✓ Yes | Parent class |
+| **gmn:E22_1_Building** | ✓ Yes | Houses, shops, warehouses |
+| **gmn:E22_2_Moveable_Property** | ✓ Yes | Furniture, goods, tools |
+| **E31_Document** | ✗ No | Documents have creators, not owners |
+| **E26_Physical_Feature** | ✗ No | Natural features not owned |
+| **E18_Physical_Thing** | ✗ No | Too broad; use specific subclasses |
+
+
+# =============================================================================
+# SECTION 6: QUERY EXAMPLES (for SPARQL section)
+# =============================================================================
+
+SPARQL QUERY 1: FIND ALL BUILDINGS AND THEIR OWNERS
+====================================================
+
+PREFIX gmn: <http://example.org/gmn/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?building ?buildingName ?owner ?ownerName
+WHERE {
+    ?building a gmn:E22_1_Building ;
+              gmn:P22_1_has_owner ?owner .
+    OPTIONAL { ?building gmn:P1_1_has_name ?buildingName }
+    OPTIONAL { ?owner gmn:P1_2_has_name_from_source ?ownerName }
+}
+ORDER BY ?buildingName
+
+
+SPARQL QUERY 2: FIND ALL PROPERTIES OWNED BY A SPECIFIC PERSON
+===============================================================
+
+PREFIX gmn: <http://example.org/gmn/>
+
+SELECT ?property ?propertyName ?propertyType
+WHERE {
+    ?property gmn:P22_1_has_owner <http://example.org/person/giovanni> .
+    ?property a ?propertyType .
+    OPTIONAL { ?property gmn:P1_1_has_name ?propertyName }
+}
+
+
+SPARQL QUERY 3: FIND CO-OWNED PROPERTIES (MULTIPLE OWNERS)
+===========================================================
+
+PREFIX gmn: <http://example.org/gmn/>
+
+SELECT ?property ?propertyName (COUNT(?owner) as ?ownerCount)
+WHERE {
+    ?property gmn:P22_1_has_owner ?owner .
+    OPTIONAL { ?property gmn:P1_1_has_name ?propertyName }
+}
+GROUP BY ?property ?propertyName
+HAVING (COUNT(?owner) > 1)
+ORDER BY DESC(?ownerCount)
+
+
+SPARQL QUERY 4: FIND OWNERS BY SOCIAL CATEGORY
+===============================================
+
+PREFIX gmn: <http://example.org/gmn/>
+
+SELECT ?owner ?ownerName ?property ?propertyName ?socialCategory
+WHERE {
+    ?property gmn:P22_1_has_owner ?owner .
+    ?owner gmn:P107i_2_has_social_category ?socialCategory .
+    OPTIONAL { ?owner gmn:P1_2_has_name_from_source ?ownerName }
+    OPTIONAL { ?property gmn:P1_1_has_name ?propertyName }
+}
+ORDER BY ?socialCategory ?ownerName
+
+
+SPARQL QUERY 5: OWNERSHIP NETWORK (CO-OWNERSHIP PATTERNS)
+==========================================================
+
+PREFIX gmn: <http://example.org/gmn/>
+
+SELECT ?owner1 ?name1 ?owner2 ?name2 (COUNT(?property) as ?sharedProperties)
+WHERE {
+    ?property gmn:P22_1_has_owner ?owner1 , ?owner2 .
+    FILTER(?owner1 < ?owner2)  # Avoid duplicates
+    OPTIONAL { ?owner1 gmn:P1_2_has_name_from_source ?name1 }
+    OPTIONAL { ?owner2 gmn:P1_2_has_name_from_source ?name2 }
+}
+GROUP BY ?owner1 ?name1 ?owner2 ?name2
+HAVING (COUNT(?property) > 0)
+ORDER BY DESC(?sharedProperties)
+
+
+# =============================================================================
+# SECTION 7: BEST PRACTICES (for guidelines section)
+# =============================================================================
+
+BEST PRACTICES FOR USING P22.1
+===============================
+
+DO:
+✓ Use P22.1 to document current or historical ownership states
+✓ Distinguish clearly between owners (P22.1) and occupants (P53.1)
+✓ List each co-owner separately when documenting joint ownership
+✓ Use proper person URIs or IDs, not string literals
+✓ Provide detailed person information separately from ownership statements
+✓ Document source information for ownership claims
+✓ Apply to buildings and moveable property only
+
+DON'T:
+✗ Don't use P22.1 for organizational ownership (use appropriate E74_Group properties)
+✗ Don't use P22.1 to document sales transactions (use P70.1, P70.2, P70.3)
+✗ Don't confuse ownership with occupation or residence
+✗ Don't use P22.1 for land parcels (use land-specific properties)
+✗ Don't use string literals for owners - always use URIs or blank nodes
+✗ Don't forget to distinguish rental/lease scenarios from ownership
+
+
+# =============================================================================
+# SECTION 8: COMMON PATTERNS (for patterns section)
+# =============================================================================
+
+COMMON OWNERSHIP PATTERNS IN HISTORICAL SOURCES
+================================================
+
+Pattern 1: Individual Building Ownership
+-----------------------------------------
+Context: Single person owns a residential building
+Example: "domus posita in civitate Janue in contracta Sancti Laurentii, 
+          que est Antonii Spinola"
+Usage:
+  <building001> gmn:P22_1_has_owner <antonio_spinola> .
+
+
+Pattern 2: Co-ownership by Siblings
+------------------------------------
+Context: Property inherited by multiple siblings
+Example: "domus que est Stefani et Johannis Lomellini fratrum"
+Usage:
+  <building002> gmn:P22_1_has_owner <stefano_lomellini> , <giovanni_lomellini> .
+  <stefano_lomellini> gmn:P96_1_has_mother <mother_lomellini> .
+  <giovanni_lomellini> gmn:P96_1_has_mother <mother_lomellini> .
+
+
+Pattern 3: Dowry Property
+--------------------------
+Context: Property brought as dowry by bride
+Example: Contract states "domus que est dicte domine Marie"
+Usage:
+  <dowry_contract> gmn:P70_34_indicates_object_of_dowry <building003> .
+  <building003> gmn:P22_1_has_owner <bride_maria> .
+
+
+Pattern 4: Rental Property
+---------------------------
+Context: Owner rents to tenant
+Example: "domus Pauli Spinola in qua habitat Franciscus Lomellini"
+Usage:
+  <building004> gmn:P22_1_has_owner <paolo_spinola> ;
+                gmn:P53_1_has_occupant <francesco_lomellini> .
+
+
+Pattern 5: Commercial Property Ownership
+-----------------------------------------
+Context: Merchant owns shop or warehouse
+Example: "apoteca posita in civitate Janue que est Nicolai Grimaldi"
+Usage:
+  <building005> a gmn:E22_1_Building ;
+                gmn:P2_1_has_building_type <shop> ;
+                gmn:P22_1_has_owner <nicolo_grimaldi> .
+
+
+# =============================================================================
+# SECTION 9: FREQUENTLY ASKED QUESTIONS
+# =============================================================================
+
+FREQUENTLY ASKED QUESTIONS ABOUT P22.1
+=======================================
+
+Q1: What's the difference between P22.1 (has owner) and P53.1 (has occupant)?
+------------------------------------------------------------------------------
+A: P22.1 expresses legal ownership or title to property, while P53.1 expresses
+   physical residence or occupation. A building can have both properties when
+   the owner and occupant are different people (e.g., landlord and tenant).
+
+Q2: Can a building have multiple owners?
+-----------------------------------------
+A: Yes. Use gmn:P22_1_has_owner multiple times to document co-ownership. During
+   transformation, each owner gets a separate E8_Acquisition event.
+
+Q3: Should I use P22.1 for organizational ownership?
+-----------------------------------------------------
+A: No. P22.1 is specifically for persons (E21_Person). For organizations, use
+   properties appropriate for E74_Group or its subclasses.
+
+Q4: How do I document a sale of property?
+------------------------------------------
+A: Use the sales contract properties (P70.1, P70.2, P70.3) to document the
+   transaction. P22.1 is for documenting the resulting ownership state, not
+   the transfer event itself.
+
+Q5: Can moveable property have an owner?
+-----------------------------------------
+A: Yes. P22.1 applies to both buildings (E22.1) and moveable property (E22.2).
+   Use it for furniture, goods, tools, and other moveable objects.
+
+Q6: What happens to P22.1 during transformation?
+-------------------------------------------------
+A: The property is expanded into: E22 > P24i > E8_Acquisition > P22 > E21.
+   Each owner gets a unique E8_Acquisition event. The original gmn:P22_1_has_owner
+   property is removed from the output.
+
+Q7: How are acquisition URIs generated?
+----------------------------------------
+A: URIs are generated as: <object_uri>/acquisition/ownership_<hash>
+   where <hash> is the last 8 characters of hash(owner_uri + 'ownership').
+   This ensures unique, consistent URIs for each owner-object pair.
+
+Q8: Can I add temporal information to ownership?
+-------------------------------------------------
+A: Not directly with P22.1. The E8_Acquisition events created during
+   transformation can later be enriched with P4_has_time-span properties
+   to add temporal context.
+
+
+# =============================================================================
+# SECTION 10: GLOSSARY ENTRIES
+# =============================================================================
+
+GLOSSARY ENTRIES
+================
+
+Acquisition (E8_Acquisition)
+  A CIDOC-CRM class representing the transfer of legal ownership of objects or
+  property. In the GMN context, used to model ownership relationships created
+  by the gmn:P22_1_has_owner property.
+
+Co-ownership
+  A situation where multiple persons hold ownership rights to the same property.
+  In GMN, documented using multiple gmn:P22_1_has_owner statements, each creating
+  a separate E8_Acquisition event.
+
+Occupant
+  A person who physically resides in or uses a building, documented with
+  gmn:P53_1_has_occupant. Distinct from owner, who holds legal title.
+
+Owner
+  A person who holds legal title to property, documented with gmn:P22_1_has_owner.
+  The owner has property rights but may not physically occupy the property.
+
+Ownership
+  Legal right to possess, use, and dispose of property. In CIDOC-CRM modeled
+  through E8_Acquisition events connecting properties to persons.
+
+
+# =============================================================================
+# END OF FILE
+# =============================================================================
