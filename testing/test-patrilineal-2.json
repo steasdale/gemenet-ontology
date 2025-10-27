@@ -1,0 +1,7 @@
+{
+  "@id": "https://example.org/person/giovanni_doria",
+  "@type": "cidoc:E21_Person",
+  "gmn:P1_1_has_name": [{"@value": "Giovanni Doria"}],
+  "gmn:P1_3_has_patrilineal_name": [{"@value": "Giovanni Doria q. Luca"}],
+  "gmn:P1_4_has_loconym": [{"@id": "https://example.org/place/genoa"}]
+}
