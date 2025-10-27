@@ -1,0 +1,84 @@
+# TTL Additions for gmn_ontology.ttl
+# Property: gmn:P11i_3_has_spouse
+# Add this to the main ontology file in the properties section
+
+# ============================================================================
+# PROPERTY DEFINITION
+# ============================================================================
+
+# Property: P11i.3 has spouse
+gmn:P11i_3_has_spouse
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P11i.3 has spouse"@en ;
+    rdfs:comment "Simplified property for expressing a spousal relationship between two persons. Represents the full CIDOC-CRM path: E21_Person > P11i_participated_in > E5_Event > P2_has_type <http://vocab.getty.edu/aat/300055475> > P11_had_participant > E21_Person. This property captures marriage relationships through a marriage event. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The event type is automatically set to AAT 300055475 (marriages)."@en ;
+    rdfs:subPropertyOf cidoc:P11i_participated_in ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-16"^^xsd:date ;
+    rdfs:seeAlso cidoc:P11i_participated_in, cidoc:P11_had_participant, aat:300055475 ;
+    gmn:hasImplicitType aat:300055475 .
+
+# ============================================================================
+# PLACEMENT INSTRUCTIONS
+# ============================================================================
+#
+# Insert this definition in the main ontology file (gmn_ontology.ttl) after
+# the gmn:P11i_2_latest_attestation_date property and before the 
+# gmn:P22_1_has_owner property.
+#
+# Approximate location: Lines 300-400
+#
+# The property should be grouped with other person attestation and relationship
+# properties:
+#   - gmn:P11i_1_earliest_attestation_date
+#   - gmn:P11i_2_latest_attestation_date
+#   - gmn:P11i_3_has_spouse (THIS PROPERTY)
+#   - gmn:P96_1_has_mother
+#   - gmn:P97_1_has_father
+#
+# ============================================================================
+# VALIDATION
+# ============================================================================
+#
+# After adding, validate the TTL syntax with:
+#   rapper -i turtle gmn_ontology.ttl -o turtle > /dev/null
+#
+# Verify the property was added:
+#   grep -A 10 "P11i_3_has_spouse" gmn_ontology.ttl
+#
+# ============================================================================
+# NOTES
+# ============================================================================
+#
+# 1. This property is a subproperty of cidoc:P11i_participated_in
+# 2. The domain and range are both cidoc:E21_Person
+# 3. The property has an implicit type: AAT 300055475 (marriages)
+# 4. This property must be transformed to full CIDOC-CRM for compliance
+# 5. The transformation creates E5_Event instances automatically typed as marriages
+#
+# ============================================================================
+# REQUIRED NAMESPACE DECLARATIONS
+# ============================================================================
+#
+# Ensure these namespace prefixes are declared at the top of your ontology file:
+#
+# @prefix gmn: <http://example.org/gmn/> .
+# @prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+# @prefix owl: <http://www.w3.org/2002/07/owl#> .
+# @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+# @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+# @prefix dcterms: <http://purl.org/dc/terms/> .
+# @prefix aat: <http://vocab.getty.edu/aat/> .
+#
+# ============================================================================
+# RELATED PROPERTIES
+# ============================================================================
+#
+# This property works in conjunction with:
+#   - gmn:P11i_1_earliest_attestation_date (earliest documentation)
+#   - gmn:P11i_2_latest_attestation_date (latest documentation)
+#   - gmn:P96_1_has_mother (maternal relationship)
+#   - gmn:P97_1_has_father (paternal relationship)
+#
+# ============================================================================

@@ -1,0 +1,360 @@
+# Documentation Additions for Main Documentation File
+# Property: gmn:P11i_3_has_spouse
+# Add these sections to your main GMN documentation
+
+================================================================================
+SECTION 1: PROPERTY TABLE ENTRY
+================================================================================
+
+Add this row to your properties table in the appropriate section:
+
+| Property | Label | Domain | Range | Description |
+|----------|-------|--------|-------|-------------|
+| gmn:P11i_3_has_spouse | P11i.3 has spouse | cidoc:E21_Person | cidoc:E21_Person | Simplified property for expressing spousal relationships. Represents the full CIDOC-CRM path: E21_Person > P11i_participated_in > E5_Event > P2_has_type <AAT:300055475> > P11_had_participant > E21_Person. Marriage events are automatically typed with AAT 300055475 (marriages). |
+
+================================================================================
+SECTION 2: DETAILED DESCRIPTION
+================================================================================
+
+### P11i.3 Has Spouse (gmn:P11i_3_has_spouse)
+
+**Purpose**: Records marriage relationships between persons through simplified person-to-person assertions.
+
+**Semantic Structure**:
+The property represents a spousal relationship by creating a marriage event in which both persons participated. The transformation automatically creates:
+- An E5_Event (marriage event)
+- Typed with AAT 300055475 (marriages)
+- Linking both persons via P11_had_participant
+
+**Full CIDOC-CRM Path**:
+```
+E21_Person (subject)
+  └─ cidoc:P11i_participated_in
+      └─ E5_Event (marriage)
+          ├─ cidoc:P2_has_type → AAT:300055475 (marriages)
+          └─ cidoc:P11_had_participant → E21_Person (spouse)
+```
+
+**Usage Notes**:
+- Supports multiple spouses (sequential marriages or, historically, concurrent)
+- Creates separate marriage events for each spouse relationship
+- URIs are generated deterministically for consistency
+- Bidirectional relationships should be recorded separately (on both persons)
+
+================================================================================
+SECTION 3: USAGE EXAMPLES
+================================================================================
+
+### Example 1: Simple Marriage Relationship
+
+**Scenario**: Recording the marriage between Cosimo de' Medici and Contessina de' Bardi
+
+**Input (GMN Simplified)**:
+```json
+{
+  "@id": "person:cosimo_medici",
+  "@type": "cidoc:E21_Person",
+  "rdfs:label": "Cosimo de' Medici",
+  "gmn:P11i_3_has_spouse": [
+    {
+      "@id": "person:contessina_bardi",
+      "@type": "cidoc:E21_Person",
+      "rdfs:label": "Contessina de' Bardi"
+    }
+  ]
+}
+```
+
+**Output (CIDOC-CRM Compliant)**:
+```json
+{
+  "@id": "person:cosimo_medici",
+  "@type": "cidoc:E21_Person",
+  "rdfs:label": "Cosimo de' Medici",
+  "cidoc:P11i_participated_in": [
+    {
+      "@id": "person:cosimo_medici/event/marriage_f7e2b9a1",
+      "@type": "cidoc:E5_Event",
+      "cidoc:P2_has_type": {
+        "@id": "http://vocab.getty.edu/aat/300055475",
+        "@type": "cidoc:E55_Type"
+      },
+      "cidoc:P11_had_participant": [
+        {
+          "@id": "person:contessina_bardi",
+          "@type": "cidoc:E21_Person",
+          "rdfs:label": "Contessina de' Bardi"
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Example 2: Multiple Marriages (Sequential)
+
+**Scenario**: A person who remarried after being widowed
+
+**Input**:
+```json
+{
+  "@id": "person:historical_figure",
+  "@type": "cidoc:E21_Person",
+  "gmn:P11i_3_has_spouse": [
+    {"@id": "person:first_spouse"},
+    {"@id": "person:second_spouse"}
+  ]
+}
+```
+
+**Result**: Two separate marriage events are created, each properly typed with AAT 300055475.
+
+### Example 3: Integration with Other Person Properties
+
+**Scenario**: Complete person record with spouse, parents, and attestation dates
+
+**Input**:
+```json
+{
+  "@id": "person:lorenzo_medici",
+  "@type": "cidoc:E21_Person",
+  "rdfs:label": "Lorenzo de' Medici",
+  "gmn:P11i_1_earliest_attestation_date": ["1449-01-01"],
+  "gmn:P11i_2_latest_attestation_date": ["1492-04-08"],
+  "gmn:P11i_3_has_spouse": [
+    {
+      "@id": "person:clarice_orsini",
+      "@type": "cidoc:E21_Person",
+      "rdfs:label": "Clarice Orsini"
+    }
+  ],
+  "gmn:P96_1_has_mother": [
+    {"@id": "person:lucrezia_tornabuoni"}
+  ],
+  "gmn:P97_1_has_father": [
+    {"@id": "person:piero_medici"}
+  ]
+}
+```
+
+**Result**: All properties are transformed to their respective CIDOC-CRM structures, with all events appearing in the P11i_participated_in array (for spouse and attestation dates) and separate arrays for birth relationships.
+
+================================================================================
+SECTION 4: TRANSFORMATION RULES
+================================================================================
+
+### Transformation Rule: Has Spouse
+
+**Input Property**: `gmn:P11i_3_has_spouse`
+
+**Transformation Steps**:
+1. Extract spouse URI from input (handle both object and string formats)
+2. Generate unique event URI using hash of spouse URI + "marriage"
+3. Create E5_Event structure with:
+   - Event type: AAT 300055475 (marriages)
+   - Participant: spouse person
+4. Add event to subject's P11i_participated_in array
+5. Remove original gmn:P11i_3_has_spouse property
+
+**Event URI Pattern**:
+```
+{subject_uri}/event/marriage_{hash}
+```
+where `{hash}` is the last 8 characters of hash(spouse_uri + "marriage")
+
+**Event Type**:
+- AAT Concept: 300055475
+- Label: "marriages (social events)"
+- URI: http://vocab.getty.edu/aat/300055475
+
+================================================================================
+SECTION 5: DATA ENTRY GUIDELINES
+================================================================================
+
+### Guidelines for Recording Spouse Information
+
+**When to Use**:
+- Confirmed marriage relationships documented in sources
+- Historical records explicitly mention spousal status
+- Church or civil records document the marriage
+
+**When NOT to Use**:
+- Unconfirmed or speculative relationships
+- Non-marital partnerships (use appropriate alternative properties)
+- Relationships documented through other means (e.g., cohabitation)
+
+**Best Practices**:
+1. **Use Proper URIs**: Always reference spouses by their established URI
+2. **Verify Existence**: Ensure referenced spouse entities exist in your dataset
+3. **Record Bidirectionally**: Consider adding the inverse relationship on the spouse's record
+4. **Source Documentation**: Include source information for relationship claims in editorial notes
+5. **Multiple Marriages**: Use multiple values for sequential or concurrent marriages
+
+**Input Format Options**:
+
+*Option 1: Full Object (Recommended)*
+```json
+"gmn:P11i_3_has_spouse": [
+  {
+    "@id": "person:spouse_uri",
+    "@type": "cidoc:E21_Person",
+    "rdfs:label": "Spouse Name"
+  }
+]
+```
+
+*Option 2: Minimal URI*
+```json
+"gmn:P11i_3_has_spouse": ["person:spouse_uri"]
+```
+
+================================================================================
+SECTION 6: RELATIONSHIP TO OTHER PROPERTIES
+================================================================================
+
+### Related Properties
+
+The `gmn:P11i_3_has_spouse` property is part of a family of properties that document person relationships and attestations:
+
+**Person Attestation Properties**:
+- `gmn:P11i_1_earliest_attestation_date` - First documented appearance
+- `gmn:P11i_2_latest_attestation_date` - Last documented appearance
+- `gmn:P11i_3_has_spouse` - Marriage relationships
+
+**Family Relationship Properties**:
+- `gmn:P96_1_has_mother` - Maternal relationship
+- `gmn:P97_1_has_father` - Paternal relationship
+
+**Group Membership Properties**:
+- `gmn:P107i_1_has_regional_provenance` - Geographic origin
+- `gmn:P107i_2_has_social_category` - Social class
+- `gmn:P107i_3_has_occupation` - Professional affiliation
+
+All person attestation properties (P11i.1, P11i.2, P11i.3) transform to events in the `cidoc:P11i_participated_in` array, while family relationships transform to birth events.
+
+================================================================================
+SECTION 7: VALIDATION AND QUALITY CONTROL
+================================================================================
+
+### Validation Checklist for Spouse Data
+
+**Before Entry**:
+- [ ] Source documentation confirms marriage relationship
+- [ ] Both persons have established URIs in the system
+- [ ] Marriage is historically plausible given dates and context
+- [ ] No conflicting relationship data exists
+
+**After Transformation**:
+- [ ] Marriage event exists in P11i_participated_in array
+- [ ] Event is properly typed with AAT 300055475
+- [ ] Spouse person is properly referenced in P11_had_participant
+- [ ] Event URI is unique and well-formed
+- [ ] Original simplified property has been removed
+
+**SPARQL Validation Query**:
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX aat: <http://vocab.getty.edu/aat/>
+
+# Find all marriage relationships
+SELECT ?person ?spouse
+WHERE {
+  ?person cidoc:P11i_participated_in ?event .
+  ?event cidoc:P2_has_type aat:300055475 .
+  ?event cidoc:P11_had_participant ?spouse .
+  FILTER(?person != ?spouse)
+}
+```
+
+================================================================================
+SECTION 8: HISTORICAL CONTEXT AND USE CASES
+================================================================================
+
+### Historical Marriage Records in Renaissance Italy
+
+Marriage relationships in the GMN dataset typically come from:
+
+1. **Notarial Marriage Contracts**: Legal documents recording marriage agreements
+2. **Dowry Records**: Documents recording property transfers at marriage
+3. **Church Records**: Parish registrations of marriages
+4. **Family Chronicles**: Private family histories documenting marriages
+5. **Property Records**: Documents identifying married couples as property owners
+
+### Common Use Cases
+
+**Use Case 1: Documenting Marriage Alliances**
+Renaissance Italian families used strategic marriages to form political and economic alliances. The spouse property captures these documented relationships.
+
+**Use Case 2: Property Transfer Context**
+Marriage relationships help explain property transfers documented in dowry and donation contracts.
+
+**Use Case 3: Family Network Reconstruction**
+Combined with parent properties, spouse relationships enable reconstruction of family networks across generations.
+
+**Use Case 4: Social Network Analysis**
+Marriage relationships between different social categories or geographic regions reveal patterns of social mobility and regional connections.
+
+================================================================================
+SECTION 9: TECHNICAL SPECIFICATIONS
+================================================================================
+
+### Property Specification
+
+| Attribute | Value |
+|-----------|-------|
+| **Property URI** | gmn:P11i_3_has_spouse |
+| **Label** | P11i.3 has spouse |
+| **Property Type** | owl:ObjectProperty |
+| **Super-property** | cidoc:P11i_participated_in |
+| **Domain** | cidoc:E21_Person |
+| **Range** | cidoc:E21_Person |
+| **Cardinality** | 0..* (zero or more) |
+| **Implicit Type** | AAT 300055475 (marriages) |
+| **Functional** | No |
+| **Inverse Functional** | No |
+| **Transitive** | No |
+| **Symmetric** | No |
+| **Transformation Required** | Yes |
+
+### Event Generation Specification
+
+| Attribute | Value |
+|-----------|-------|
+| **Event Class** | cidoc:E5_Event |
+| **Event Type** | AAT 300055475 (marriages) |
+| **Event URI Pattern** | {subject_uri}/event/marriage_{hash} |
+| **Hash Algorithm** | hash(spouse_uri + "marriage") |
+| **Hash Length** | 8 characters |
+| **Participant Property** | cidoc:P11_had_participant |
+
+================================================================================
+SECTION 10: REFERENCES AND RESOURCES
+================================================================================
+
+### External Resources
+
+**CIDOC-CRM Documentation**:
+- E5 Event: http://www.cidoc-crm.org/Entity/e5-event/version-7.1.3
+- E21 Person: http://www.cidoc-crm.org/Entity/e21-person/version-7.1.3
+- P11 had participant: http://www.cidoc-crm.org/Property/p11-had-participant/version-7.1.3
+- P11i participated in: http://www.cidoc-crm.org/Property/p11i-participated-in/version-7.1.3
+
+**Getty AAT**:
+- AAT 300055475 marriages: http://vocab.getty.edu/aat/300055475
+
+**Related Vocabularies**:
+- FOAF (Friend of a Friend): http://xmlns.com/foaf/spec/#term_spouse
+- Schema.org: https://schema.org/spouse
+- BIO Vocabulary: http://purl.org/vocab/bio/0.1/Marriage
+
+### Further Reading
+
+- CIDOC-CRM Tutorial: "Modeling Social Relationships"
+- GMN Project Documentation (main documentation file)
+- Renaissance Marriage Practices (historical context)
+
+================================================================================
+END OF DOCUMENTATION ADDITIONS
+================================================================================
+
+These sections should be integrated into your main documentation file in the appropriate locations. Adjust formatting and placement as needed to match your documentation structure and style.
