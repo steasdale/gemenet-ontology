@@ -1,0 +1,255 @@
+# GMN P70.11 Documents Referenced Person - TTL Additions
+# Ready-to-copy Turtle snippets for gmn_ontology.ttl
+
+# ==============================================================================
+# INSERTION LOCATION
+# ==============================================================================
+# Insert after: gmn:P70_10_documents_payment_recipient_for_seller (around line 1100)
+# Insert before: gmn:P70_12_documents_payment_through_organization
+#
+# Make sure there's a blank line before and after the property definition.
+# ==============================================================================
+
+# Property: P70.11 documents referenced person
+gmn:P70_11_documents_referenced_person
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.11 documents referenced person"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with any person referenced or mentioned in the document text who does not have one of the specified transactional roles. This captures persons who appear in the contract narrative but are not parties to the acquisition: witnesses present at the signing, absent parties whose rights or claims are acknowledged, deceased persons whose estates or relationships are mentioned for context (e.g., 'Giovanni, son of the late Marco'), neighbors or adjacent property owners referenced in property descriptions, previous owners mentioned in provenance statements, or any other individuals named in the contract text. Unlike the other P70 properties which document participation in the E8_Acquisition event, this property represents a direct relationship between the document and the person: E31_Document > P67_refers_to > E21_Person. This acknowledges that the person is textually present in the document without implying their participation in the transaction itself."@en ;
+    rdfs:subPropertyOf cidoc:P67_refers_to ;
+    rdfs:domain cidoc:E31_Document ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P67_refers_to .
+
+# ==============================================================================
+# VERIFICATION CHECKLIST
+# ==============================================================================
+# After copying, verify:
+# [ ] Property URI is exactly: gmn:P70_11_documents_referenced_person
+# [ ] Comment is a single string (no line breaks within quotes)
+# [ ] Domain is: cidoc:E31_Document
+# [ ] Range is: cidoc:E21_Person
+# [ ] Subproperty of: cidoc:P67_refers_to
+# [ ] All statements end with semicolon except last (period)
+# [ ] Proper indentation (4 spaces)
+# [ ] Created date is: 2025-10-17
+# [ ] Blank lines before and after property block
+# ==============================================================================
+
+# ==============================================================================
+# NAMESPACE DECLARATIONS (if not already present in file header)
+# ==============================================================================
+# These should already be at the top of gmn_ontology.ttl
+# Only add if missing:
+
+@prefix gmn: <http://example.org/gmn/> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# ==============================================================================
+# EXAMPLE USAGE IN DATA
+# ==============================================================================
+# How to use this property in your data files:
+
+# Example 1: Single referenced person (URI only)
+:contract_001 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_11_documents_referenced_person :person_giovanni_deceased .
+
+:person_giovanni_deceased a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Giovanni Rossi" ;
+    rdfs:label "Giovanni Rossi (deceased father of seller)" .
+
+# Example 2: Multiple referenced persons
+:contract_002 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_11_documents_referenced_person :person_marco_neighbor ,
+                                           :person_pietro_previous ,
+                                           :person_antonio_deceased .
+
+:person_marco_neighbor a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Marco Santini" ;
+    rdfs:label "Marco Santini (owner of adjacent property)" .
+
+:person_pietro_previous a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Pietro Verdi" ;
+    rdfs:label "Pietro Verdi (previous owner, 1445)" .
+
+:person_antonio_deceased a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Antonio Bianchi" ;
+    rdfs:label "Antonio Bianchi (deceased)" .
+
+# Example 3: Referenced person with detailed information
+:contract_003 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_1_documents_seller :seller_lorenzo ;
+    gmn:P70_11_documents_referenced_person :person_father_deceased .
+
+:person_father_deceased a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Tommaso di Giovanni" ;
+    gmn:P1_3_has_patrilineal_name "di Giovanni" ;
+    rdfs:label "Tommaso di Giovanni (deceased father)" ;
+    rdfs:comment "Mentioned in seller's patronymic for identification purposes" .
+
+# Example 4: Referenced person in boundary description
+:contract_004 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_3_documents_transfer_of :property_vineyard_004 ;
+    gmn:P70_11_documents_referenced_person :person_boundary_north ,
+                                           :person_boundary_south ,
+                                           :person_boundary_east ,
+                                           :person_boundary_west .
+
+:property_vineyard_004 a cidoc:E18_Physical_Thing ;
+    rdfs:label "Vineyard in San Gimignano" ;
+    rdfs:comment "Boundaries defined by adjacent property owners" .
+
+:person_boundary_north a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Francesco Medici" ;
+    rdfs:comment "Northern boundary" .
+
+# Example 5: Referenced person with consent (not active participant)
+:contract_005 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_1_documents_seller :husband_seller ;
+    gmn:P70_11_documents_referenced_person :wife_consenting .
+
+:wife_consenting a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Lucia" ;
+    rdfs:comment "Wife providing consent, mentioned but not signatory" .
+
+# ==============================================================================
+# WHAT THIS TRANSFORMS TO (CIDOC-CRM)
+# ==============================================================================
+# After transformation, the above examples become:
+
+# Example 1 transformed:
+:contract_001 a gmn:E31_2_Sales_Contract ;
+    cidoc:P67_refers_to :person_giovanni_deceased .
+
+:person_giovanni_deceased a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Giovanni Rossi" ;
+    rdfs:label "Giovanni Rossi (deceased father of seller)" .
+
+# Example 2 transformed:
+:contract_002 a gmn:E31_2_Sales_Contract ;
+    cidoc:P67_refers_to :person_marco_neighbor ,
+                        :person_pietro_previous ,
+                        :person_antonio_deceased .
+
+# ==============================================================================
+# VALIDATION QUERIES
+# ==============================================================================
+# Use these SPARQL queries to validate the property after addition:
+
+# Query 1: Check if property exists
+SELECT ?property WHERE {
+    BIND(gmn:P70_11_documents_referenced_person AS ?property)
+    ?property a owl:ObjectProperty .
+}
+
+# Query 2: Verify property characteristics
+SELECT ?domain ?range ?subPropertyOf WHERE {
+    gmn:P70_11_documents_referenced_person rdfs:domain ?domain ;
+                                           rdfs:range ?range ;
+                                           rdfs:subPropertyOf ?subPropertyOf .
+}
+# Expected results:
+# domain: cidoc:E31_Document
+# range: cidoc:E21_Person
+# subPropertyOf: cidoc:P67_refers_to
+
+# Query 3: Find all uses of this property
+SELECT ?document ?person WHERE {
+    ?document gmn:P70_11_documents_referenced_person ?person .
+}
+
+# Query 4: Verify all referenced persons are E21_Person
+SELECT ?document ?person WHERE {
+    ?document gmn:P70_11_documents_referenced_person ?person .
+    FILTER NOT EXISTS { ?person a cidoc:E21_Person }
+}
+# This should return no results (empty set)
+
+# ==============================================================================
+# COMMON MISTAKES TO AVOID
+# ==============================================================================
+
+# WRONG: Using for active witnesses (use P70.15 instead)
+:contract_wrong_001 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_11_documents_referenced_person :witness_person .  # WRONG!
+
+# CORRECT: Witnesses use P70.15
+:contract_correct_001 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_15_documents_witness :witness_person .  # CORRECT
+
+# ---
+
+# WRONG: Using for transaction parties (use specific P70 properties)
+:contract_wrong_002 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_11_documents_referenced_person :buyer_person .  # WRONG!
+
+# CORRECT: Buyers use P70.2
+:contract_correct_002 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_2_documents_buyer :buyer_person .  # CORRECT
+
+# ---
+
+# WRONG: Using with groups (range is E21_Person, not E74_Group)
+:contract_wrong_003 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_11_documents_referenced_person :some_organization .  # WRONG!
+
+:some_organization a cidoc:E74_Group .  # Wrong range type
+
+# CORRECT: Groups need different property (if one exists) or use related persons
+:contract_correct_003 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_11_documents_referenced_person :member_of_org .
+
+:member_of_org a cidoc:E21_Person ;
+    rdfs:label "Member of organization" .
+
+# ==============================================================================
+# RELATED PROPERTIES
+# ==============================================================================
+# These properties work together with P70.11:
+
+# P70.1 - documents seller (not referenced, active seller)
+# P70.2 - documents buyer (not referenced, active buyer)
+# P70.15 - documents witness (not just referenced, actively witnessed)
+# P70.13 - documents referenced place (similar pattern, different range)
+# P70.14 - documents referenced object (similar pattern, different range)
+
+# Example showing multiple related properties:
+:contract_complex_001 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_1_documents_seller :seller ;
+    gmn:P70_2_documents_buyer :buyer ;
+    gmn:P70_15_documents_witness :witness_active ;
+    gmn:P70_11_documents_referenced_person :deceased_father ,
+                                           :neighbor_boundary ;
+    gmn:P70_13_documents_referenced_place :venice_reference .
+
+# ==============================================================================
+# NOTES
+# ==============================================================================
+# 1. This property uses P67_refers_to, not P70_documents
+#    - P67_refers_to = document refers to entity (documentary reference)
+#    - P70_documents = document documents event (event participation)
+#
+# 2. Domain is E31_Document (not E31_2_Sales_Contract)
+#    - Can be used with any document type
+#    - Sales contracts, declarations, correspondence, etc.
+#
+# 3. Range is E21_Person
+#    - Only individual persons, not groups
+#    - Living or deceased
+#
+# 4. Multiple persons can be referenced
+#    - No limit on number
+#    - Each gets separate P67_refers_to statement after transformation
+#
+# 5. Transformation preserves person data
+#    - All person properties maintained
+#    - Only the document property changes (P70.11 → P67)
+# ==============================================================================
+
+# End of TTL Additions File

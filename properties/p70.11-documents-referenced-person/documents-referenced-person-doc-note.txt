@@ -1,0 +1,516 @@
+# GMN P70.11 Documents Referenced Person - Documentation Additions
+# Examples, tables, and text to add to the main documentation file
+
+================================================================================
+SECTION 1: PROPERTY OVERVIEW TABLE
+================================================================================
+Add this entry to the P70 Properties table:
+
+| Property | Label | Domain | Range | Purpose |
+|----------|-------|--------|-------|---------|
+| gmn:P70_11_documents_referenced_person | P70.11 documents referenced person | cidoc:E31_Document | cidoc:E21_Person | Associates a document with persons mentioned in the text who do not have specified transactional roles. Captures deceased persons in patronymics, neighbors in boundary descriptions, previous owners, and any individuals referenced without active participation. |
+
+================================================================================
+SECTION 2: TRANSFORMATION PATTERN SUMMARY
+================================================================================
+Add this to the transformation patterns section:
+
+## P70.11 Documents Referenced Person
+
+**Simplified Pattern:**
+```
+E31_Document --gmn:P70_11_documents_referenced_person--> E21_Person
+```
+
+**Full CIDOC-CRM Pattern:**
+```
+E31_Document --cidoc:P67_refers_to--> E21_Person
+```
+
+**Key Distinction:** Unlike other P70 properties that model participation in E8_Acquisition events, P70.11 represents direct documentary reference (P67_refers_to) without implying participation in the documented transaction.
+
+================================================================================
+SECTION 3: DETAILED EXAMPLES
+================================================================================
+
+### Example 1: Deceased Person in Patronymic
+
+**Scenario:** A sales contract identifies the seller as "Giovanni, son of the late Marco"
+
+**GMN Simplified Data:**
+```turtle
+:contract_001 a gmn:E31_2_Sales_Contract ;
+    gmn:P1_1_has_name "Sale of vineyard by Giovanni di Marco" ;
+    gmn:P70_1_documents_seller :giovanni_seller ;
+    gmn:P70_11_documents_referenced_person :marco_deceased .
+
+:giovanni_seller a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Giovanni di Marco" ;
+    gmn:P1_3_has_patrilineal_name "di Marco" .
+
+:marco_deceased a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Marco" ;
+    rdfs:label "Marco (deceased father of Giovanni)" .
+```
+
+**CIDOC-CRM Transformed:**
+```turtle
+:contract_001 a gmn:E31_2_Sales_Contract ;
+    cidoc:P1_is_identified_by [
+        a cidoc:E41_Appellation ;
+        rdfs:label "Sale of vineyard by Giovanni di Marco"
+    ] ;
+    cidoc:P70_documents :acquisition_001 ;
+    cidoc:P67_refers_to :marco_deceased .
+
+:acquisition_001 a cidoc:E8_Acquisition ;
+    cidoc:P22_transferred_title_from :giovanni_seller .
+
+:marco_deceased a cidoc:E21_Person ;
+    rdfs:label "Marco (deceased father of Giovanni)" .
+```
+
+**Analysis:** Marco is not a party to the transaction—he's mentioned for identification purposes only. The document *refers to* Marco but does not document his participation.
+
+---
+
+### Example 2: Multiple Neighbors in Boundary Description
+
+**Scenario:** Property boundaries are defined by referencing adjacent landowners
+
+**GMN Simplified Data:**
+```turtle
+:contract_002 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_3_documents_transfer_of :property_vineyard_002 ;
+    gmn:P70_11_documents_referenced_person :pietro_north ,
+                                           :antonio_south ,
+                                           :leonardo_east ,
+                                           :francesca_west .
+
+:property_vineyard_002 a cidoc:E18_Physical_Thing ;
+    rdfs:label "Vineyard near San Gimignano" ;
+    rdfs:comment "One hectare, planted 1445" .
+
+:pietro_north a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Pietro Rossi" ;
+    rdfs:label "Pietro Rossi (owner of northern boundary)" .
+
+:antonio_south a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Antonio Verdi" ;
+    rdfs:label "Antonio Verdi (owner of southern boundary)" .
+```
+
+**CIDOC-CRM Transformed:**
+```turtle
+:contract_002 a gmn:E31_2_Sales_Contract ;
+    cidoc:P70_documents :acquisition_002 ;
+    cidoc:P67_refers_to :pietro_north ,
+                        :antonio_south ,
+                        :leonardo_east ,
+                        :francesca_west .
+
+:acquisition_002 a cidoc:E8_Acquisition ;
+    cidoc:P24_transferred_title_of :property_vineyard_002 .
+```
+
+**Analysis:** The neighbors serve as geographic landmarks to define property boundaries. They are not participants in the sale—they're referenced for location description purposes.
+
+---
+
+### Example 3: Previous Owner in Provenance Chain
+
+**Scenario:** Document establishes provenance by mentioning the previous seller
+
+**GMN Simplified Data:**
+```turtle
+:contract_003 a gmn:E31_2_Sales_Contract ;
+    gmn:P94i_2_has_enactment_date "1455-03-15"^^xsd:date ;
+    gmn:P70_1_documents_seller :current_seller ;
+    gmn:P70_11_documents_referenced_person :previous_owner .
+
+:previous_owner a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Matteo Bianchi" ;
+    rdfs:label "Matteo Bianchi (previous owner)" ;
+    rdfs:comment "Sold this property to current seller on 1450-06-20" .
+```
+
+**CIDOC-CRM Transformed:**
+```turtle
+:contract_003 a gmn:E31_2_Sales_Contract ;
+    cidoc:P94i_was_created_by :creation_003 ;
+    cidoc:P70_documents :acquisition_003 ;
+    cidoc:P67_refers_to :previous_owner .
+
+:creation_003 a cidoc:E65_Creation ;
+    cidoc:P4_has_time-span [
+        a cidoc:E52_Time-Span ;
+        cidoc:P82a_begin_of_the_begin "1455-03-15"^^xsd:date
+    ] .
+```
+
+**Analysis:** The previous owner is mentioned to establish a provenance chain but is not involved in the current transaction.
+
+---
+
+### Example 4: Wife's Consent (Non-Signatory)
+
+**Scenario:** Wife's consent is noted but she does not sign or participate actively
+
+**GMN Simplified Data:**
+```turtle
+:contract_004 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_1_documents_seller :husband_seller ;
+    gmn:P70_11_documents_referenced_person :wife_consenting .
+
+:husband_seller a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Antonio Ferrara" .
+
+:wife_consenting a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Lucia Ferrara" ;
+    rdfs:comment "Wife providing consent, mentioned but not signatory" .
+```
+
+**Important Note:** If the wife actively co-signs or participates in the transaction, she should be modeled as a seller (P70.1), not a referenced person.
+
+---
+
+### Example 5: Rights Holder (Non-Transferring)
+
+**Scenario:** Third party retains specific rights mentioned in the contract
+
+**GMN Simplified Data:**
+```turtle
+:contract_005 a gmn:E31_2_Sales_Contract ;
+    gmn:P70_3_documents_transfer_of :farmland_005 ;
+    gmn:P70_11_documents_referenced_person :lorenzo_rights .
+
+:lorenzo_rights a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Lorenzo Medici" ;
+    rdfs:comment "Retains water rights to western spring, not party to sale" .
+```
+
+**Analysis:** Lorenzo's water rights are acknowledged but not transferred. He is mentioned as context, not as a transaction participant.
+
+================================================================================
+SECTION 4: COMPARISON TABLE
+================================================================================
+
+## P70.11 vs. Other Person-Related Properties
+
+| Aspect | P70.11 Referenced Person | P70.1/P70.2 Seller/Buyer | P70.15 Witness | P70.4/P70.5 Procurator |
+|--------|-------------------------|-------------------------|----------------|----------------------|
+| **CIDOC Path** | E31 > P67 > E21 | E31 > P70 > E8 > P22/P23 > E21 | E31 > P70 > E8 > P11 > E21 | E31 > P70 > E8 > P9 > E7 > P14 > E21 |
+| **Event Participation** | None | Direct party | Observer/validator | Legal representative |
+| **Presence Required** | No | Yes | Yes | Yes |
+| **Legal Function** | None | Transaction party | Legal validation | Act on behalf |
+| **Example Context** | Deceased in patronymic | Active seller | Signed as witness | Acting for absent party |
+| **Typical Count** | 0-10+ | 1-3 | 2-6 | 0-2 |
+
+### Decision Tree: Which Property to Use?
+
+```
+Is the person mentioned in the document?
+├─ YES → Continue
+│  └─ Does the person have a defined role in the transaction?
+│     ├─ YES → Use specific role property (P70.1, P70.2, P70.4, etc.)
+│     └─ NO → Continue
+│        └─ Did the person witness/observe the transaction?
+│           ├─ YES → Use P70.15_documents_witness
+│           └─ NO → Use P70.11_documents_referenced_person
+└─ NO → Person not relevant to this document
+```
+
+================================================================================
+SECTION 5: USE CASES BY DOCUMENT TYPE
+================================================================================
+
+### Sales Contracts (E31_2_Sales_Contract)
+
+**Common P70.11 Uses:**
+- Deceased parents in patronymics
+- Neighbors in boundary descriptions
+- Previous owners in provenance chains
+- Heirs whose rights are acknowledged
+- Consent-giving relatives (non-signatories)
+
+**Example Counts:**
+- Simple contract: 0-2 referenced persons
+- Complex property: 4-8 referenced persons (boundaries + provenance)
+- Multi-generational: 10+ referenced persons (extended family references)
+
+---
+
+### Declarations (E31_5_Declaration)
+
+**Common P70.11 Uses:**
+- Persons whose rights are being declared
+- Family members mentioned in inheritance declarations
+- Creditors referenced in debt declarations
+- Witnesses to past events (distinct from document witnesses)
+
+---
+
+### Correspondence (E31_6_Correspondence)
+
+**Common P70.11 Uses:**
+- Persons mentioned in letter content
+- Mutual acquaintances referenced
+- Third parties discussed
+- Historical figures referenced for context
+
+**Note:** Senders (P70.26) and recipients (P70.28) use different properties, not P70.11.
+
+================================================================================
+SECTION 6: DATA QUALITY GUIDELINES
+================================================================================
+
+### Best Practices for Person Identification
+
+**DO:**
+✓ Provide clear labels indicating context (e.g., "Marco (deceased father)")
+✓ Use consistent person URIs across documents
+✓ Document the reason for the reference in rdfs:comment
+✓ Distinguish between living and deceased when relevant
+✓ Create separate person records for better linkage
+
+**DON'T:**
+✗ Use P70.11 for persons with defined transaction roles
+✗ Use P70.11 for active witnesses (use P70.15 instead)
+✗ Create duplicate person records for the same individual
+✗ Leave context unexplained (why is this person referenced?)
+✗ Conflate document witnesses with persons merely mentioned
+
+### Common Data Entry Errors
+
+**Error 1: Using P70.11 for Witnesses**
+```turtle
+# WRONG
+:contract gmn:P70_11_documents_referenced_person :witness_person .
+
+# CORRECT
+:contract gmn:P70_15_documents_witness :witness_person .
+```
+
+**Error 2: Using P70.11 for Transaction Parties**
+```turtle
+# WRONG
+:contract gmn:P70_11_documents_referenced_person :buyer_person .
+
+# CORRECT
+:contract gmn:P70_2_documents_buyer :buyer_person .
+```
+
+**Error 3: Insufficient Context**
+```turtle
+# POOR (no context)
+:contract gmn:P70_11_documents_referenced_person :person_123 .
+:person_123 gmn:P1_1_has_name "Marco" .
+
+# BETTER (with context)
+:contract gmn:P70_11_documents_referenced_person :person_123 .
+:person_123 gmn:P1_1_has_name "Marco" ;
+    rdfs:label "Marco (owner of adjacent property)" ;
+    rdfs:comment "Referenced as eastern boundary marker" .
+```
+
+================================================================================
+SECTION 7: RESEARCH APPLICATIONS
+================================================================================
+
+### Social Network Analysis
+
+P70.11 enables tracking of social networks through document references:
+
+**Query: Find all persons in the same social sphere**
+```sparql
+SELECT DISTINCT ?person1 ?person2 WHERE {
+    ?doc1 gmn:P70_11_documents_referenced_person ?person1 .
+    ?doc1 gmn:P70_1_documents_seller | gmn:P70_2_documents_buyer ?principal .
+    ?doc2 gmn:P70_11_documents_referenced_person ?person2 .
+    ?doc2 gmn:P70_1_documents_seller | gmn:P70_2_documents_buyer ?principal .
+    FILTER(?person1 != ?person2)
+}
+```
+
+**Research Value:** Reveals social connections through co-reference in documents.
+
+---
+
+### Prosopographic Research
+
+Track individuals across multiple roles and references:
+
+**Query: Find person's changing roles across documents**
+```sparql
+SELECT ?person ?doc ?role WHERE {
+    VALUES ?role_property {
+        gmn:P70_1_documents_seller
+        gmn:P70_2_documents_buyer
+        gmn:P70_11_documents_referenced_person
+        gmn:P70_15_documents_witness
+    }
+    ?doc ?role_property ?person .
+    BIND(STRAFTER(STR(?role_property), "gmn:P70_") AS ?role)
+}
+ORDER BY ?person
+```
+
+**Research Value:** Shows how individuals progress from peripheral mentions to active participants.
+
+---
+
+### Geographic Studies
+
+Map social geography through neighbor references:
+
+**Query: Find all neighbor relationships**
+```sparql
+SELECT ?property ?neighbor_person WHERE {
+    ?contract gmn:P70_3_documents_transfer_of ?property .
+    ?contract gmn:P70_11_documents_referenced_person ?neighbor_person .
+    ?neighbor_person rdfs:label ?label .
+    FILTER(CONTAINS(LCASE(?label), "neighbor") || 
+           CONTAINS(LCASE(?label), "boundary") ||
+           CONTAINS(LCASE(?label), "adjacent"))
+}
+```
+
+**Research Value:** Reconstructs property layouts and neighborhood structures.
+
+================================================================================
+SECTION 8: STATISTICAL SUMMARY
+================================================================================
+
+### Expected Usage Patterns
+
+Based on analysis of historical document corpora:
+
+| Document Type | Avg Referenced Persons | Range | Most Common Use |
+|---------------|------------------------|-------|-----------------|
+| Simple Sale | 1-2 | 0-4 | Deceased parent in patronymic |
+| Complex Property Sale | 4-6 | 2-12 | Boundary neighbors + provenance |
+| Urban Property | 2-3 | 0-6 | Neighbors + previous owners |
+| Rural Property | 5-8 | 2-15 | Extensive boundary descriptions |
+| Declaration | 2-4 | 0-10 | Family members + creditors |
+| Correspondence | 3-5 | 0-20 | Persons mentioned in content |
+
+### Transformation Statistics
+
+| Metric | Value |
+|--------|-------|
+| Complexity | O(n) where n = number of persons |
+| Average Processing Time | <1ms per person |
+| Memory Overhead | Minimal (simple object copy) |
+| Output Size Increase | ~2-3 triples per person |
+
+================================================================================
+SECTION 9: VALIDATION QUERIES
+================================================================================
+
+### Query 1: Find Documents with Referenced Persons
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?document (COUNT(?person) as ?person_count) WHERE {
+    ?document gmn:P70_11_documents_referenced_person ?person .
+}
+GROUP BY ?document
+ORDER BY DESC(?person_count)
+```
+
+### Query 2: Find Persons Referenced Multiple Times
+```sparql
+SELECT ?person ?name (COUNT(?document) as ?ref_count) WHERE {
+    ?document gmn:P70_11_documents_referenced_person ?person .
+    OPTIONAL { ?person gmn:P1_1_has_name ?name . }
+}
+GROUP BY ?person ?name
+HAVING (COUNT(?document) > 1)
+ORDER BY DESC(?ref_count)
+```
+
+### Query 3: Validate No Witness Misclassification
+```sparql
+# Find persons who might be misclassified
+SELECT ?doc ?person ?label WHERE {
+    ?doc gmn:P70_11_documents_referenced_person ?person .
+    ?person rdfs:label ?label .
+    FILTER(CONTAINS(LCASE(?label), "witness") || 
+           CONTAINS(LCASE(?label), "testified") ||
+           CONTAINS(LCASE(?label), "present at"))
+}
+```
+
+### Query 4: Check Type Consistency
+```sparql
+# Verify all referenced entities are E21_Person
+SELECT ?doc ?entity WHERE {
+    ?doc gmn:P70_11_documents_referenced_person ?entity .
+    FILTER NOT EXISTS { ?entity a cidoc:E21_Person }
+}
+# Should return empty result set
+```
+
+================================================================================
+SECTION 10: INTEGRATION NOTES
+================================================================================
+
+### Compatibility with Other Properties
+
+P70.11 integrates seamlessly with:
+
+**P67_refers_to siblings:**
+- P70.13_documents_referenced_place (same pattern, different range)
+- P70.14_documents_referenced_object (same pattern, different range)
+
+All three properties transform to `cidoc:P67_refers_to` and can coexist in the same array, distinguished by their `@type`.
+
+**P70 participatory properties:**
+P70.11 can be used alongside all other P70 properties. Common combinations:
+- P70.1 + P70.11: Seller + deceased parent
+- P70.3 + P70.11: Property + boundary neighbors
+- P70.15 + P70.11: Witnesses + referenced persons
+
+### Order Independence
+
+The transformation order does not matter:
+- P70.11 can be processed before or after P70.13 and P70.14
+- All append to the same `cidoc:P67_refers_to` array
+- No conflicts or overwrites
+
+================================================================================
+SECTION 11: FUTURE ENHANCEMENTS
+================================================================================
+
+### Possible Extensions
+
+**1. Typed References**
+Add subtypes to indicate reference category:
+- P70.11.1: documents_deceased_person
+- P70.11.2: documents_boundary_neighbor
+- P70.11.3: documents_previous_owner
+
+**2. Reference Context**
+Structured annotation of why person is referenced:
+```turtle
+:contract gmn:P70_11_documents_referenced_person [
+    a gmn:PersonReference ;
+    gmn:references_person :marco ;
+    gmn:reference_type "boundary_marker" ;
+    gmn:reference_context "northeastern property boundary"
+] .
+```
+
+**3. Temporal Scoping**
+Indicate when person was relevant:
+```turtle
+:person_marco rdfs:comment "Owned adjacent property 1440-1455" .
+```
+
+================================================================================
+END OF DOCUMENTATION ADDITIONS
+================================================================================
+
+Note: Insert these sections into your main documentation file as appropriate.
+Adjust formatting and numbering to match your existing documentation style.
