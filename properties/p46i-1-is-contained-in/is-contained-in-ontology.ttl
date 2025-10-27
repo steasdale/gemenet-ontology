@@ -1,0 +1,230 @@
+# TTL Additions for gmn_ontology.ttl
+# P46i.1 Is Contained In Property Definition
+
+## Status: Already Present in Current Ontology ✓
+
+The property definition below is already included in the current `gmn_ontology.ttl` file 
+(created 2025-10-17). This file is provided for reference and for adding to new ontology 
+files if needed.
+
+## Copy-Paste TTL Snippet
+
+```turtle
+# Property: P46i.1 is contained in
+gmn:P46i_1_is_contained_in
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P46i.1 is contained in"@en ;
+    rdfs:comment "Simplified property for expressing that a document forms part of a larger archival unit or collection. Use this to link individual contracts to the registers, filze (bundles of contracts tied with string), folders, or other archival containers in which they are physically housed. This represents the direct CIDOC-CRM property P46i_forms_part_of. The range can be any archival unit or collection, including registers (E31_Document subtype), filze, folders, or institutional archives. This captures the archival context and provenance of individual documents."@en ;
+    rdfs:subPropertyOf cidoc:P46i_forms_part_of ;
+    rdfs:domain cidoc:E31_Document ;
+    rdfs:range cidoc:E78_Curated_Holding ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P46i_forms_part_of .
+```
+
+## Required Namespace Prefixes
+
+Ensure the following prefixes are defined in your ontology file:
+
+```turtle
+@prefix gmn: <http://www.genoesemerchantnetworks.com/ontology#> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+```
+
+## Property Metadata Breakdown
+
+| Element | Value | Purpose |
+|---------|-------|---------|
+| `a owl:ObjectProperty` | Declares as object property | Indicates range is a resource, not literal |
+| `a rdf:Property` | Declares as RDF property | Ensures compatibility with RDF processors |
+| `rdfs:label` | "P46i.1 is contained in" | Human-readable label |
+| `rdfs:comment` | Extended description | Complete semantic definition |
+| `rdfs:subPropertyOf` | `cidoc:P46i_forms_part_of` | CIDOC-CRM alignment |
+| `rdfs:domain` | `cidoc:E31_Document` | Valid subject types |
+| `rdfs:range` | `cidoc:E78_Curated_Holding` | Valid object types |
+| `dcterms:created` | Date | Version tracking |
+| `rdfs:seeAlso` | CIDOC property | Cross-reference |
+
+## Alternative Label (Optional)
+
+If you want to add alternative labels for different languages:
+
+```turtle
+gmn:P46i_1_is_contained_in
+    rdfs:label "P46i.1 is contained in"@en ;
+    rdfs:label "P46i.1 è contenuto in"@it ;  # Italian
+    rdfs:label "P46i.1 est contenu dans"@fr ;  # French
+    # ... existing properties ...
+```
+
+## SKOS Annotations (Optional)
+
+For better discoverability and semantic web alignment:
+
+```turtle
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+gmn:P46i_1_is_contained_in
+    # ... existing properties ...
+    skos:prefLabel "is contained in"@en ;
+    skos:altLabel "forms part of"@en ;
+    skos:altLabel "is part of"@en ;
+    skos:definition "Expresses that a document is physically housed within a larger archival container."@en ;
+    skos:scopeNote "Use for documents within registers, filze, folders, or other archival units."@en ;
+    skos:example "A notarial contract contained in a register"@en .
+```
+
+## Full Definition with All Optional Elements
+
+```turtle
+# Property: P46i.1 is contained in (Complete version with all options)
+gmn:P46i_1_is_contained_in
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P46i.1 is contained in"@en ;
+    rdfs:label "P46i.1 è contenuto in"@it ;
+    rdfs:comment "Simplified property for expressing that a document forms part of a larger archival unit or collection. Use this to link individual contracts to the registers, filze (bundles of contracts tied with string), folders, or other archival containers in which they are physically housed. This represents the direct CIDOC-CRM property P46i_forms_part_of. The range can be any archival unit or collection, including registers (E31_Document subtype), filze, folders, or institutional archives. This captures the archival context and provenance of individual documents."@en ;
+    rdfs:subPropertyOf cidoc:P46i_forms_part_of ;
+    rdfs:domain cidoc:E31_Document ;
+    rdfs:range cidoc:E78_Curated_Holding ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    dcterms:modified "2025-10-27"^^xsd:date ;
+    rdfs:seeAlso cidoc:P46i_forms_part_of ;
+    rdfs:isDefinedBy <http://www.genoesemerchantnetworks.com/ontology> ;
+    skos:prefLabel "is contained in"@en ;
+    skos:altLabel "forms part of"@en ;
+    skos:definition "Expresses that a document is physically housed within a larger archival container."@en ;
+    skos:scopeNote "Use for documents within registers, filze, folders, or other archival units."@en ;
+    skos:example "A notarial contract contained in a register"@en .
+```
+
+## Usage Examples in Data
+
+### Example 1: Basic Usage
+```turtle
+<http://example.org/contracts/contract_001>
+    a gmn:E31_2_Sales_Contract ;
+    gmn:P46i_1_is_contained_in <http://example.org/archives/register_1450> .
+
+<http://example.org/archives/register_1450>
+    a cidoc:E31_Document ;
+    a cidoc:E78_Curated_Holding ;
+    gmn:P1_1_has_name "Notarial Register 1450"@en .
+```
+
+### Example 2: Hierarchical Structure
+```turtle
+<http://example.org/contracts/contract_001>
+    gmn:P46i_1_is_contained_in <http://example.org/archives/filza_23> .
+
+<http://example.org/archives/filza_23>
+    a cidoc:E78_Curated_Holding ;
+    gmn:P1_1_has_name "Filza 23"@it ;
+    gmn:P46i_1_is_contained_in <http://example.org/archives/busta_5> .
+
+<http://example.org/archives/busta_5>
+    a cidoc:E78_Curated_Holding ;
+    gmn:P1_1_has_name "Busta 5"@it .
+```
+
+### Example 3: Multiple Documents in Container
+```turtle
+<http://example.org/contracts/contract_001>
+    gmn:P46i_1_is_contained_in <http://example.org/archives/register_1450> .
+
+<http://example.org/contracts/contract_002>
+    gmn:P46i_1_is_contained_in <http://example.org/archives/register_1450> .
+
+<http://example.org/contracts/contract_003>
+    gmn:P46i_1_is_contained_in <http://example.org/archives/register_1450> .
+```
+
+## Validation Shapes (SHACL - Optional)
+
+For data validation:
+
+```turtle
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+gmn:P46i_1_ContainmentShape
+    a sh:PropertyShape ;
+    sh:path gmn:P46i_1_is_contained_in ;
+    sh:class cidoc:E78_Curated_Holding ;
+    sh:name "Is contained in" ;
+    sh:description "Documents must be contained in curated holdings" ;
+    sh:minCount 0 ;  # Optional property
+    sh:nodeKind sh:IRI .  # Must be a URI reference
+```
+
+## OWL Axioms (Optional)
+
+Additional OWL axioms for reasoning:
+
+```turtle
+# Property characteristics
+gmn:P46i_1_is_contained_in
+    # ... existing properties ...
+    
+    # Not functional (a document can be in multiple containers)
+    # Not inverse functional (a container can have multiple documents)
+    
+    # Could add domain/range unions if needed:
+    rdfs:domain [
+        a owl:Class ;
+        owl:unionOf (
+            gmn:E31_2_Sales_Contract
+            gmn:E31_6_Correspondence
+            gmn:E31_8_Dowry_Contract
+            # ... other document types
+        )
+    ] .
+```
+
+## Related Properties Reference
+
+```turtle
+# For reference: Related CIDOC-CRM properties
+
+cidoc:P46i_forms_part_of
+    rdfs:comment "This property associates an instance of E18 Physical Thing with another instance of E18 Physical Thing that forms part of it." .
+
+cidoc:P46_is_composed_of
+    rdfs:comment "Inverse of P46i_forms_part_of" .
+
+cidoc:P55_has_current_location
+    rdfs:comment "Different: indicates where something is currently located, not its archival container" .
+
+gmn:P94i_3_has_place_of_enactment
+    rdfs:comment "Different: indicates where a document was created, not where it is stored" .
+```
+
+## Integration Checklist
+
+When adding this property to your ontology:
+
+- [ ] Copy the core property definition
+- [ ] Verify all required namespace prefixes are present
+- [ ] Optionally add alternative labels for internationalization
+- [ ] Optionally add SKOS annotations for semantic web compliance
+- [ ] Optionally add SHACL shapes for data validation
+- [ ] Test ontology parsing with RDFLib or similar tool
+- [ ] Update ontology documentation to reference this property
+- [ ] Add usage examples to your user guide
+
+## Notes
+
+1. **Already Defined**: This property is already present in the current GMN ontology (gmn_ontology.ttl) as of 2025-10-17.
+
+2. **Direct Mapping**: Unlike many GMN properties, this one does not require transformation through intermediate nodes—it's a direct subproperty of CIDOC-CRM.
+
+3. **Flexibility**: The broad range (E78_Curated_Holding) allows for various types of archival containers.
+
+4. **Transitivity**: While not explicitly declared as transitive, CIDOC-CRM P46i_forms_part_of has transitive characteristics that can be leveraged in queries.
+
+5. **Validation**: Consider implementing SHACL shapes if you need strict data validation on your RDF graphs.

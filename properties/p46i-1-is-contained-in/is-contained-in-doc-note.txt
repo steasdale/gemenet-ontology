@@ -1,0 +1,569 @@
+# Documentation Additions for P46i.1 Is Contained In
+# Copy-Paste Content for Main Documentation File
+
+This file contains formatted text, examples, and tables ready to be added to your main
+GMN ontology documentation. Content is organized by section for easy integration.
+
+================================================================================
+SECTION 1: PROPERTY OVERVIEW TABLE
+================================================================================
+
+Add this to your properties catalog or quick reference section:
+
+---
+
+### P46i.1 is contained in
+
+**Property URI**: `gmn:P46i_1_is_contained_in`
+
+**Label**: "P46i.1 is contained in" (English)
+
+**Domain**: `cidoc:E31_Document`
+
+**Range**: `cidoc:E78_Curated_Holding`
+
+**Superproperty**: `cidoc:P46i_forms_part_of`
+
+**Definition**: Simplified property for expressing that a document forms part of a larger archival unit or collection. Use this to link individual contracts to the registers, filze (bundles of contracts tied with string), folders, or other archival containers in which they are physically housed. This represents the direct CIDOC-CRM property P46i_forms_part_of.
+
+**CIDOC-CRM Path**:
+```
+Direct mapping: E31_Document > P46i_forms_part_of > E78_Curated_Holding
+```
+
+**Transformation**: Direct property substitution (no intermediate nodes)
+
+**Inverse**: `cidoc:P46_is_composed_of`
+
+**Quantification**: Many to many (0,n:0,n)
+
+**Scope Note**: The range can be any archival unit or collection, including registers (E31_Document subtype), filze, folders, or institutional archives. This captures the archival context and provenance of individual documents. Unlike P94i_3_has_place_of_enactment (where document was created) or P55_has_current_location (current physical location), this property specifically expresses the archival containment relationship.
+
+**Examples**:
+- A sales contract contained in a notarial register
+- A letter in a letterbook collection
+- A document in a filza (bundle tied with string)
+- Multiple contracts in a busta (archival box)
+
+---
+
+================================================================================
+SECTION 2: TRANSFORMATION EXAMPLES
+================================================================================
+
+Add this to your transformation documentation:
+
+---
+
+## Transformation Examples for P46i.1 Is Contained In
+
+### Example 1: Basic Document Containment
+
+**Input (shortcut):**
+```turtle
+<contract_genoa_1450_123> 
+    a gmn:E31_2_Sales_Contract ;
+    gmn:P1_1_has_name "House Sale Contract"@en ;
+    gmn:P46i_1_is_contained_in <register_antonio_1450> .
+
+<register_antonio_1450>
+    a cidoc:E31_Document ;
+    a cidoc:E78_Curated_Holding ;
+    gmn:P1_1_has_name "Notarial Register of Antonio Foglietta, 1450"@en .
+```
+
+**Output (CIDOC-CRM compliant):**
+```turtle
+<contract_genoa_1450_123> 
+    a gmn:E31_2_Sales_Contract ;
+    cidoc:P1_is_identified_by <contract_genoa_1450_123/appellation/1> ;
+    cidoc:P46i_forms_part_of <register_antonio_1450> .
+
+<register_antonio_1450>
+    a cidoc:E31_Document ;
+    a cidoc:E78_Curated_Holding ;
+    cidoc:P1_is_identified_by <register_antonio_1450/appellation/1> .
+```
+
+### Example 2: Hierarchical Archival Structure
+
+**Input (shortcut):**
+```turtle
+<contract_001>
+    a gmn:E31_2_Sales_Contract ;
+    gmn:P46i_1_is_contained_in <filza_23> .
+
+<filza_23>
+    a cidoc:E78_Curated_Holding ;
+    gmn:P1_1_has_name "Filza 23"@it ;
+    gmn:P46i_1_is_contained_in <busta_5> .
+
+<busta_5>
+    a cidoc:E78_Curated_Holding ;
+    gmn:P1_1_has_name "Busta 5, Archivio di Stato"@it ;
+    gmn:P46i_1_is_contained_in <archivio_stato_genova> .
+
+<archivio_stato_genova>
+    a cidoc:E78_Curated_Holding ;
+    gmn:P1_1_has_name "Archivio di Stato di Genova"@it .
+```
+
+**Output (CIDOC-CRM compliant):**
+```turtle
+<contract_001>
+    a gmn:E31_2_Sales_Contract ;
+    cidoc:P46i_forms_part_of <filza_23> .
+
+<filza_23>
+    a cidoc:E78_Curated_Holding ;
+    cidoc:P1_is_identified_by <filza_23/appellation/1> ;
+    cidoc:P46i_forms_part_of <busta_5> .
+
+<busta_5>
+    a cidoc:E78_Curated_Holding ;
+    cidoc:P1_is_identified_by <busta_5/appellation/1> ;
+    cidoc:P46i_forms_part_of <archivio_stato_genova> .
+
+<archivio_stato_genova>
+    a cidoc:E78_Curated_Holding ;
+    cidoc:P1_is_identified_by <archivio_stato_genova/appellation/1> .
+```
+
+**Note**: The hierarchical structure allows transitive queries to find all documents within a top-level archive, even if they are nested several levels deep.
+
+### Example 3: Multiple Documents in Same Container
+
+**Input (shortcut):**
+```turtle
+<contract_001> gmn:P46i_1_is_contained_in <register_1450> .
+<contract_002> gmn:P46i_1_is_contained_in <register_1450> .
+<contract_003> gmn:P46i_1_is_contained_in <register_1450> .
+
+<register_1450>
+    a cidoc:E31_Document ;
+    a cidoc:E78_Curated_Holding ;
+    gmn:P1_1_has_name "Notarial Register 1450"@en .
+```
+
+**Output (CIDOC-CRM compliant):**
+```turtle
+<contract_001> cidoc:P46i_forms_part_of <register_1450> .
+<contract_002> cidoc:P46i_forms_part_of <register_1450> .
+<contract_003> cidoc:P46i_forms_part_of <register_1450> .
+
+<register_1450>
+    a cidoc:E31_Document ;
+    a cidoc:E78_Curated_Holding ;
+    cidoc:P1_is_identified_by <register_1450/appellation/1> .
+```
+
+---
+
+================================================================================
+SECTION 3: USAGE GUIDELINES
+================================================================================
+
+Add this to your user guide or best practices section:
+
+---
+
+## Using P46i.1 Is Contained In: Guidelines
+
+### When to Use
+
+✅ **USE** `gmn:P46i_1_is_contained_in` for:
+
+- Linking documents to notarial registers
+- Expressing containment in filze (string-tied bundles)
+- Documents within folder systems
+- Letters in letterbooks
+- Any document-to-archival-container relationship
+- Preserving original archival organization
+- Recording provenance through archival context
+
+### When NOT to Use
+
+❌ **DO NOT USE** `gmn:P46i_1_is_contained_in` for:
+
+- **Current physical location** → Use `cidoc:P55_has_current_location` instead
+  ```turtle
+  <document> cidoc:P55_has_current_location <archive_building> .
+  ```
+
+- **Document creation location** → Use `gmn:P94i_3_has_place_of_enactment` instead
+  ```turtle
+  <contract> gmn:P94i_3_has_place_of_enactment <genoa> .
+  ```
+
+- **Places mentioned in documents** → Use `cidoc:P67_refers_to` instead
+  ```turtle
+  <contract> cidoc:P67_refers_to <property_location> .
+  ```
+
+### Common Scenarios
+
+#### Scenario 1: Document in Register
+```turtle
+<contract_sale_1450_07_15>
+    a gmn:E31_2_Sales_Contract ;
+    gmn:P1_1_has_name "House Sale, 15 July 1450"@en ;
+    gmn:P94i_2_has_enactment_date "1450-07-15"^^xsd:date ;
+    gmn:P46i_1_is_contained_in <register_foglietta_1450> .
+```
+
+#### Scenario 2: Letters in Letterbook
+```turtle
+<letter_1453_05_12>
+    a gmn:E31_6_Correspondence ;
+    gmn:P46i_1_is_contained_in <letterbook_maria_spinola_1453> .
+
+<letter_1453_06_20>
+    a gmn:E31_6_Correspondence ;
+    gmn:P46i_1_is_contained_in <letterbook_maria_spinola_1453> .
+```
+
+#### Scenario 3: Multi-Level Archival Hierarchy
+```turtle
+# Document level
+<contract> gmn:P46i_1_is_contained_in <filza_23> .
+
+# Filza level
+<filza_23> gmn:P46i_1_is_contained_in <busta_5> .
+
+# Busta level
+<busta_5> gmn:P46i_1_is_contained_in <archivio_stato> .
+```
+
+### Property Combination Patterns
+
+Combine with document creation properties for complete context:
+
+```turtle
+<contract_001>
+    # What is it?
+    a gmn:E31_2_Sales_Contract ;
+    gmn:P1_1_has_name "Vineyard Sale Contract"@en ;
+    
+    # Who created it?
+    gmn:P94i_1_was_created_by <notary_giovanni> ;
+    
+    # When was it created?
+    gmn:P94i_2_has_enactment_date "1450-03-15"^^xsd:date ;
+    
+    # Where was it created?
+    gmn:P94i_3_has_place_of_enactment <genoa> ;
+    
+    # Where is it stored (archivally)?
+    gmn:P46i_1_is_contained_in <register_1450> ;
+    
+    # Digital representation
+    gmn:P138i_1_has_representation <scan_contract_001.jpg> .
+```
+
+---
+
+================================================================================
+SECTION 4: COMPARISON TABLE
+================================================================================
+
+Add this table to clarify differences between similar properties:
+
+---
+
+### Property Comparison: Containment vs. Location
+
+| Property | Purpose | Example |
+|----------|---------|---------|
+| `gmn:P46i_1_is_contained_in` | Archival containment | Contract is in Register 1450 |
+| `cidoc:P55_has_current_location` | Current physical location | Register is in Archive Building |
+| `gmn:P94i_3_has_place_of_enactment` | Document creation place | Contract was created in Genoa |
+| `cidoc:P67_refers_to` | Places mentioned in text | Contract mentions property in Savona |
+
+**Example showing all four**:
+```turtle
+<contract_001>
+    # Created in Genoa (where notary worked)
+    gmn:P94i_3_has_place_of_enactment <genoa> ;
+    
+    # Contained in Register 1450 (archival organization)
+    gmn:P46i_1_is_contained_in <register_1450> ;
+    
+    # Mentions property in Savona (content reference)
+    cidoc:P67_refers_to <savona_property> .
+
+<register_1450>
+    # Currently located in Archive of State (physical location)
+    cidoc:P55_has_current_location <archivio_di_stato_genova> .
+```
+
+---
+
+================================================================================
+SECTION 5: SPARQL QUERY EXAMPLES
+================================================================================
+
+Add these to your query examples section:
+
+---
+
+## SPARQL Queries for P46i.1 Is Contained In
+
+### Query 1: Find All Documents in a Register
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX gmn: <http://www.genoesemerchantnetworks.com/ontology#>
+
+SELECT ?document ?name ?date
+WHERE {
+    ?document cidoc:P46i_forms_part_of <http://example.org/register_1450> ;
+              cidoc:P1_is_identified_by/cidoc:P190_has_symbolic_content ?name .
+    OPTIONAL {
+        ?document cidoc:P94i_was_created_by/cidoc:P4_has_time-span/cidoc:P82_at_some_time_within ?date .
+    }
+}
+ORDER BY ?date
+```
+
+### Query 2: Find Archival Container of Document
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?container ?containerName
+WHERE {
+    <http://example.org/contract_001> cidoc:P46i_forms_part_of ?container .
+    ?container cidoc:P1_is_identified_by/cidoc:P190_has_symbolic_content ?containerName .
+}
+```
+
+### Query 3: Traverse Full Archival Hierarchy
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?doc ?level1 ?level2 ?level3
+WHERE {
+    ?doc a gmn:E31_2_Sales_Contract ;
+         cidoc:P46i_forms_part_of ?level1 .
+    OPTIONAL { ?level1 cidoc:P46i_forms_part_of ?level2 . }
+    OPTIONAL { ?level2 cidoc:P46i_forms_part_of ?level3 . }
+}
+```
+
+### Query 4: Find All Documents in Archive (Any Level)
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?document
+WHERE {
+    # Use property path + for one or more levels
+    ?document cidoc:P46i_forms_part_of+ <http://example.org/archivio_stato_genova> .
+}
+```
+
+### Query 5: Count Documents per Container
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?container ?containerName (COUNT(?document) AS ?count)
+WHERE {
+    ?document cidoc:P46i_forms_part_of ?container .
+    ?container cidoc:P1_is_identified_by/cidoc:P190_has_symbolic_content ?containerName .
+}
+GROUP BY ?container ?containerName
+ORDER BY DESC(?count)
+```
+
+### Query 6: Documents Without Archival Context
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX gmn: <http://www.genoesemerchantnetworks.com/ontology#>
+
+SELECT ?document ?name
+WHERE {
+    ?document a ?docType ;
+              cidoc:P1_is_identified_by/cidoc:P190_has_symbolic_content ?name .
+    
+    # Only look at GMN document types
+    FILTER(STRSTARTS(STR(?docType), "http://www.genoesemerchantnetworks.com/ontology#E31_"))
+    
+    # Documents without containment info
+    FILTER NOT EXISTS { ?document cidoc:P46i_forms_part_of ?container . }
+}
+ORDER BY ?name
+```
+
+---
+
+================================================================================
+SECTION 6: QUICK REFERENCE CARD
+================================================================================
+
+Add this as a sidebar or quick reference:
+
+---
+
+### P46i.1 Quick Reference
+
+**Property**: `gmn:P46i_1_is_contained_in`
+**Maps to**: `cidoc:P46i_forms_part_of`
+**Type**: Direct property mapping
+
+**Quick Syntax**:
+```turtle
+<document> gmn:P46i_1_is_contained_in <container> .
+```
+
+**Transforms to**:
+```turtle
+<document> cidoc:P46i_forms_part_of <container> .
+```
+
+**Domain**: E31_Document
+**Range**: E78_Curated_Holding
+
+**Common Containers**:
+- Notarial registers
+- Filze (bundles)
+- Buste (boxes)
+- Folders
+- Letterbooks
+- Institutional archives
+
+**Use for**: Archival containment
+**Don't use for**: Physical location, creation place, content references
+
+---
+
+================================================================================
+SECTION 7: ARCHIVAL STANDARDS REFERENCE
+================================================================================
+
+Add this to contextualize within broader archival practices:
+
+---
+
+## Archival Standards Alignment
+
+The `gmn:P46i_1_is_contained_in` property aligns with international archival description standards:
+
+### ISAD(G) Alignment
+
+| ISAD(G) Element | GMN Implementation |
+|-----------------|-------------------|
+| 3.1.4 Immediate source of acquisition or transfer | `P46i_1_is_contained_in` to source container |
+| 3.1.3 Extent and medium | Count via `SELECT COUNT(*)` on container |
+| 3.1.1 Reference code | `P1_is_identified_by` on container |
+| 3.2.1 Name of creator | `P94i_1_was_created_by` on document |
+
+### EAD Mapping
+
+```xml
+<!-- EAD structure -->
+<archdesc level="collection">
+    <dsc>
+        <c01 level="series"> <!-- = Container -->
+            <did>
+                <unitid>register_1450</unitid>
+                <unittitle>Notarial Register 1450</unittitle>
+            </did>
+            <c02 level="file"> <!-- = Document -->
+                <did>
+                    <unitid>contract_001</unitid>
+                    <unittitle>House Sale Contract</unittitle>
+                </did>
+            </c02>
+        </c01>
+    </dsc>
+</archdesc>
+```
+
+**RDF equivalent**:
+```turtle
+<register_1450> a cidoc:E78_Curated_Holding ;
+    cidoc:P1_is_identified_by "Notarial Register 1450"@en .
+
+<contract_001> a gmn:E31_2_Sales_Contract ;
+    cidoc:P1_is_identified_by "House Sale Contract"@en ;
+    cidoc:P46i_forms_part_of <register_1450> .
+```
+
+### Dublin Core Alignment
+
+| Dublin Core Element | GMN Property |
+|--------------------|--------------|
+| dcterms:isPartOf | Maps to P46i_forms_part_of |
+| dcterms:hasPart | Inverse: P46_is_composed_of |
+| dcterms:source | Can be inferred from containment chain |
+
+---
+
+================================================================================
+SECTION 8: VALIDATION CHECKLIST
+================================================================================
+
+Add this to help users verify their data:
+
+---
+
+## Data Validation Checklist for P46i.1
+
+When using `gmn:P46i_1_is_contained_in`, verify:
+
+### Domain Validation
+- [ ] Subject is `cidoc:E31_Document` or subclass
+- [ ] Subject has proper document type (E31_2_Sales_Contract, etc.)
+- [ ] Subject has identifying information (P1_1_has_name)
+
+### Range Validation
+- [ ] Object is `cidoc:E78_Curated_Holding` or subclass
+- [ ] Container has descriptive name/identifier
+- [ ] Container represents actual archival unit
+
+### Relationship Validation
+- [ ] Containment relationship is accurate
+- [ ] No circular references (document contains itself)
+- [ ] Hierarchy is logical (register → filza → busta → archive)
+
+### After Transformation
+- [ ] GMN property (`P46i_1_is_contained_in`) removed
+- [ ] CIDOC property (`P46i_forms_part_of`) present
+- [ ] Subject and object unchanged
+- [ ] No intermediate nodes created
+
+### SPARQL Validation Queries
+
+**Check 1**: Any remaining GMN properties?
+```sparql
+SELECT (COUNT(*) as ?count) WHERE {
+    ?s gmn:P46i_1_is_contained_in ?o .
+}
+# Should return 0 after transformation
+```
+
+**Check 2**: All CIDOC properties valid?
+```sparql
+SELECT * WHERE {
+    ?doc cidoc:P46i_forms_part_of ?container .
+    FILTER NOT EXISTS { ?container a cidoc:E78_Curated_Holding . }
+}
+# Should return no results
+```
+
+---
+
+================================================================================
+END OF DOCUMENTATION ADDITIONS
+================================================================================
+
+These sections can be copied directly into your main documentation file.
+Adjust formatting and organization to match your documentation style.
+
+For questions or clarifications, refer to:
+- is-contained-in-documentation.md (complete semantic reference)
+- is-contained-in-implementation-guide.md (step-by-step instructions)
+- CIDOC-CRM documentation for P46i_forms_part_of
