@@ -1,0 +1,511 @@
+DOCUMENTATION ADDITIONS FOR gmn:P70_4_documents_sellers_procurator
+================================================================================
+
+This file contains ready-to-copy text, examples, and tables to add to your
+main documentation file. Insert these sections in the appropriate locations.
+
+================================================================================
+SECTION 1: PROPERTY OVERVIEW TABLE
+================================================================================
+
+Add this row to your property overview table in the "Sales Contract Properties"
+section (between P70.3 and P70.5):
+
+| Property | Label | Domain | Range | Description |
+|----------|-------|--------|-------|-------------|
+| gmn:P70_4_documents_sellers_procurator | P70.4 documents seller's procurator | gmn:E31_2_Sales_Contract | cidoc:E21_Person | Links a sales contract to the person acting as legal representative (procurator) for the seller. Represents E31_Document > P70_documents > E8_Acquisition > P9_consists_of > E7_Activity > P14_carried_out_by > E21_Person (procurator), with P17_was_motivated_by linking to the seller. |
+
+================================================================================
+SECTION 2: DETAILED PROPERTY DESCRIPTION
+================================================================================
+
+Add this section after the P70.3 property documentation:
+
+---
+
+### gmn:P70_4_documents_sellers_procurator
+
+**Label**: P70.4 documents seller's procurator
+
+**Definition**: Simplified property for associating a sales contract with the 
+person named as the procurator (legal representative) for the seller.
+
+**Domain**: gmn:E31_2_Sales_Contract  
+**Range**: cidoc:E21_Person  
+**Super-property**: cidoc:P70_documents  
+**Date Created**: 2025-10-17
+
+**Purpose**: This shortcut property simplifies data entry by allowing direct 
+specification of seller's procurators without manually creating the complex 
+CIDOC-CRM structure involving E7_Activity and multiple property chains.
+
+**Historical Context**: In medieval Mediterranean legal practice, procurators 
+were commonly appointed to represent parties in property transactions. They 
+held legal authority to act on behalf of their principals (sellers) through 
+written or verbal authorization. This property captures the explicit naming 
+of such representatives in Genizah sales contracts.
+
+**CIDOC-CRM Path**:
+```
+E31_Document (Sales Contract)
+  └─ P70_documents
+      └─ E8_Acquisition
+          └─ P23_transferred_title_from
+          │   └─ E21_Person (Seller)
+          └─ P9_consists_of
+              └─ E7_Activity
+                  ├─ P14_carried_out_by
+                  │   └─ E21_Person (Procurator)
+                  ├─ P14.1_in_the_role_of
+                  │   └─ E55_Type (AAT:300025972 - agent)
+                  └─ P17_was_motivated_by
+                      └─ E21_Person (Seller)
+```
+
+**Transformation**: During transformation to full CIDOC-CRM compliance, this 
+property is expanded to create an E7_Activity node that explicitly models the 
+procurator's role and links them to the seller they represent via 
+P17_was_motivated_by.
+
+**Role Qualification**: The procurator's role is specified using the Getty AAT 
+term for "agent" (http://vocab.getty.edu/page/aat/300025972), distinguishing 
+procurators from other transaction participants such as guarantors, brokers, 
+or witnesses.
+
+**Multiple Values**: The property accepts multiple values to accommodate cases 
+where a seller appointed multiple procurators to act jointly or independently 
+in the transaction.
+
+**Related Properties**:
+- gmn:P70_1_documents_seller - The principal whom the procurator represents
+- gmn:P70_5_documents_buyers_procurator - Parallel property for buyer's procurator
+- gmn:P70_6_documents_sellers_guarantor - Different role but similar structure
+
+================================================================================
+SECTION 3: USAGE EXAMPLES
+================================================================================
+
+Add these examples to your "Property Usage Examples" section:
+
+---
+
+#### Example 1: Simple Sale with Procurator
+
+A sale where the seller acts through a procurator:
+
+**Scenario**: David sells a house to Sarah. His brother Isaac acts as his 
+procurator for the transaction.
+
+**GMN Input**:
+```json
+{
+  "@id": "contract/ts_20_176",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "gmn:P70_1_documents_seller": [{
+    "@id": "person/david_ben_abraham"
+  }],
+  "gmn:P70_2_documents_buyer": [{
+    "@id": "person/sarah_bat_moses"
+  }],
+  "gmn:P70_4_documents_sellers_procurator": [{
+    "@id": "person/isaac_ben_abraham"
+  }],
+  "gmn:P70_3_documents_transfer_of": [{
+    "@id": "property/house_goldsmiths_street"
+  }]
+}
+```
+
+**CIDOC-CRM Output** (after transformation):
+```json
+{
+  "@id": "contract/ts_20_176",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "cidoc:P70_documents": [{
+    "@id": "contract/ts_20_176/acquisition",
+    "@type": "cidoc:E8_Acquisition",
+    "cidoc:P23_transferred_title_from": [{
+      "@id": "person/david_ben_abraham",
+      "@type": "cidoc:E21_Person"
+    }],
+    "cidoc:P22_transferred_title_to": [{
+      "@id": "person/sarah_bat_moses",
+      "@type": "cidoc:E21_Person"
+    }],
+    "cidoc:P24_transferred_title_of": [{
+      "@id": "property/house_goldsmiths_street",
+      "@type": "cidoc:E18_Physical_Thing"
+    }],
+    "cidoc:P9_consists_of": [{
+      "@id": "contract/ts_20_176/activity/procurator_a1b2c3d4",
+      "@type": "cidoc:E7_Activity",
+      "cidoc:P14_carried_out_by": [{
+        "@id": "person/isaac_ben_abraham",
+        "@type": "cidoc:E21_Person"
+      }],
+      "cidoc:P14.1_in_the_role_of": {
+        "@id": "http://vocab.getty.edu/page/aat/300025972",
+        "@type": "cidoc:E55_Type"
+      },
+      "cidoc:P17_was_motivated_by": {
+        "@id": "person/david_ben_abraham",
+        "@type": "cidoc:E21_Person"
+      }
+    }]
+  }]
+}
+```
+
+**Interpretation**: Isaac acts as David's legal representative in the sale. 
+The E7_Activity explicitly models Isaac's role, qualified as "agent" via AAT, 
+and links him to David through P17_was_motivated_by to show he acts on David's 
+behalf.
+
+---
+
+#### Example 2: Multiple Procurators
+
+A complex sale with joint procurators:
+
+**Scenario**: Merchant Jacob appoints his two sons, Joseph and Benjamin, as 
+joint procurators to handle a significant property sale.
+
+**GMN Input**:
+```json
+{
+  "@id": "contract/ena_2805_28",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "gmn:P70_1_documents_seller": [{
+    "@id": "person/jacob_merchant"
+  }],
+  "gmn:P70_4_documents_sellers_procurator": [
+    {"@id": "person/joseph_ben_jacob"},
+    {"@id": "person/benjamin_ben_jacob"}
+  ]
+}
+```
+
+**CIDOC-CRM Output** (after transformation):
+```json
+{
+  "@id": "contract/ena_2805_28",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "cidoc:P70_documents": [{
+    "@id": "contract/ena_2805_28/acquisition",
+    "@type": "cidoc:E8_Acquisition",
+    "cidoc:P23_transferred_title_from": [{
+      "@id": "person/jacob_merchant",
+      "@type": "cidoc:E21_Person"
+    }],
+    "cidoc:P9_consists_of": [
+      {
+        "@id": "contract/ena_2805_28/activity/procurator_x1y2z3w4",
+        "@type": "cidoc:E7_Activity",
+        "cidoc:P14_carried_out_by": [{
+          "@id": "person/joseph_ben_jacob",
+          "@type": "cidoc:E21_Person"
+        }],
+        "cidoc:P14.1_in_the_role_of": {
+          "@id": "http://vocab.getty.edu/page/aat/300025972",
+          "@type": "cidoc:E55_Type"
+        },
+        "cidoc:P17_was_motivated_by": {
+          "@id": "person/jacob_merchant",
+          "@type": "cidoc:E21_Person"
+        }
+      },
+      {
+        "@id": "contract/ena_2805_28/activity/procurator_p5q6r7s8",
+        "@type": "cidoc:E7_Activity",
+        "cidoc:P14_carried_out_by": [{
+          "@id": "person/benjamin_ben_jacob",
+          "@type": "cidoc:E21_Person"
+        }],
+        "cidoc:P14.1_in_the_role_of": {
+          "@id": "http://vocab.getty.edu/page/aat/300025972",
+          "@type": "cidoc:E55_Type"
+        },
+        "cidoc:P17_was_motivated_by": {
+          "@id": "person/jacob_merchant",
+          "@type": "cidoc:E21_Person"
+        }
+      }
+    ]
+  }]
+}
+```
+
+**Interpretation**: Two separate E7_Activity nodes represent the individual 
+actions of each procurator. Each has a unique URI (generated with different 
+hash values) while both link to Jacob as the principal they represent. This 
+structure allows for modeling joint representation while maintaining the 
+distinct identities of each procurator.
+
+================================================================================
+SECTION 4: ROLE COMPARISON TABLE
+================================================================================
+
+Add this table to a section comparing different participant roles:
+
+### Transaction Participant Roles
+
+| Role | Property | Acts For | Function | AAT Type |
+|------|----------|----------|----------|----------|
+| Seller | P70.1 | Self | Transfers ownership | N/A |
+| Buyer | P70.2 | Self | Acquires ownership | N/A |
+| **Seller's Procurator** | **P70.4** | **Seller** | **Legal representative with authority** | **300025972 (agent)** |
+| Buyer's Procurator | P70.5 | Buyer | Legal representative with authority | 300025972 (agent) |
+| Seller's Guarantor | P70.6 | Seller | Provides security | 300025614 (guarantor) |
+| Buyer's Guarantor | P70.7 | Buyer | Provides security | 300025614 (guarantor) |
+| Broker | P70.8 | Both parties | Facilitates transaction | 300025234 (broker) |
+| Witness | P70.15 | Neither | Attests to transaction | 300028910 (witness) |
+
+**Key Distinctions**:
+- **Procurators** have legal authority to act on behalf of a party and bind them 
+  contractually
+- **Guarantors** provide security but don't act with the principal's authority
+- **Brokers** facilitate but represent neither party exclusively
+- **Witnesses** observe and attest without participating in the transaction
+
+================================================================================
+SECTION 5: TRANSFORMATION PATTERN
+================================================================================
+
+Add this to your "Transformation Patterns" section:
+
+---
+
+### Pattern: Procurator Transformation
+
+**Pattern Name**: Seller's Procurator Expansion
+
+**Input Pattern**:
+```
+contract gmn:P70_4_documents_sellers_procurator person
+```
+
+**Output Pattern**:
+```
+contract cidoc:P70_documents acquisition .
+acquisition cidoc:P9_consists_of activity .
+activity cidoc:P14_carried_out_by person .
+activity cidoc:P14.1_in_the_role_of AAT:agent .
+activity cidoc:P17_was_motivated_by seller .
+```
+
+**Prerequisites**:
+- Seller must be defined (gmn:P70_1_documents_seller) for P17 linkage
+- E8_Acquisition node must exist or be created
+
+**Generated Resources**:
+- E7_Activity with URI pattern: `{contract_uri}/activity/procurator_{hash}`
+- Hash calculated from: hash(procurator_uri + property_name)
+
+**Cardinality**: 1:N (one property can generate multiple activities for 
+multiple procurators)
+
+**Similar Patterns**:
+- P70.5 (buyer's procurator) - uses P22_transferred_title_to for motivation
+- P70.6/P70.7 (guarantors) - uses AAT:guarantor instead of AAT:agent
+
+================================================================================
+SECTION 6: DATA ENTRY GUIDELINES
+================================================================================
+
+Add this to your "Data Entry Guidelines" or "Best Practices" section:
+
+---
+
+### Guidelines for Seller's Procurator
+
+**When to Use**: Use gmn:P70_4_documents_sellers_procurator when the contract 
+text explicitly identifies someone as acting as a legal representative (wakīl, 
+procurator, agent) on behalf of the seller.
+
+**Common Terms in Sources**:
+- Arabic: وكيل (wakīl), نائب (nā'ib)
+- Hebrew: שליח (shaliaḥ), בא כוח (ba koaḥ)
+- Judeo-Arabic: אלוכיל (al-wakīl)
+
+**Verification Checklist**:
+- [ ] Contract explicitly names the procurator
+- [ ] Text indicates representative capacity
+- [ ] Procurator's authority is stated or implied
+- [ ] Procurator is distinct from the actual seller
+
+**Data Entry Steps**:
+1. Create E21_Person entity for the procurator (if not already exists)
+2. Create E21_Person entity for the seller (if not already exists)
+3. Add gmn:P70_1_documents_seller for the principal
+4. Add gmn:P70_4_documents_sellers_procurator for the representative
+5. Ensure person URIs are consistent across properties
+
+**Common Mistakes to Avoid**:
+- ❌ Don't use P70.4 if the person is the actual seller (use P70.1 instead)
+- ❌ Don't use P70.4 for guarantors (use P70.6 instead)
+- ❌ Don't use P70.4 for witnesses (use P70.15 instead)
+- ❌ Don't forget to also specify the seller via P70.1
+
+**Linking to Seller**: Always specify the seller using P70.1 before or 
+together with P70.4. This ensures proper linkage in the transformed output 
+via P17_was_motivated_by.
+
+================================================================================
+SECTION 7: SPARQL QUERY EXAMPLES
+================================================================================
+
+Add these queries to your "Query Examples" or "SPARQL Queries" section:
+
+---
+
+### Query 1: Find all contracts with seller's procurators
+
+```sparql
+PREFIX gmn: <http://genizah.org/ontology/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?contract ?seller ?procurator
+WHERE {
+  ?contract a gmn:E31_2_Sales_Contract ;
+            gmn:P70_1_documents_seller ?seller ;
+            gmn:P70_4_documents_sellers_procurator ?procurator .
+}
+ORDER BY ?contract
+```
+
+### Query 2: Find contracts where same person acts as procurator multiple times
+
+```sparql
+PREFIX gmn: <http://genizah.org/ontology/>
+
+SELECT ?procurator (COUNT(?contract) as ?count)
+WHERE {
+  ?contract gmn:P70_4_documents_sellers_procurator ?procurator .
+}
+GROUP BY ?procurator
+HAVING (COUNT(?contract) > 1)
+ORDER BY DESC(?count)
+```
+
+### Query 3: Find sellers who used procurators (transformed data)
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT DISTINCT ?seller ?procurator
+WHERE {
+  ?contract cidoc:P70_documents ?acquisition .
+  ?acquisition cidoc:P23_transferred_title_from ?seller ;
+               cidoc:P9_consists_of ?activity .
+  ?activity cidoc:P14_carried_out_by ?procurator ;
+            cidoc:P17_was_motivated_by ?seller ;
+            cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300025972> .
+}
+```
+
+### Query 4: Compare procurators vs guarantors for sellers
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?role (COUNT(?activity) as ?count)
+WHERE {
+  ?contract cidoc:P70_documents ?acquisition .
+  ?acquisition cidoc:P9_consists_of ?activity .
+  ?activity cidoc:P14.1_in_the_role_of ?roleType .
+  
+  BIND(IF(?roleType = <http://vocab.getty.edu/page/aat/300025972>, 
+          "Procurator", "Guarantor") as ?role)
+}
+GROUP BY ?role
+```
+
+================================================================================
+SECTION 8: TROUBLESHOOTING
+================================================================================
+
+Add this to your "Common Issues" or "Troubleshooting" section:
+
+---
+
+### Issue: P17_was_motivated_by missing after transformation
+
+**Symptoms**: The transformed output has the procurator activity but no 
+P17_was_motivated_by property linking to the seller.
+
+**Cause**: The seller transformation was not executed before the procurator 
+transformation, or the seller property (P70.1) was not specified.
+
+**Solution**:
+1. Ensure gmn:P70_1_documents_seller is present in the input data
+2. Verify transform_p70_1_documents_seller() is called before 
+   transform_p70_4_documents_sellers_procurator() in transform_item()
+3. Check that the seller URI is consistent between P70.1 and P70.4
+
+---
+
+### Issue: Multiple procurators create same URI
+
+**Symptoms**: When multiple procurators are specified, they overwrite each 
+other in the output instead of creating separate activities.
+
+**Cause**: Hash collision or incorrect URI generation in the transformation.
+
+**Solution**:
+1. Verify that each procurator has a distinct URI
+2. Check the hash calculation in transform_procurator_property()
+3. Ensure the activity URIs include both the procurator URI and property name 
+   in the hash input
+
+---
+
+### Issue: Procurator appears as regular seller
+
+**Symptoms**: Person who should be a procurator is listed as the seller.
+
+**Cause**: Incorrect property used during data entry (P70.1 instead of P70.4).
+
+**Solution**:
+1. Use P70.1 only for the actual seller (principal)
+2. Use P70.4 for the legal representative
+3. Include both properties when a procurator handles the sale
+
+================================================================================
+SECTION 9: REFERENCES AND RESOURCES
+================================================================================
+
+Add these references to your bibliography or resources section:
+
+---
+
+**Getty AAT - agent**:
+- URI: http://vocab.getty.edu/page/aat/300025972
+- Definition: "People or corporate bodies who act as representatives for 
+  others in business and legal matters"
+- Scope Note: "For the concept of people who act or have the power to act for 
+  others"
+
+**CIDOC-CRM P17 was motivated by**:
+- Domain: E7 Activity
+- Range: E1 CRM Entity
+- Definition: "This property describes the relationship between an activity 
+  and the entity that provided the motivation for it"
+
+**Historical Context**:
+- Goitein, S.D. *A Mediterranean Society*, Vol. II: The Community, pp. 236-243 
+  (discussion of legal representation in Genizah documents)
+
+**Related Medieval Legal Concepts**:
+- Wakālah (وكالة): Islamic legal concept of agency/procuration
+- Shelihut (שליחות): Jewish legal concept of agency
+
+================================================================================
+END OF DOCUMENTATION ADDITIONS
+================================================================================
+
+These additions should be integrated into your main documentation file in the
+appropriate sections. Adjust section headings and numbering to match your
+existing documentation structure.
+
+File version: 1.0
+Last updated: October 2025

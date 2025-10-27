@@ -1,0 +1,99 @@
+# TTL Ontology Additions for gmn:P70_4_documents_sellers_procurator
+# Ready to copy into gmn_ontology.ttl
+#
+# INSTRUCTIONS:
+# 1. Open gmn_ontology.ttl
+# 2. Locate the P70.3 property definition (approximately line 320)
+# 3. Insert the content below AFTER the P70.3 definition
+# 4. Ensure proper spacing and formatting
+# 5. Verify all prefixes are declared at the top of the file
+
+# ===========================================================================
+# COPY FROM HERE
+# ===========================================================================
+
+# Property: P70.4 documents seller's procurator
+gmn:P70_4_documents_sellers_procurator
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.4 documents seller's procurator"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with the person named as the procurator (legal representative) for the seller. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P9_consists_of > E7_Activity > P14_carried_out_by > E21_Person (procurator), with P17_was_motivated_by linking to the seller (E21_Person). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The transformation creates an E7_Activity node that explicitly links the procurator to the seller they represent via P17_was_motivated_by."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by, cidoc:P17_was_motivated_by .
+
+# ===========================================================================
+# COPY TO HERE
+# ===========================================================================
+
+# VERIFICATION CHECKLIST:
+# [ ] All periods and semicolons are correctly placed
+# [ ] Property URI is unique (no duplicates in file)
+# [ ] Prefixes used (gmn:, cidoc:, rdfs:, owl:, rdf:, dcterms:) are declared
+# [ ] rdfs:label has language tag @en
+# [ ] rdfs:comment has language tag @en
+# [ ] dcterms:created has proper xsd:date format
+# [ ] rdfs:seeAlso references are comma-separated (no semicolon at end)
+# [ ] Domain is gmn:E31_2_Sales_Contract
+# [ ] Range is cidoc:E21_Person
+# [ ] Super-property is cidoc:P70_documents
+
+# CONTEXTUAL PLACEMENT:
+# This property should appear in the sequence:
+# - P70.1 documents seller
+# - P70.2 documents buyer
+# - P70.3 documents transfer of
+# - P70.4 documents seller's procurator  <-- INSERT HERE
+# - P70.5 documents buyer's procurator
+# - P70.6 documents seller's guarantor
+# - ... (remaining P70 properties)
+
+# REQUIRED PREFIX DECLARATIONS (should already exist at top of file):
+# @prefix gmn: <http://genizah.org/ontology/> .
+# @prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+# @prefix owl: <http://www.w3.org/2002/07/owl#> .
+# @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+# @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+# @prefix dcterms: <http://purl.org/dc/terms/> .
+# @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# TESTING AFTER ADDITION:
+# Run syntax validation:
+#   rapper -i turtle -o turtle gmn_ontology.ttl > /dev/null
+#
+# Expected: No errors
+# If errors occur, check for:
+# - Missing periods at end of property definition
+# - Misspelled prefix names
+# - Missing prefix declarations
+# - Incorrect indentation (though not syntactically required)
+
+# SEMANTIC NOTES:
+# - This property is a shortcut/convenience property
+# - It represents a complex CIDOC-CRM path in a single triple
+# - The transformation script expands it to full CIDOC-CRM compliance
+# - The E7_Activity created includes:
+#   * P14_carried_out_by → E21_Person (procurator)
+#   * P14.1_in_the_role_of → E55_Type (AAT:agent)
+#   * P17_was_motivated_by → E21_Person (seller)
+
+# RELATED PROPERTIES:
+# - gmn:P70_1_documents_seller (the principal)
+# - gmn:P70_5_documents_buyers_procurator (parallel structure for buyer)
+# - gmn:P70_6_documents_sellers_guarantor (different role, similar structure)
+
+# AAT REFERENCE:
+# Role type: http://vocab.getty.edu/page/aat/300025972 (agent)
+
+# EXAMPLE USAGE IN DATA:
+# contract:001
+#     a gmn:E31_2_Sales_Contract ;
+#     gmn:P70_1_documents_seller person:seller001 ;
+#     gmn:P70_4_documents_sellers_procurator person:procurator001 .
+
+# VERSION INFO:
+# Property created: 2025-10-17
+# File version: 1.0
+# Last updated: October 2025
