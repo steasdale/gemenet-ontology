@@ -1,0 +1,656 @@
+# GMN P70.2 Documents Buyer: Documentation Additions
+# Examples and tables to add to the main documentation text file
+
+================================================================================
+SECTION 1: PROPERTY DESCRIPTION FOR MAIN DOCUMENTATION
+================================================================================
+
+Add this section to your main documentation after P70.1 documents seller:
+
+--------------------------------------------------------------------------------
+
+### P70.2 documents buyer
+
+**GMN Property:** `gmn:P70_2_documents_buyer`  
+**Label:** "P70.2 documents buyer"  
+**Domain:** `gmn:E31_2_Sales_Contract`  
+**Range:** `cidoc:E21_Person`  
+**Cardinality:** Multiple (0..n)  
+**Created:** 2025-10-17
+
+#### Definition
+
+Simplified property for associating a sales contract document with the person or 
+persons named as buyer(s). The buyer is the party receiving ownership rights of 
+the property, object, or (in historical contexts) person being transferred 
+through the documented acquisition event.
+
+#### Purpose
+
+This property provides a convenient shorthand for data entry, abstracting the 
+complex CIDOC-CRM structure of document-event-participation relationships. It 
+should be transformed into the full CIDOC-CRM representation for formal 
+compliance and semantic reasoning.
+
+#### CIDOC-CRM Transformation Path
+
+```
+E31_Document (Sales Contract)
+  └─ P70_documents
+      └─ E8_Acquisition
+          └─ P22_transferred_title_to
+              └─ E21_Person (Buyer)
+```
+
+The property transforms from a direct document-person relationship to the full 
+CIDOC-CRM path that properly represents the buyer's role in the acquisition 
+event documented by the contract.
+
+#### Usage Notes
+
+- **Multiple Buyers:** Supports arrays for joint purchases by multiple individuals
+- **Integration:** Works with P70_1 (seller) and P70_3 (transfer of) to document 
+  complete transactions
+- **Roles:** Distinguished from P70_5 (buyer's procurator), P70_7 (buyer's 
+  guarantor), and P70_9 (payment provider)
+- **Type:** Automatically assigns `cidoc:E21_Person` type if not specified
+
+#### Related Properties
+
+- **gmn:P70_1_documents_seller** - Counterpart property for transferring party
+- **gmn:P70_3_documents_transfer_of** - Documents the property being acquired
+- **gmn:P70_5_documents_buyers_procurator** - Legal representative for buyer
+- **gmn:P70_7_documents_buyers_guarantor** - Security provider for buyer
+- **gmn:P70_9_documents_payment_provider_for_buyer** - Third-party payer
+
+--------------------------------------------------------------------------------
+
+
+================================================================================
+SECTION 2: PROPERTY REFERENCE TABLE
+================================================================================
+
+Add this row to your property reference table:
+
+| GMN Property | Label | CIDOC Path | Domain | Range | Mult. |
+|--------------|-------|------------|--------|-------|-------|
+| gmn:P70_2_documents_buyer | P70.2 documents buyer | P70→E8→P22→E21 | E31_2_Sales_Contract | E21_Person | 0..n |
+
+
+================================================================================
+SECTION 3: DETAILED USAGE EXAMPLES
+================================================================================
+
+Add these examples to your documentation's examples section:
+
+--------------------------------------------------------------------------------
+
+#### Example 1: Basic Property Sale with Single Buyer
+
+A straightforward property sale from one seller to one buyer in 16th century Venice.
+
+**Historical Context:**  
+1548-05-12, Venice. Giovanni Marcello sells a house in the San Polo parish to 
+Pietro Grimani.
+
+**GMN Representation:**
+
+```json
+{
+  "@context": {
+    "gmn": "http://example.org/gmn/",
+    "cidoc": "http://www.cidoc-crm.org/cidoc-crm/"
+  },
+  "@id": "ASV_NT_1548_05_12_001",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "gmn:P94i_2_has_enactment_date": "1548-05-12",
+  "gmn:P70_1_documents_seller": [
+    {
+      "@id": "person_giovanni_marcello",
+      "gmn:P1_1_has_name": "Giovanni Marcello",
+      "gmn:P1_3_has_patrilineal_name": "Marcello"
+    }
+  ],
+  "gmn:P70_2_documents_buyer": [
+    {
+      "@id": "person_pietro_grimani",
+      "gmn:P1_1_has_name": "Pietro Grimani",
+      "gmn:P1_3_has_patrilineal_name": "Grimani"
+    }
+  ],
+  "gmn:P70_3_documents_transfer_of": [
+    {
+      "@id": "building_san_polo_1548",
+      "@type": "gmn:E22_1_Building",
+      "cidoc:P3_has_note": "House in San Polo parish near the fish market"
+    }
+  ]
+}
+```
+
+**CIDOC-CRM Transformation:**
+
+```json
+{
+  "@id": "ASV_NT_1548_05_12_001",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "gmn:P94i_2_has_enactment_date": "1548-05-12",
+  "cidoc:P70_documents": [
+    {
+      "@id": "ASV_NT_1548_05_12_001/acquisition",
+      "@type": "cidoc:E8_Acquisition",
+      "cidoc:P23_transferred_title_from": [
+        {
+          "@id": "person_giovanni_marcello",
+          "@type": "cidoc:E21_Person",
+          "gmn:P1_1_has_name": "Giovanni Marcello",
+          "gmn:P1_3_has_patrilineal_name": "Marcello"
+        }
+      ],
+      "cidoc:P22_transferred_title_to": [
+        {
+          "@id": "person_pietro_grimani",
+          "@type": "cidoc:E21_Person",
+          "gmn:P1_1_has_name": "Pietro Grimani",
+          "gmn:P1_3_has_patrilineal_name": "Grimani"
+        }
+      ],
+      "cidoc:P24_transferred_title_of": [
+        {
+          "@id": "building_san_polo_1548",
+          "@type": "gmn:E22_1_Building",
+          "cidoc:P3_has_note": "House in San Polo parish near the fish market"
+        }
+      ]
+    }
+  ]
+}
+```
+
+--------------------------------------------------------------------------------
+
+#### Example 2: Joint Purchase by Multiple Buyers
+
+Two brothers jointly purchasing property from a single seller.
+
+**Historical Context:**  
+1565-08-22, Venice. Antonio Neri sells a house to Marco and Alvise Contarini 
+(brothers).
+
+**GMN Representation:**
+
+```json
+{
+  "@id": "ASV_NT_1565_08_22_003",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "gmn:P94i_2_has_enactment_date": "1565-08-22",
+  "gmn:P70_1_documents_seller": [
+    {
+      "@id": "person_antonio_neri",
+      "gmn:P1_1_has_name": "Antonio Neri"
+    }
+  ],
+  "gmn:P70_2_documents_buyer": [
+    {
+      "@id": "person_marco_contarini",
+      "gmn:P1_1_has_name": "Marco Contarini",
+      "gmn:P1_3_has_patrilineal_name": "Contarini",
+      "cidoc:P3_has_note": "Brother of Alvise"
+    },
+    {
+      "@id": "person_alvise_contarini",
+      "gmn:P1_1_has_name": "Alvise Contarini",
+      "gmn:P1_3_has_patrilineal_name": "Contarini",
+      "cidoc:P3_has_note": "Brother of Marco"
+    }
+  ],
+  "gmn:P70_3_documents_transfer_of": [
+    {
+      "@id": "building_dorsoduro_1565",
+      "@type": "gmn:E22_1_Building"
+    }
+  ]
+}
+```
+
+**Analysis:**  
+The shared patrilineal name "Contarini" and mutual references in notes indicate 
+a family relationship. Both brothers receive equal ownership rights through the 
+joint purchase.
+
+--------------------------------------------------------------------------------
+
+#### Example 3: Buyer Acting Through Procurator
+
+A buyer using a legal representative (procurator) to conduct the transaction.
+
+**Historical Context:**  
+1572-03-15, Venice. Lorenzo Morosini, acting through his procurator Andrea Venier, 
+purchases a shop from Giacomo Foscarini.
+
+**GMN Representation:**
+
+```json
+{
+  "@id": "ASV_NT_1572_03_15_007",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "gmn:P94i_2_has_enactment_date": "1572-03-15",
+  "gmn:P70_1_documents_seller": [
+    {
+      "@id": "person_giacomo_foscarini",
+      "gmn:P1_1_has_name": "Giacomo Foscarini"
+    }
+  ],
+  "gmn:P70_2_documents_buyer": [
+    {
+      "@id": "person_lorenzo_morosini",
+      "gmn:P1_1_has_name": "Lorenzo Morosini",
+      "gmn:P1_3_has_patrilineal_name": "Morosini"
+    }
+  ],
+  "gmn:P70_5_documents_buyers_procurator": [
+    {
+      "@id": "person_andrea_venier",
+      "gmn:P1_1_has_name": "Andrea Venier",
+      "cidoc:P3_has_note": "Acting as procurator for Lorenzo Morosini"
+    }
+  ],
+  "gmn:P70_3_documents_transfer_of": [
+    {
+      "@id": "shop_rialto_1572",
+      "@type": "gmn:E22_1_Building",
+      "cidoc:P3_has_note": "Shop near the Rialto bridge"
+    }
+  ]
+}
+```
+
+**Analysis:**  
+Lorenzo Morosini is the buyer who receives ownership (P22_transferred_title_to), 
+while Andrea Venier is the procurator who physically conducts the transaction on 
+Lorenzo's behalf. The CIDOC-CRM transformation creates separate structures for 
+the buyer's ownership and the procurator's activity, linking them via 
+P17_was_motivated_by.
+
+--------------------------------------------------------------------------------
+
+#### Example 4: Complex Transaction with Multiple Supporting Roles
+
+A transaction involving buyer, buyer's guarantor, and payment provider.
+
+**Historical Context:**  
+1580-11-08, Venice. Francesco Giusti purchases a house from Paolo Contarini, with 
+Giovanni Vendramin as guarantor and Matteo Barbaro providing the payment funds.
+
+**GMN Representation:**
+
+```json
+{
+  "@id": "ASV_NT_1580_11_08_012",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "gmn:P94i_2_has_enactment_date": "1580-11-08",
+  "gmn:P70_1_documents_seller": [
+    {
+      "@id": "person_paolo_contarini",
+      "gmn:P1_1_has_name": "Paolo Contarini"
+    }
+  ],
+  "gmn:P70_2_documents_buyer": [
+    {
+      "@id": "person_francesco_giusti",
+      "gmn:P1_1_has_name": "Francesco Giusti",
+      "gmn:P1_3_has_patrilineal_name": "Giusti",
+      "gmn:P102_1_has_title": "Merchant"
+    }
+  ],
+  "gmn:P70_7_documents_buyers_guarantor": [
+    {
+      "@id": "person_giovanni_vendramin",
+      "gmn:P1_1_has_name": "Giovanni Vendramin",
+      "cidoc:P3_has_note": "Guarantor for Francesco Giusti"
+    }
+  ],
+  "gmn:P70_9_documents_payment_provider_for_buyer": [
+    {
+      "@id": "person_matteo_barbaro",
+      "gmn:P1_1_has_name": "Matteo Barbaro",
+      "cidoc:P3_has_note": "Provided payment funds on behalf of Francesco Giusti"
+    }
+  ],
+  "gmn:P70_3_documents_transfer_of": [
+    {
+      "@id": "house_san_marco_1580",
+      "@type": "gmn:E22_1_Building"
+    }
+  ]
+}
+```
+
+**Role Distinctions:**
+- **Francesco Giusti (Buyer):** Receives ownership of the property
+- **Giovanni Vendramin (Guarantor):** Provides security for the transaction
+- **Matteo Barbaro (Payment Provider):** Supplies the actual funds
+
+Each role creates a separate E7_Activity within the E8_Acquisition, all linked 
+to Francesco Giusti via P17_was_motivated_by.
+
+--------------------------------------------------------------------------------
+
+
+================================================================================
+SECTION 4: PROPERTY COMPARISON TABLE
+================================================================================
+
+Add this comparison table to clarify role distinctions:
+
+**Table: Buyer and Related Roles in Sales Transactions**
+
+| Property | Role | Legal Relationship | Ownership | Financial Obligation | CIDOC Path |
+|----------|------|-------------------|-----------|---------------------|------------|
+| P70.2 documents buyer | Principal party | Acquires property | Receives title | Primary debtor | P70→E8→P22→E21 |
+| P70.5 documents buyer's procurator | Legal representative | Acts for buyer | None | None | P70→E8→P9→E7→P14→E21 (P17→buyer) |
+| P70.7 documents buyer's guarantor | Security provider | Guarantees buyer | None | Contingent liability | P70→E8→P9→E7→P14→E21 (P17→buyer) |
+| P70.9 documents payment provider | Financial supporter | Provides funds | None | Supplies payment | P70→E8→P9→E7→P14→E21 (P17→buyer) |
+
+
+================================================================================
+SECTION 5: TRANSFORMATION EXAMPLES WITH COMMENTS
+================================================================================
+
+Add these annotated transformation examples:
+
+--------------------------------------------------------------------------------
+
+**Transformation Walkthrough: Single Buyer**
+
+**Step 1: Input Data (GMN)**
+```json
+{
+  "@id": "contract_example",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "gmn:P70_2_documents_buyer": [
+    {
+      "@id": "person_buyer",
+      "gmn:P1_1_has_name": "Pietro Grimani"
+    }
+  ]
+}
+```
+
+**Step 2: Check for Existing Acquisition**
+No `cidoc:P70_documents` exists, so create new E8_Acquisition node:
+```
+URI: contract_example/acquisition
+Type: cidoc:E8_Acquisition
+```
+
+**Step 3: Initialize P22 Array**
+Create `cidoc:P22_transferred_title_to` array in acquisition.
+
+**Step 4: Process Buyer**
+- Copy buyer object
+- Ensure type is `cidoc:E21_Person`
+- Add to P22 array
+
+**Step 5: Clean Up**
+Remove original `gmn:P70_2_documents_buyer` property.
+
+**Step 6: Output (CIDOC-CRM)**
+```json
+{
+  "@id": "contract_example",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "cidoc:P70_documents": [
+    {
+      "@id": "contract_example/acquisition",
+      "@type": "cidoc:E8_Acquisition",
+      "cidoc:P22_transferred_title_to": [
+        {
+          "@id": "person_buyer",
+          "@type": "cidoc:E21_Person",
+          "gmn:P1_1_has_name": "Pietro Grimani"
+        }
+      ]
+    }
+  ]
+}
+```
+
+--------------------------------------------------------------------------------
+
+
+================================================================================
+SECTION 6: FREQUENTLY ASKED QUESTIONS (FAQ)
+================================================================================
+
+Add this FAQ section to help users understand the property:
+
+--------------------------------------------------------------------------------
+
+**Q: Can a contract have multiple buyers?**
+
+A: Yes. The property accepts arrays and supports joint purchases by multiple 
+individuals. Each buyer receives equal representation in the P22_transferred_title_to 
+array.
+
+**Q: What's the difference between a buyer and a buyer's procurator?**
+
+A: The buyer (P70.2) is the person who receives ownership rights. The buyer's 
+procurator (P70.5) is a legal representative who acts on the buyer's behalf but 
+does not receive ownership. In CIDOC-CRM, the buyer appears in P22_transferred_title_to, 
+while the procurator appears in a separate E7_Activity linked to the buyer via 
+P17_was_motivated_by.
+
+**Q: Can the same person be both buyer and seller?**
+
+A: While technically possible in the data structure, this would be highly unusual 
+in real transactions. If your data contains such cases, verify the accuracy of 
+the source document or consider whether a different transaction type is more 
+appropriate.
+
+**Q: How do I handle anonymous buyers?**
+
+A: Use a blank node or generated URI with whatever identifying information is 
+available (e.g., "unknown buyer", "unnamed merchant"). The minimal structure 
+requires only an @id and @type.
+
+**Q: What if the buyer's name is unclear or partially illegible?**
+
+A: Record what you can read in `gmn:P1_1_has_name` and use `cidoc:P3_has_note` 
+to indicate uncertainty: "Name partially illegible: possibly 'Gio[???]ni Mar[???]o'".
+
+**Q: Should I include the buyer's title or profession?**
+
+A: Yes, if documented in the contract. Use `gmn:P102_1_has_title` for formal 
+titles and social roles.
+
+**Q: How do I link multiple contracts involving the same buyer?**
+
+A: Use the same person URI across all contracts. This allows querying for all 
+purchases by a specific individual and enables network analysis of transaction 
+patterns.
+
+--------------------------------------------------------------------------------
+
+
+================================================================================
+SECTION 7: QUERY PATTERNS
+================================================================================
+
+Add these SPARQL query patterns to your documentation:
+
+--------------------------------------------------------------------------------
+
+**Query 1: Find All Purchases by a Specific Person**
+
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?contract ?date ?property
+WHERE {
+  ?contract a gmn:E31_2_Sales_Contract ;
+            gmn:P70_2_documents_buyer <http://example.org/person_pietro_grimani> ;
+            gmn:P94i_2_has_enactment_date ?date .
+  
+  OPTIONAL {
+    ?contract gmn:P70_3_documents_transfer_of ?property
+  }
+}
+ORDER BY ?date
+```
+
+**Query 2: Identify Joint Purchases (Multiple Buyers)**
+
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+
+SELECT ?contract (COUNT(?buyer) as ?num_buyers) 
+       (GROUP_CONCAT(?name; separator=" & ") as ?buyers)
+WHERE {
+  ?contract a gmn:E31_2_Sales_Contract ;
+            gmn:P70_2_documents_buyer ?buyer .
+  
+  OPTIONAL { ?buyer gmn:P1_1_has_name ?name }
+}
+GROUP BY ?contract
+HAVING (COUNT(?buyer) > 1)
+ORDER BY DESC(?num_buyers)
+```
+
+**Query 3: Find Family Transactions (Shared Patrilineal Names)**
+
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+
+SELECT ?patrilineal_name ?contract 
+       (GROUP_CONCAT(?buyer_name; separator=", ") as ?family_members)
+WHERE {
+  ?contract gmn:P70_2_documents_buyer ?buyer .
+  ?buyer gmn:P1_3_has_patrilineal_name ?patrilineal_name ;
+         gmn:P1_1_has_name ?buyer_name .
+}
+GROUP BY ?patrilineal_name ?contract
+HAVING (COUNT(?buyer) > 1)
+```
+
+**Query 4: Buyer Statistics by Time Period**
+
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+
+SELECT (YEAR(?date) as ?year) (COUNT(DISTINCT ?buyer) as ?unique_buyers)
+WHERE {
+  ?contract a gmn:E31_2_Sales_Contract ;
+            gmn:P94i_2_has_enactment_date ?date ;
+            gmn:P70_2_documents_buyer ?buyer .
+}
+GROUP BY YEAR(?date)
+ORDER BY ?year
+```
+
+--------------------------------------------------------------------------------
+
+
+================================================================================
+SECTION 8: VALIDATION RULES
+================================================================================
+
+Add these validation rules to your data quality section:
+
+--------------------------------------------------------------------------------
+
+**Data Quality Checks for P70.2 Documents Buyer**
+
+1. **Structural Validation**
+   - [ ] Property value is an array (not a single object)
+   - [ ] Array elements are either objects or string URIs
+   - [ ] Each buyer object has an @id property
+   - [ ] No null or undefined values in array
+
+2. **Type Validation**
+   - [ ] Buyer type is cidoc:E21_Person (or subclass)
+   - [ ] Not using E39_Actor or E74_Group inappropriately
+   - [ ] Proper use of person classes vs. organization classes
+
+3. **Consistency Validation**
+   - [ ] Same buyer not listed multiple times in same contract
+   - [ ] Buyer is not also listed as seller (in most cases)
+   - [ ] Person URI is consistent across multiple documents
+   - [ ] Name spelling is consistent for same person
+
+4. **Completeness Validation**
+   - [ ] All buyers mentioned in contract text are recorded
+   - [ ] Buyer has at least a name or identifying description
+   - [ ] Related roles (procurators, guarantors) are also documented
+
+5. **Historical Accuracy**
+   - [ ] Names match source document orthography
+   - [ ] Titles and roles are historically appropriate
+   - [ ] Family relationships are accurately represented
+   - [ ] Notes cite source document where ambiguous
+
+--------------------------------------------------------------------------------
+
+
+================================================================================
+SECTION 9: HISTORICAL CONTEXT NOTES
+================================================================================
+
+Add this historical context section:
+
+--------------------------------------------------------------------------------
+
+**Historical Context: Buyers in Venetian Sales Contracts**
+
+**Buyer Identification**
+
+In Venetian notarial contracts, buyers were typically identified by:
+- Personal name (e.g., "Giovanni")
+- Patrilineal family name (e.g., "Marcello")
+- Patronymic (e.g., "son of Pietro")
+- Title or social role (e.g., "merchant", "nobleman", "procurator")
+- Parish or neighborhood (e.g., "of San Marco")
+
+**Joint Purchases**
+
+Joint purchases were common among:
+- Siblings dividing inherited wealth
+- Business partners acquiring commercial property
+- Family members pooling resources
+- Multiple heirs purchasing together
+
+**Legal Representatives**
+
+Buyers often acted through procurators when:
+- Physically absent from Venice (e.g., traveling)
+- Of high social status (delegating routine transactions)
+- Female (restricted from some legal acts)
+- Minor (represented by guardian)
+
+**Payment Arrangements**
+
+Payment providers were used when:
+- Family member supported purchase (e.g., parent for child)
+- Business partner provided capital
+- Creditor settled debt through property
+- Dowry funds were applied to purchase
+
+**Social Networks**
+
+Analysis of buyer patterns can reveal:
+- Family property accumulation strategies
+- Business partnership networks
+- Neighborhood concentration of families
+- Social mobility through property acquisition
+- Marriage alliance property transfers
+
+--------------------------------------------------------------------------------
+
+
+================================================================================
+END OF DOCUMENT ADDITIONS FILE
+================================================================================
+
+These sections can be copied directly into your main documentation file,
+adapted to match your documentation style and formatting preferences.

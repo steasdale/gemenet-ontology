@@ -1,0 +1,262 @@
+# GMN Ontology TTL Additions: P70.2 Documents Buyer
+# Ready-to-copy TTL snippets for gmn_ontology.ttl
+
+# =============================================================================
+# PROPERTY DEFINITION - P70.2 DOCUMENTS BUYER
+# =============================================================================
+# Location: Add this in the P70 properties section, after P70.1 documents seller
+# =============================================================================
+
+# Property: P70.2 documents buyer
+gmn:P70_2_documents_buyer
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.2 documents buyer"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with the person named as the buyer. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P22_transferred_title_to > E21_Person. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The buyer is the party receiving ownership of the property being sold."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P22_transferred_title_to .
+
+# =============================================================================
+# REQUIRED NAMESPACE PREFIXES
+# =============================================================================
+# Ensure these prefixes are declared at the top of your ontology file:
+# =============================================================================
+
+@prefix gmn: <http://example.org/gmn/> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+# =============================================================================
+# VALIDATION NOTES
+# =============================================================================
+# 
+# 1. INDENTATION: Use 4 spaces for each indentation level
+# 
+# 2. PUNCTUATION:
+#    - Each line ends with `;` (semicolon)
+#    - Last line ends with `.` (period)
+# 
+# 3. PLACEMENT:
+#    - Add after gmn:P70_1_documents_seller definition
+#    - Before gmn:P70_3_documents_transfer_of definition
+#    - Keep P70 properties together in numerical order
+# 
+# 4. DEPENDENCIES:
+#    - Requires cidoc:P70_documents to be defined
+#    - Requires cidoc:E21_Person to be defined
+#    - Requires gmn:E31_2_Sales_Contract to be defined
+# 
+# 5. VALIDATION:
+#    - Run TTL syntax validator after adding
+#    - Check that all referenced properties/classes exist
+#    - Verify proper namespace prefixes
+# 
+# =============================================================================
+
+# =============================================================================
+# EXAMPLE USAGE IN DATA
+# =============================================================================
+
+# Example 1: Single Buyer
+# -----------------------
+:contract_example_001
+    a gmn:E31_2_Sales_Contract ;
+    gmn:P70_2_documents_buyer [
+        a cidoc:E21_Person ;
+        gmn:P1_1_has_name "Giovanni Marcello"
+    ] .
+
+# Example 2: Multiple Buyers (Joint Purchase)
+# -------------------------------------------
+:contract_example_002
+    a gmn:E31_2_Sales_Contract ;
+    gmn:P70_2_documents_buyer 
+        [
+            a cidoc:E21_Person ;
+            gmn:P1_1_has_name "Marco Contarini" ;
+            gmn:P1_3_has_patrilineal_name "Contarini"
+        ] ,
+        [
+            a cidoc:E21_Person ;
+            gmn:P1_1_has_name "Alvise Contarini" ;
+            gmn:P1_3_has_patrilineal_name "Contarini"
+        ] .
+
+# Example 3: Buyer with URI Reference
+# -----------------------------------
+:contract_example_003
+    a gmn:E31_2_Sales_Contract ;
+    gmn:P70_2_documents_buyer :person_pietro_grimani .
+
+:person_pietro_grimani
+    a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Pietro Grimani" ;
+    gmn:P1_3_has_patrilineal_name "Grimani" .
+
+# Example 4: Complete Sales Transaction
+# -------------------------------------
+:contract_example_004
+    a gmn:E31_2_Sales_Contract ;
+    gmn:P94i_2_has_enactment_date "1548-05-12"^^xsd:date ;
+    gmn:P70_1_documents_seller [
+        a cidoc:E21_Person ;
+        gmn:P1_1_has_name "Antonio Neri"
+    ] ;
+    gmn:P70_2_documents_buyer [
+        a cidoc:E21_Person ;
+        gmn:P1_1_has_name "Francesco Giusti"
+    ] ;
+    gmn:P70_3_documents_transfer_of [
+        a gmn:E22_1_Building ;
+        cidoc:P3_has_note "House in San Polo parish"
+    ] .
+
+# =============================================================================
+# EXPECTED TRANSFORMATION OUTPUT (CIDOC-CRM)
+# =============================================================================
+# After transformation, the above examples should become:
+# =============================================================================
+
+# Transformed Example 1:
+# ---------------------
+:contract_example_001
+    a gmn:E31_2_Sales_Contract ;
+    cidoc:P70_documents [
+        a cidoc:E8_Acquisition ;
+        cidoc:P22_transferred_title_to [
+            a cidoc:E21_Person ;
+            gmn:P1_1_has_name "Giovanni Marcello"
+        ]
+    ] .
+
+# Transformed Example 2:
+# ---------------------
+:contract_example_002
+    a gmn:E31_2_Sales_Contract ;
+    cidoc:P70_documents [
+        a cidoc:E8_Acquisition ;
+        cidoc:P22_transferred_title_to 
+            [
+                a cidoc:E21_Person ;
+                gmn:P1_1_has_name "Marco Contarini" ;
+                gmn:P1_3_has_patrilineal_name "Contarini"
+            ] ,
+            [
+                a cidoc:E21_Person ;
+                gmn:P1_1_has_name "Alvise Contarini" ;
+                gmn:P1_3_has_patrilineal_name "Contarini"
+            ]
+    ] .
+
+# Transformed Example 3:
+# ---------------------
+:contract_example_003
+    a gmn:E31_2_Sales_Contract ;
+    cidoc:P70_documents [
+        a cidoc:E8_Acquisition ;
+        cidoc:P22_transferred_title_to :person_pietro_grimani
+    ] .
+
+:person_pietro_grimani
+    a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Pietro Grimani" ;
+    gmn:P1_3_has_patrilineal_name "Grimani" .
+
+# Transformed Example 4:
+# ---------------------
+:contract_example_004
+    a gmn:E31_2_Sales_Contract ;
+    gmn:P94i_2_has_enactment_date "1548-05-12"^^xsd:date ;
+    cidoc:P70_documents [
+        a cidoc:E8_Acquisition ;
+        cidoc:P23_transferred_title_from [
+            a cidoc:E21_Person ;
+            gmn:P1_1_has_name "Antonio Neri"
+        ] ;
+        cidoc:P22_transferred_title_to [
+            a cidoc:E21_Person ;
+            gmn:P1_1_has_name "Francesco Giusti"
+        ] ;
+        cidoc:P24_transferred_title_of [
+            a gmn:E22_1_Building ;
+            cidoc:P3_has_note "House in San Polo parish"
+        ]
+    ] .
+
+# =============================================================================
+# INTEGRATION CHECKLIST
+# =============================================================================
+# 
+# Before adding this property to your ontology:
+# 
+# [ ] 1. Verify all namespace prefixes are declared
+# [ ] 2. Confirm gmn:E31_2_Sales_Contract class exists
+# [ ] 3. Confirm cidoc:E21_Person class is imported
+# [ ] 4. Confirm cidoc:P70_documents property is available
+# [ ] 5. Check that property URI doesn't conflict with existing properties
+# [ ] 6. Add property in correct numerical order (after P70.1, before P70.3)
+# [ ] 7. Run TTL syntax validator
+# [ ] 8. Update transformation script (see documents-buyer-transform.py)
+# [ ] 9. Update documentation with new property
+# [ ] 10. Create test data for validation
+# 
+# =============================================================================
+
+# =============================================================================
+# RELATED PROPERTIES TO CONSIDER
+# =============================================================================
+# When implementing P70.2, you may also want to implement:
+# 
+# - gmn:P70_1_documents_seller (counterpart - transferring party)
+# - gmn:P70_3_documents_transfer_of (object being acquired)
+# - gmn:P70_5_documents_buyers_procurator (buyer's legal representative)
+# - gmn:P70_7_documents_buyers_guarantor (buyer's security provider)
+# - gmn:P70_9_documents_payment_provider_for_buyer (third-party payer)
+# - gmn:P70_16_documents_sale_price_amount (transaction value)
+# - gmn:P70_17_documents_sale_price_currency (price currency)
+# 
+# =============================================================================
+
+# =============================================================================
+# QUERIES FOR TESTING
+# =============================================================================
+
+# Test Query 1: Find all buyers
+# ----------------------------
+# SELECT ?contract ?buyer ?name
+# WHERE {
+#   ?contract a gmn:E31_2_Sales_Contract ;
+#             gmn:P70_2_documents_buyer ?buyer .
+#   OPTIONAL { ?buyer gmn:P1_1_has_name ?name }
+# }
+
+# Test Query 2: Find joint purchases
+# ---------------------------------
+# SELECT ?contract (COUNT(?buyer) as ?num_buyers)
+# WHERE {
+#   ?contract a gmn:E31_2_Sales_Contract ;
+#             gmn:P70_2_documents_buyer ?buyer .
+# }
+# GROUP BY ?contract
+# HAVING (COUNT(?buyer) > 1)
+
+# Test Query 3: Validate buyer-seller distinction
+# ----------------------------------------------
+# SELECT ?contract ?person
+# WHERE {
+#   ?contract a gmn:E31_2_Sales_Contract ;
+#             gmn:P70_1_documents_seller ?person ;
+#             gmn:P70_2_documents_buyer ?person .
+# }
+# COMMENT: Should return no results in normal cases
+
+# =============================================================================
+# END OF TTL ADDITIONS FILE
+# =============================================================================
