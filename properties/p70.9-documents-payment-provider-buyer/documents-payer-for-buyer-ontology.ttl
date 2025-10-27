@@ -1,0 +1,232 @@
+# TTL Additions for P70.9 Documents Payment Provider for Buyer
+# Ready-to-copy Turtle snippets for gmn_ontology.ttl
+
+# =============================================================================
+# PROPERTY DEFINITION
+# =============================================================================
+
+# Property: P70.9 documents payment provider for buyer
+gmn:P70_9_documents_payment_provider_for_buyer
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.9 documents payment provider for buyer"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with a third party who provides the payment (funds) on behalf of the buyer. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P9_consists_of > E7_Activity > P14_carried_out_by > E21_Person (payment provider), with P17_was_motivated_by linking to the buyer (E21_Person). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. Unlike procurators (legal representatives), guarantors (security providers), or brokers (facilitators), payment providers are third parties who supply the actual funds for the purchase on behalf of the buyer, often in situations involving family members, business partners, or creditors."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by, cidoc:P17_was_motivated_by .
+
+# =============================================================================
+# NAMESPACE DECLARATIONS (verify these exist at top of file)
+# =============================================================================
+
+@prefix gmn: <https://w3id.org/geniza/ontology/> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# =============================================================================
+# USAGE EXAMPLE: Single Payment Provider
+# =============================================================================
+
+# A sales contract where Pietro Bianchi provides payment for his son Marco
+<https://example.org/contract/SalesContract_1456> 
+    a gmn:E31_2_Sales_Contract ;
+    rdfs:label "Sale of House to Marco Bianchi"@en ;
+    gmn:P70_1_documents_seller <https://example.org/person/Giovanni_Rossi> ;
+    gmn:P70_2_documents_buyer <https://example.org/person/Marco_Bianchi> ;
+    gmn:P70_9_documents_payment_provider_for_buyer <https://example.org/person/Pietro_Bianchi> .
+
+<https://example.org/person/Giovanni_Rossi> 
+    a cidoc:E21_Person ;
+    rdfs:label "Giovanni Rossi"@en .
+
+<https://example.org/person/Marco_Bianchi> 
+    a cidoc:E21_Person ;
+    rdfs:label "Marco Bianchi"@en .
+
+<https://example.org/person/Pietro_Bianchi> 
+    a cidoc:E21_Person ;
+    rdfs:label "Pietro Bianchi"@en ;
+    rdfs:comment "Father of the buyer, provides payment"@en .
+
+# =============================================================================
+# USAGE EXAMPLE: Multiple Payment Providers
+# =============================================================================
+
+# A sales contract with two payment providers sharing the cost
+<https://example.org/contract/SalesContract_2045> 
+    a gmn:E31_2_Sales_Contract ;
+    rdfs:label "Sale of Vineyard to Francesco Alberti"@en ;
+    gmn:P70_2_documents_buyer <https://example.org/person/Francesco_Alberti> ;
+    gmn:P70_9_documents_payment_provider_for_buyer 
+        <https://example.org/person/Lorenzo_Pazzi> ,
+        <https://example.org/person/Cosimo_Rucellai> .
+
+<https://example.org/person/Francesco_Alberti> 
+    a cidoc:E21_Person ;
+    rdfs:label "Francesco Alberti"@en .
+
+<https://example.org/person/Lorenzo_Pazzi> 
+    a cidoc:E21_Person ;
+    rdfs:label "Lorenzo Pazzi"@en ;
+    rdfs:comment "Creditor providing partial payment"@en .
+
+<https://example.org/person/Cosimo_Rucellai> 
+    a cidoc:E21_Person ;
+    rdfs:label "Cosimo Rucellai"@en ;
+    rdfs:comment "Creditor providing partial payment"@en .
+
+# =============================================================================
+# FULL CIDOC-CRM TRANSFORMATION EXAMPLE
+# =============================================================================
+
+# The transformed structure after applying gmn_to_cidoc_transform.py
+# (This shows what the shortcut expands to)
+
+<https://example.org/contract/SalesContract_1456> 
+    a gmn:E31_2_Sales_Contract ;
+    rdfs:label "Sale of House to Marco Bianchi"@en ;
+    cidoc:P70_documents <https://example.org/contract/SalesContract_1456/acquisition> .
+
+<https://example.org/contract/SalesContract_1456/acquisition> 
+    a cidoc:E8_Acquisition ;
+    cidoc:P22_transferred_title_to <https://example.org/person/Marco_Bianchi> ;
+    cidoc:P23_transferred_title_from <https://example.org/person/Giovanni_Rossi> ;
+    cidoc:P9_consists_of <https://example.org/contract/SalesContract_1456/activity/payment_a7b3c4d2> .
+
+<https://example.org/contract/SalesContract_1456/activity/payment_a7b3c4d2> 
+    a cidoc:E7_Activity ;
+    cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300055984> ;  # financial transaction
+    cidoc:P14_carried_out_by <https://example.org/person/Pietro_Bianchi> ;
+    cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300386048> .  # payer
+
+<https://example.org/person/Pietro_Bianchi> 
+    a cidoc:E21_Person ;
+    rdfs:label "Pietro Bianchi"@en .
+
+<http://vocab.getty.edu/page/aat/300055984> 
+    a cidoc:E55_Type ;
+    rdfs:label "financial transactions"@en .
+
+<http://vocab.getty.edu/page/aat/300386048> 
+    a cidoc:E55_Type ;
+    rdfs:label "payers"@en .
+
+# =============================================================================
+# INTEGRATION WITH OTHER PROPERTIES
+# =============================================================================
+
+# Complete sales contract showing payment provider alongside other roles
+<https://example.org/contract/SalesContract_3456> 
+    a gmn:E31_2_Sales_Contract ;
+    rdfs:label "Complex Sale with Multiple Roles"@en ;
+    
+    # Main parties
+    gmn:P70_1_documents_seller <https://example.org/person/Seller_123> ;
+    gmn:P70_2_documents_buyer <https://example.org/person/Buyer_456> ;
+    
+    # Object and price
+    gmn:P70_3_documents_transfer_of <https://example.org/property/Building_789> ;
+    gmn:P70_16_documents_sale_price_amount "500"^^xsd:decimal ;
+    gmn:P70_17_documents_sale_price_currency <https://example.org/currency/Florin> ;
+    
+    # Supporting roles
+    gmn:P70_5_documents_buyers_procurator <https://example.org/person/Procurator_101> ;
+    gmn:P70_7_documents_buyers_guarantor <https://example.org/person/Guarantor_789> ;
+    gmn:P70_9_documents_payment_provider_for_buyer <https://example.org/person/Payer_202> ;
+    gmn:P70_8_documents_broker <https://example.org/person/Broker_303> .
+
+# =============================================================================
+# RELATED VOCABULARY TERMS (for reference)
+# =============================================================================
+
+# Getty AAT: Payer
+# URI: http://vocab.getty.edu/page/aat/300386048
+# Preferred Label: "payers" (English)
+# Scope: People or organizations that make payments
+
+# Getty AAT: Financial Transaction
+# URI: http://vocab.getty.edu/page/aat/300055984
+# Preferred Label: "financial transactions" (English)
+# Scope: Commercial or legal transactions involving monetary exchange
+
+# Getty AAT: Agent
+# URI: http://vocab.getty.edu/page/aat/300025972
+# Used for procurators who act as legal representatives
+
+# Getty AAT: Guarantor
+# URI: http://vocab.getty.edu/page/aat/300025614
+# Used for guarantors who provide security
+
+# Getty AAT: Broker
+# URI: http://vocab.getty.edu/page/aat/300025234
+# Used for brokers who facilitate transactions
+
+# =============================================================================
+# NOTES ON USAGE
+# =============================================================================
+
+# 1. Domain Constraint: This property can only be used with gmn:E31_2_Sales_Contract
+#    It should not be applied to other contract types.
+
+# 2. Range Constraint: The property range is cidoc:E21_Person
+#    For organizational payment providers, use P70.12 instead.
+
+# 3. Multiple Values: The property can have multiple values when payment
+#    is provided by several parties jointly.
+
+# 4. Transformation: The shortcut property should be transformed to the full
+#    CIDOC-CRM structure using the transform_p70_9 function in the Python script.
+
+# 5. Role Distinction: Payment providers are distinct from:
+#    - Procurators (legal representatives): use P70.5
+#    - Guarantors (security providers): use P70.7
+#    - Brokers (transaction facilitators): use P70.8
+#    - Payment recipients (on seller's side): use P70.10
+
+# 6. URI Generation: Activity URIs are generated using a hash of the
+#    payment provider URI to ensure uniqueness.
+
+# 7. Activity Type: The E7_Activity created during transformation is always
+#    typed as a financial transaction (AAT 300055984).
+
+# 8. Role Assignment: The payment provider always receives the role of
+#    "payer" (AAT 300386048) via P14.1_in_the_role_of.
+
+# =============================================================================
+# VALIDATION QUERIES
+# =============================================================================
+
+# SPARQL query to find all payment providers in sales contracts:
+# 
+# PREFIX gmn: <https://w3id.org/geniza/ontology/>
+# PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+# 
+# SELECT ?contract ?buyer ?paymentProvider
+# WHERE {
+#   ?contract a gmn:E31_2_Sales_Contract ;
+#             gmn:P70_2_documents_buyer ?buyer ;
+#             gmn:P70_9_documents_payment_provider_for_buyer ?paymentProvider .
+# }
+
+# SPARQL query to validate transformation:
+#
+# PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+# 
+# SELECT ?contract ?activity ?provider
+# WHERE {
+#   ?contract cidoc:P70_documents ?acquisition .
+#   ?acquisition cidoc:P9_consists_of ?activity .
+#   ?activity cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300055984> ;
+#             cidoc:P14_carried_out_by ?provider ;
+#             cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300386048> .
+# }
+
+# =============================================================================
+# END OF FILE
+# =============================================================================

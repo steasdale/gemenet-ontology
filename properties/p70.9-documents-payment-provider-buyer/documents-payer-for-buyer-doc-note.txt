@@ -1,0 +1,459 @@
+# Documentation Additions for P70.9 Documents Payment Provider for Buyer
+# Examples and tables to add to main documentation file
+
+================================================================================
+SECTION TO ADD: Sales Contract Properties Table
+================================================================================
+
+Add this row to the Sales Contract properties table:
+
+| Property | Label | Domain | Range | Description |
+|----------|-------|--------|-------|-------------|
+| gmn:P70_9_documents_payment_provider_for_buyer | P70.9 documents payment provider for buyer | E31_2_Sales_Contract | E21_Person | Third party who provides the payment (funds) on behalf of the buyer. Unlike procurators (legal representatives), guarantors (security providers), or brokers (facilitators), payment providers supply the actual funds for the purchase, often family members, business partners, or creditors. |
+
+================================================================================
+SECTION TO ADD: Property Definitions
+================================================================================
+
+### P70.9 documents payment provider for buyer
+
+**URI**: `gmn:P70_9_documents_payment_provider_for_buyer`
+
+**Label**: "P70.9 documents payment provider for buyer"@en
+
+**Domain**: `gmn:E31_2_Sales_Contract`
+
+**Range**: `cidoc:E21_Person`
+
+**Super-property**: `cidoc:P70_documents`
+
+**Definition**: Simplified property for associating a sales contract with a third party who provides the payment (funds) on behalf of the buyer.
+
+**CIDOC-CRM Path**:
+```
+E31_Document → P70_documents → E8_Acquisition → 
+  P9_consists_of → E7_Activity → 
+    P14_carried_out_by → E21_Person (payment provider)
+    P14.1_in_the_role_of → E55_Type (payer: AAT 300386048)
+    P2_has_type → E55_Type (financial transaction: AAT 300055984)
+```
+
+**Usage Notes**:
+- Use when a third party supplies the actual funds for a purchase
+- Distinct from procurators (legal representatives)
+- Distinct from guarantors (security providers)
+- Distinct from brokers (transaction facilitators)
+- Common scenarios: family support, business partnerships, creditor arrangements
+
+**Example**: Pietro Bianchi provides the funds for his son Marco's purchase of a house.
+
+================================================================================
+SECTION TO ADD: Transformation Patterns
+================================================================================
+
+### P70.9 Payment Provider Transformation
+
+**Input (Shortcut Property)**:
+```json
+{
+  "@id": "contract/123",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "gmn:P70_9_documents_payment_provider_for_buyer": [
+    {"@id": "person/456", "@type": "cidoc:E21_Person"}
+  ]
+}
+```
+
+**Output (Full CIDOC-CRM)**:
+```json
+{
+  "@id": "contract/123",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "cidoc:P70_documents": [{
+    "@id": "contract/123/acquisition",
+    "@type": "cidoc:E8_Acquisition",
+    "cidoc:P9_consists_of": [{
+      "@id": "contract/123/activity/payment_a7b3c4d2",
+      "@type": "cidoc:E7_Activity",
+      "cidoc:P2_has_type": {
+        "@id": "http://vocab.getty.edu/page/aat/300055984",
+        "@type": "cidoc:E55_Type"
+      },
+      "cidoc:P14_carried_out_by": [
+        {"@id": "person/456", "@type": "cidoc:E21_Person"}
+      ],
+      "cidoc:P14.1_in_the_role_of": {
+        "@id": "http://vocab.getty.edu/page/aat/300386048",
+        "@type": "cidoc:E55_Type"
+      }
+    }]
+  }]
+}
+```
+
+**Transformation Function**: `transform_p70_9_documents_payment_provider_for_buyer()`
+
+**Key Features**:
+- Creates E7_Activity typed as financial transaction
+- Links payment provider via P14_carried_out_by
+- Assigns payer role via P14.1_in_the_role_of
+- Supports multiple payment providers (each gets own activity)
+
+================================================================================
+SECTION TO ADD: Comparison Table for Payment-Related Properties
+================================================================================
+
+### Comparison of Payment and Support Roles in Sales Contracts
+
+| Property | Role | Function | Legal Authority | Financial Obligation | Typical Relationship |
+|----------|------|----------|-----------------|---------------------|---------------------|
+| P70.2 Buyer | Principal | Receives property | Yes | Direct | Party to contract |
+| P70.5 Buyer's Procurator | Representative | Acts for buyer | Yes | Per buyer | Legal agent |
+| P70.7 Buyer's Guarantor | Security Provider | Promises fulfillment | Conditional | Contingent | Surety/co-signer |
+| P70.8 Broker | Facilitator | Arranges transaction | No | None (receives commission) | Third-party intermediary |
+| **P70.9 Payment Provider** | **Fund Supplier** | **Provides payment** | **No** | **Direct payment** | **Family/partner/creditor** |
+| P70.12 Payment Organization | Payment Processor | Facilitates payment | No | Processing only | Financial institution |
+
+**Key Distinctions for P70.9**:
+- Supplies actual funds (not just legal authority like procurator)
+- Direct payment obligation (not contingent like guarantor)
+- Acts for buyer specifically (not both parties like broker)
+- Individual person (not organization like P70.12)
+
+================================================================================
+SECTION TO ADD: Use Case Examples
+================================================================================
+
+### Example 1: Family Support
+
+**Scenario**: A father provides funds for his son's land purchase.
+
+**Context**: Marco Bianchi wishes to purchase a vineyard from Giovanni Rossi. Marco's father, Pietro Bianchi, provides the 500 florins required for the purchase.
+
+**Contract Excerpt**: "...Marco Bianchi, son of Pietro, has purchased said vineyard, with payment provided by his father Pietro Bianchi..."
+
+**Data Entry**:
+```json
+{
+  "@id": "contract/456",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "gmn:P70_1_documents_seller": {"@id": "person/Giovanni_Rossi"},
+  "gmn:P70_2_documents_buyer": {"@id": "person/Marco_Bianchi"},
+  "gmn:P70_9_documents_payment_provider_for_buyer": [
+    {"@id": "person/Pietro_Bianchi"}
+  ],
+  "gmn:P70_16_documents_sale_price_amount": "500",
+  "gmn:P70_17_documents_sale_price_currency": {"@id": "currency/Florin"}
+}
+```
+
+### Example 2: Business Partnership
+
+**Scenario**: A merchant's business partner provides capital for a purchase.
+
+**Context**: Giovanni Medici purchases silk inventory from a foreign trader. His business partner Antonio Strozzi provides the capital for the transaction.
+
+**Contract Excerpt**: "...Giovanni Medici has acquired silk goods, with funds supplied by Antonio Strozzi, his business associate..."
+
+**Data Entry**:
+```json
+{
+  "@id": "contract/789",
+  "gmn:P70_2_documents_buyer": {"@id": "person/Giovanni_Medici"},
+  "gmn:P70_9_documents_payment_provider_for_buyer": [
+    {"@id": "person/Antonio_Strozzi"}
+  ]
+}
+```
+
+### Example 3: Multiple Payment Providers
+
+**Scenario**: A large purchase funded by multiple creditors.
+
+**Context**: Francesco Alberti purchases an estate. Two creditors, Lorenzo Pazzi and Cosimo Rucellai, jointly provide the funds.
+
+**Contract Excerpt**: "...Francesco Alberti has purchased the estate, with payment provided jointly by Lorenzo Pazzi and Cosimo Rucellai..."
+
+**Data Entry**:
+```json
+{
+  "@id": "contract/1011",
+  "gmn:P70_2_documents_buyer": {"@id": "person/Francesco_Alberti"},
+  "gmn:P70_9_documents_payment_provider_for_buyer": [
+    {"@id": "person/Lorenzo_Pazzi"},
+    {"@id": "person/Cosimo_Rucellai"}
+  ]
+}
+```
+
+### Example 4: Complex Transaction with Multiple Roles
+
+**Scenario**: A transaction involving procurator, guarantor, and payment provider.
+
+**Context**: A buyer acts through a procurator, has a guarantor for security, and receives funds from a payment provider.
+
+**Contract Excerpt**: "...The buyer acts through procurator Paolo Alberti, with Giovanni Strozzi as guarantor, and payment provided by Niccolò Medici..."
+
+**Data Entry**:
+```json
+{
+  "@id": "contract/1213",
+  "gmn:P70_2_documents_buyer": {"@id": "person/Buyer_X"},
+  "gmn:P70_5_documents_buyers_procurator": [{"@id": "person/Paolo_Alberti"}],
+  "gmn:P70_7_documents_buyers_guarantor": [{"@id": "person/Giovanni_Strozzi"}],
+  "gmn:P70_9_documents_payment_provider_for_buyer": [{"@id": "person/Niccolo_Medici"}]
+}
+```
+
+================================================================================
+SECTION TO ADD: Vocabulary References
+================================================================================
+
+### Getty AAT Vocabulary for P70.9
+
+**Payer (Role)**
+- **URI**: http://vocab.getty.edu/page/aat/300386048
+- **Label**: "payers" (English)
+- **Definition**: People or organizations that make payments
+- **Usage**: Assigned to payment providers via P14.1_in_the_role_of
+
+**Financial Transaction (Activity Type)**
+- **URI**: http://vocab.getty.edu/page/aat/300055984
+- **Label**: "financial transactions" (English)
+- **Definition**: Commercial or legal transactions involving monetary exchange
+- **Usage**: Assigned to E7_Activity via P2_has_type
+
+================================================================================
+SECTION TO ADD: Implementation Checklist
+================================================================================
+
+### Implementation Checklist for P70.9
+
+**Ontology (gmn_ontology.ttl)**:
+- [ ] Property definition present with correct URI
+- [ ] Label: "P70.9 documents payment provider for buyer"@en
+- [ ] Domain: gmn:E31_2_Sales_Contract
+- [ ] Range: cidoc:E21_Person
+- [ ] Super-property: cidoc:P70_documents
+- [ ] Created date: 2025-10-17
+
+**Transformation Script (gmn_to_cidoc_transform.py)**:
+- [ ] AAT_PAYER constant defined (300386048)
+- [ ] AAT_FINANCIAL_TRANSACTION constant defined (300055984)
+- [ ] transform_p70_9_documents_payment_provider_for_buyer() function added
+- [ ] Function called in transform_item() after P70.8, before P70.10
+- [ ] Function creates E8_Acquisition if needed
+- [ ] Function creates E7_Activity with financial transaction type
+- [ ] Function assigns payer role to payment provider
+- [ ] Function handles multiple payment providers
+- [ ] Function removes shortcut property after transformation
+
+**Documentation**:
+- [ ] Property added to Sales Contract properties table
+- [ ] Property definition added to documentation
+- [ ] Transformation pattern documented
+- [ ] Use cases and examples provided
+- [ ] Comparison with related properties included
+- [ ] AAT vocabulary references documented
+
+**Testing**:
+- [ ] Single payment provider test passes
+- [ ] Multiple payment providers test passes
+- [ ] Integration with existing acquisition test passes
+- [ ] Validation query returns correct results
+
+================================================================================
+SECTION TO ADD: SPARQL Queries
+================================================================================
+
+### SPARQL Queries for P70.9
+
+**Find all contracts with payment providers**:
+```sparql
+PREFIX gmn: <https://w3id.org/geniza/ontology/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?contract ?buyer ?paymentProvider ?buyerLabel ?providerLabel
+WHERE {
+  ?contract a gmn:E31_2_Sales_Contract ;
+            cidoc:P70_documents ?acquisition .
+  ?acquisition cidoc:P22_transferred_title_to ?buyer ;
+               cidoc:P9_consists_of ?activity .
+  ?activity cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300386048> ;
+            cidoc:P14_carried_out_by ?paymentProvider .
+  
+  OPTIONAL { ?buyer rdfs:label ?buyerLabel }
+  OPTIONAL { ?paymentProvider rdfs:label ?providerLabel }
+}
+ORDER BY ?contract
+```
+
+**Count payment providers per contract**:
+```sparql
+PREFIX gmn: <https://w3id.org/geniza/ontology/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?contract (COUNT(DISTINCT ?paymentProvider) as ?providerCount)
+WHERE {
+  ?contract a gmn:E31_2_Sales_Contract ;
+            cidoc:P70_documents ?acquisition .
+  ?acquisition cidoc:P9_consists_of ?activity .
+  ?activity cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300386048> ;
+            cidoc:P14_carried_out_by ?paymentProvider .
+}
+GROUP BY ?contract
+HAVING (COUNT(DISTINCT ?paymentProvider) > 0)
+ORDER BY DESC(?providerCount)
+```
+
+**Find buyers who frequently use payment providers**:
+```sparql
+PREFIX gmn: <https://w3id.org/geniza/ontology/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?buyer (COUNT(DISTINCT ?contract) as ?contractCount) 
+       (COUNT(DISTINCT ?paymentProvider) as ?providerCount)
+WHERE {
+  ?contract a gmn:E31_2_Sales_Contract ;
+            cidoc:P70_documents ?acquisition .
+  ?acquisition cidoc:P22_transferred_title_to ?buyer ;
+               cidoc:P9_consists_of ?activity .
+  ?activity cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300386048> ;
+            cidoc:P14_carried_out_by ?paymentProvider .
+}
+GROUP BY ?buyer
+HAVING (COUNT(DISTINCT ?contract) > 1)
+ORDER BY DESC(?contractCount)
+```
+
+**Validate transformation (check for untransformed shortcuts)**:
+```sparql
+PREFIX gmn: <https://w3id.org/geniza/ontology/>
+
+SELECT ?contract
+WHERE {
+  ?contract gmn:P70_9_documents_payment_provider_for_buyer ?provider .
+}
+# Should return no results if all contracts have been transformed
+```
+
+================================================================================
+SECTION TO ADD: Data Entry Guidelines
+================================================================================
+
+### Data Entry Guidelines for P70.9
+
+**When to Use Payment Provider Property**:
+1. Contract explicitly mentions someone providing payment on behalf of buyer
+2. Contract text indicates funds come from a third party
+3. Buyer is not the source of payment funds
+4. Payment source is significant to the transaction
+
+**When NOT to Use**:
+1. Buyer makes payment themselves (implicit in P70.2)
+2. For legal representatives (use P70.5 procurator)
+3. For security providers (use P70.7 guarantor)
+4. For transaction facilitators (use P70.8 broker)
+5. For organizations facilitating payment (use P70.12)
+
+**Data Entry Best Practices**:
+1. Verify the person is providing funds, not just legal representation
+2. Create person record before linking as payment provider
+3. Add descriptive label indicating relationship (e.g., "father," "business partner")
+4. Can specify multiple payment providers if contract indicates shared funding
+5. Consider adding note about payment arrangement in contract description
+
+**Common Phrases Indicating Payment Provider**:
+- "with payment provided by..."
+- "funds supplied by..."
+- "payment made by [third party] on behalf of..."
+- "capital provided by..."
+- "[buyer] purchases with money from..."
+
+================================================================================
+SECTION TO ADD: Related Properties Cross-Reference
+================================================================================
+
+### Related Properties for Sales Contract Participants
+
+When documenting a sales contract, consider these related properties that may apply alongside P70.9:
+
+**Core Transaction Parties**:
+- **P70.1**: documents seller (party transferring ownership)
+- **P70.2**: documents buyer (party receiving ownership, on whose behalf payment is made)
+
+**Buyer's Representatives and Support**:
+- **P70.5**: documents buyer's procurator (legal representative)
+- **P70.7**: documents buyer's guarantor (security provider)
+- **P70.9**: documents payment provider for buyer (fund supplier) ← THIS PROPERTY
+
+**Seller's Representatives and Support**:
+- **P70.4**: documents seller's procurator (legal representative)
+- **P70.6**: documents seller's guarantor (security provider)
+- **P70.10**: documents payment recipient for seller (receives payment on behalf of seller)
+
+**Transaction Facilitators**:
+- **P70.8**: documents broker (facilitates transaction between parties)
+- **P70.12**: documents payment through organization (bank/institution processing payment)
+
+**Object and Price**:
+- **P70.3**: documents transfer of (property/object being sold)
+- **P70.16**: documents sale price amount (monetary value)
+- **P70.17**: documents sale price currency (currency type)
+
+**Additional Participants**:
+- **P70.15**: documents witness (witnesses present at signing)
+- **P70.11**: documents referenced person (other persons mentioned in text)
+
+================================================================================
+SECTION TO ADD: Troubleshooting Common Issues
+================================================================================
+
+### Troubleshooting P70.9 Implementation
+
+**Issue**: Property not transforming
+- **Check**: Function is called in transform_item()
+- **Check**: Function is placed after P70.8 and before P70.10
+- **Check**: No typos in property name
+- **Solution**: Review function call order in transform_item()
+
+**Issue**: Multiple payment providers creating same URI
+- **Check**: Hash generation includes payment provider URI
+- **Check**: Activity URI uses hash suffix
+- **Solution**: Verify hash generation: `str(hash(payer_uri + 'payment_provider'))[-8:]`
+
+**Issue**: Role not properly assigned
+- **Check**: P14.1_in_the_role_of points to AAT_PAYER
+- **Check**: AAT_PAYER constant is correct (300386048)
+- **Solution**: Verify role is added to activity, not to P14_carried_out_by
+
+**Issue**: Activity type missing
+- **Check**: P2_has_type points to AAT_FINANCIAL_TRANSACTION
+- **Check**: AAT_FINANCIAL_TRANSACTION constant is correct (300055984)
+- **Solution**: Verify activity includes P2_has_type with financial transaction
+
+**Issue**: E8_Acquisition not created
+- **Check**: Acquisition creation logic in function
+- **Check**: cidoc:P70_documents initialization
+- **Solution**: Ensure acquisition is created when P70_documents doesn't exist
+
+================================================================================
+END OF DOCUMENTATION ADDITIONS
+================================================================================
+
+NOTES FOR DOCUMENTATION INTEGRATION:
+
+1. Add the property to the main Sales Contract properties table
+2. Insert property definition in alphabetical/numerical order with other P70 properties
+3. Add transformation pattern to transformation patterns section
+4. Include at least 2-3 use case examples in examples section
+5. Add comparison table near other role comparison tables
+6. Include AAT vocabulary references in vocabulary section
+7. Add SPARQL queries to queries section
+8. Include data entry guidelines in user guide sections
+9. Add cross-references to related properties
+10. Include troubleshooting tips in implementation guide
+
+The examples provided use realistic Florentine/Italian names and scenarios common
+to medieval Mediterranean sales contracts, particularly those found in the Geniza
+documents and Italian notarial archives.
