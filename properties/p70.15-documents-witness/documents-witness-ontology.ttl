@@ -1,0 +1,112 @@
+# ============================================================================
+# GMN Ontology - P70.15 Documents Witness Property
+# TTL Additions for gmn_ontology.ttl
+# ============================================================================
+#
+# INSTRUCTIONS:
+# 1. Locate the Sales Contract properties section in your gmn_ontology.ttl file
+# 2. Find the position between P70.14 and P70.16 properties
+# 3. Copy the property definition below and paste it in that location
+# 4. Ensure proper spacing and formatting consistency with surrounding properties
+#
+# ============================================================================
+
+# Property: P70.15 documents witness
+gmn:P70_15_documents_witness
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.15 documents witness"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with a person who served as a witness to the acquisition. Witnesses were present at the transaction and formally observed the transfer of property, providing legal validation of the event. Unlike referenced persons (P70.11) who are merely mentioned in the text, witnesses actively participated in the acquisition event. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P11_had_participant > E21_Person, with the person's role typed as 'witness' (AAT 300028910). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P11_had_participant .
+
+# ============================================================================
+# VERIFICATION CHECKLIST:
+# ============================================================================
+#
+# After adding the property definition, verify:
+# 
+# [ ] The property URI follows the pattern gmn:P70_15_documents_witness
+# [ ] The label is "P70.15 documents witness"@en
+# [ ] The property is declared as both owl:ObjectProperty and rdf:Property
+# [ ] The rdfs:comment provides clear semantic explanation
+# [ ] The rdfs:subPropertyOf is cidoc:P70_documents
+# [ ] The rdfs:domain is gmn:E31_2_Sales_Contract
+# [ ] The rdfs:range is cidoc:E21_Person
+# [ ] The dcterms:created date is present
+# [ ] The rdfs:seeAlso references relevant CIDOC-CRM properties
+# [ ] The formatting is consistent with other P70.x properties
+# [ ] No syntax errors (validate with RDF tools)
+#
+# ============================================================================
+# CONTEXT FOR PLACEMENT:
+# ============================================================================
+#
+# This property should be placed after P70.14 and before P70.16:
+#
+# gmn:P70_14_documents_referenced_object
+#     ...
+#
+# gmn:P70_15_documents_witness     <-- INSERT HERE
+#     ...
+#
+# gmn:P70_16_documents_sale_price_amount
+#     ...
+#
+# ============================================================================
+# ADDITIONAL NOTES:
+# ============================================================================
+#
+# 1. This is a SHORTCUT property that simplifies data entry
+# 2. The full CIDOC-CRM path involves E8_Acquisition > P9_consists_of > 
+#    E7_Activity > P14_carried_out_by > E21_Person
+# 3. The transformation adds P14.1_in_the_role_of with AAT witness concept
+# 4. Witnesses are distinguished from merely referenced persons (P70.11)
+# 5. Witnesses actively participated in the acquisition event
+#
+# ============================================================================
+# RELATED PROPERTIES:
+# ============================================================================
+#
+# - gmn:P70_11_documents_referenced_person (for non-participating persons)
+# - gmn:P70_1_documents_seller (seller in transaction)
+# - gmn:P70_2_documents_buyer (buyer in transaction)
+# - gmn:P70_8_documents_broker (transaction facilitator)
+# - gmn:P94i_1_was_created_by (document creator/notary)
+#
+# ============================================================================
+# USAGE EXAMPLE:
+# ============================================================================
+#
+# <contract001> a gmn:E31_2_Sales_Contract ;
+#     gmn:P1_1_has_name "Sale of house"@en ;
+#     gmn:P70_1_documents_seller <giovanni> ;
+#     gmn:P70_2_documents_buyer <luca> ;
+#     gmn:P70_15_documents_witness <antonio>, <paolo> .
+#
+# After transformation, this becomes:
+#
+# <contract001> a gmn:E31_2_Sales_Contract ;
+#     cidoc:P1_is_identified_by [ ... ] ;
+#     cidoc:P70_documents <contract001/acquisition> .
+#
+# <contract001/acquisition> a cidoc:E8_Acquisition ;
+#     cidoc:P23_transferred_title_from <giovanni> ;
+#     cidoc:P22_transferred_title_to <luca> ;
+#     cidoc:P9_consists_of <contract001/activity/witness_hash1>,
+#                          <contract001/activity/witness_hash2> .
+#
+# <contract001/activity/witness_hash1> a cidoc:E7_Activity ;
+#     cidoc:P14_carried_out_by <antonio> ;
+#     cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300028910> .
+#
+# <contract001/activity/witness_hash2> a cidoc:E7_Activity ;
+#     cidoc:P14_carried_out_by <paolo> ;
+#     cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300028910> .
+#
+# ============================================================================
+# END OF TTL ADDITIONS
+# ============================================================================

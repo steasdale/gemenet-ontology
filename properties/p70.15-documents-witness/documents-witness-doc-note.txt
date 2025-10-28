@@ -1,0 +1,421 @@
+# ============================================================================
+# GMN Documentation Additions - P70.15 Documents Witness
+# Content for Main Documentation File
+# ============================================================================
+#
+# INSTRUCTIONS:
+# This file contains tables, examples, and explanatory text that should be
+# added to your main GMN documentation. Add these sections in the appropriate
+# locations based on your documentation structure.
+#
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# SECTION 1: Property Definition Table
+# ----------------------------------------------------------------------------
+# Add this to the "Sales Contract Properties" section of your documentation:
+
+### P70.15 documents witness
+
+**Property URI:** `gmn:P70_15_documents_witness`
+
+**Label:** P70.15 documents witness
+
+**Definition:** Simplified property for associating a sales contract with a person who served as a witness to the acquisition. Witnesses were present at the transaction and formally observed the transfer of property, providing legal validation of the event.
+
+**Domain:** `gmn:E31_2_Sales_Contract` (Sales Contract)
+
+**Range:** `cidoc:E21_Person` (Person)
+
+**Subproperty of:** `cidoc:P70_documents`
+
+**Cardinality:** 0..* (zero or more witnesses)
+
+**Created:** 2025-10-17
+
+**Status:** Active
+
+**Key Distinction:** Unlike `gmn:P70_11_documents_referenced_person` (which captures persons merely mentioned in the text), witnesses actively participated in the acquisition event by observing and validating the transaction.
+
+
+# ----------------------------------------------------------------------------
+# SECTION 2: CIDOC-CRM Mapping Table
+# ----------------------------------------------------------------------------
+# Add this to the "Property Mappings" section:
+
+| GMN Shortcut | CIDOC-CRM Path | Description |
+|--------------|----------------|-------------|
+| `gmn:P70_15_documents_witness` | `E31_Document → P70_documents → E8_Acquisition → P9_consists_of → E7_Activity → P14_carried_out_by → E21_Person` + `P14.1_in_the_role_of → E55_Type (AAT:300028910)` | Links sales contract to witnesses who observed the property transfer, with role assignment |
+
+
+# ----------------------------------------------------------------------------
+# SECTION 3: Transformation Pattern
+# ----------------------------------------------------------------------------
+# Add this to the "Transformation Patterns" section:
+
+### Witness Transformation Pattern
+
+**Pattern Name:** Documents Witness
+
+**GMN Shortcut Property:** `gmn:P70_15_documents_witness`
+
+**Full CIDOC-CRM Structure:**
+
+```turtle
+E31_Document (Sales Contract)
+    ↓ cidoc:P70_documents
+E8_Acquisition
+    ↓ cidoc:P9_consists_of
+E7_Activity (Witnessing Activity)
+    ↓ cidoc:P14_carried_out_by
+E21_Person (Witness)
+
+E7_Activity
+    ↓ cidoc:P14.1_in_the_role_of
+E55_Type (AAT: witness, 300028910)
+```
+
+**Transformation Logic:**
+1. Create or locate E8_Acquisition node
+2. For each witness, create a unique E7_Activity node
+3. Link activity to witness via P14_carried_out_by
+4. Assign role "witness" via P14.1_in_the_role_of
+5. Remove shortcut property from output
+
+
+# ----------------------------------------------------------------------------
+# SECTION 4: Usage Examples
+# ----------------------------------------------------------------------------
+# Add these examples to the "Usage Examples" section:
+
+### Example 1: Basic Contract with Witnesses
+
+**Scenario:** A contract documenting the sale of a vineyard with two witnesses present.
+
+**Source Document Text:**
+```
+"Vendita di vigna in Albaro. Presenti come testimoni Antonio de Marini e Paolo Grimaldi."
+(Sale of vineyard in Albaro. Present as witnesses Antonio de Marini and Paolo Grimaldi.)
+```
+
+**GMN Representation (Shortcut):**
+```turtle
+@prefix gmn: <http://example.org/gmn/> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+
+<contract_1445_07_12> a gmn:E31_2_Sales_Contract ;
+    gmn:P1_1_has_name "Sale of vineyard in Albaro"@en ;
+    gmn:P70_1_documents_seller <merchant_battista> ;
+    gmn:P70_2_documents_buyer <nobleman_filippo> ;
+    gmn:P70_3_documents_transfer_of <vineyard_albaro> ;
+    gmn:P70_15_documents_witness <antonio_marini>, <paolo_grimaldi> ;
+    gmn:P94i_2_has_enactment_date "1445-07-12"^^xsd:date .
+```
+
+**CIDOC-CRM Representation (After Transformation):**
+```turtle
+<contract_1445_07_12> a gmn:E31_2_Sales_Contract ;
+    cidoc:P1_is_identified_by <contract_1445_07_12/appellation> ;
+    cidoc:P70_documents <contract_1445_07_12/acquisition> ;
+    cidoc:P94i_was_created_by <contract_1445_07_12/creation> .
+
+<contract_1445_07_12/acquisition> a cidoc:E8_Acquisition ;
+    cidoc:P23_transferred_title_from <merchant_battista> ;
+    cidoc:P22_transferred_title_to <nobleman_filippo> ;
+    cidoc:P24_transferred_title_of <vineyard_albaro> ;
+    cidoc:P9_consists_of <contract_1445_07_12/activity/witness_hash1>,
+                         <contract_1445_07_12/activity/witness_hash2> .
+
+<contract_1445_07_12/activity/witness_hash1> a cidoc:E7_Activity ;
+    cidoc:P14_carried_out_by <antonio_marini> ;
+    cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300028910> .
+
+<antonio_marini> a cidoc:E21_Person .
+
+<contract_1445_07_12/activity/witness_hash2> a cidoc:E7_Activity ;
+    cidoc:P14_carried_out_by <paolo_grimaldi> ;
+    cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300028910> .
+
+<paolo_grimaldi> a cidoc:E21_Person .
+```
+
+### Example 2: Witnesses with Detailed Information
+
+**Scenario:** A contract with witnesses whose names include patronymic information.
+
+**Source Document Text:**
+```
+"In presenza di testimoni: Antonio Spinola, figlio del fu Giovanni, e Paolo Doria, notaio."
+(In the presence of witnesses: Antonio Spinola, son of the late Giovanni, and Paolo Doria, notary.)
+```
+
+**GMN Representation (Shortcut):**
+```turtle
+<contract_1450_03_20> a gmn:E31_2_Sales_Contract ;
+    gmn:P70_15_documents_witness <antonio_spinola_witness>, <paolo_doria_notary> .
+
+<antonio_spinola_witness> a cidoc:E21_Person ;
+    cidoc:P1_is_identified_by [
+        a cidoc:E41_Appellation ;
+        cidoc:P190_has_symbolic_content "Antonio Spinola"
+    ] ;
+    gmn:P1_3_has_patrilineal_name [
+        a cidoc:E41_Appellation ;
+        cidoc:P190_has_symbolic_content "filius quondam Giovanni"@la
+    ] .
+
+<paolo_doria_notary> a cidoc:E21_Person ;
+    cidoc:P1_is_identified_by [
+        a cidoc:E41_Appellation ;
+        cidoc:P190_has_symbolic_content "Paolo Doria"
+    ] ;
+    gmn:P102_1_has_title [
+        a cidoc:E35_Title ;
+        cidoc:P190_has_symbolic_content "notarius"@la
+    ] .
+```
+
+**Note:** All person data is preserved during transformation and linked to the witness activities.
+
+
+# ----------------------------------------------------------------------------
+# SECTION 5: Comparison Table
+# ----------------------------------------------------------------------------
+# Add this to the "Property Comparisons" section:
+
+### Witness vs. Other Person Roles in Sales Contracts
+
+| Property | Role Type | Participation | Relationship Path | Example Phrase |
+|----------|-----------|---------------|-------------------|----------------|
+| **P70.15 documents witness** | Observer/Validator | Active participant | P70→E8→P9→E7→P14→E21 | "Present as witnesses" |
+| **P70.11 documents referenced person** | Mentioned | Not participating | P67→E21 | "Previously owned by" |
+| **P70.1 documents seller** | Transferor | Active participant | P70→E8→P23→E21 | "Giovanni sells" |
+| **P70.2 documents buyer** | Acquirer | Active participant | P70→E8→P22→E21 | "Luca buys" |
+| **P70.4 documents seller's procurator** | Representative | Active participant | P70→E8→P9→E7→P14→E21 | "Acting for the seller" |
+| **P70.8 documents broker** | Facilitator | Active participant | P70→E8→P9→E7→P14→E21 | "Through mediation of" |
+| **P94i.1 was created by** | Document Creator | Document creation | P94i→E65→P14→E21 | "Written by notary" |
+
+
+# ----------------------------------------------------------------------------
+# SECTION 6: Query Examples
+# ----------------------------------------------------------------------------
+# Add these to the "SPARQL Query Examples" section:
+
+### Query 1: Find All Contracts with a Specific Witness
+
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+# Find all contracts witnessed by Antonio Spinola
+SELECT ?contract ?contract_name ?date
+WHERE {
+    ?contract a gmn:E31_2_Sales_Contract ;
+              cidoc:P70_documents ?acquisition .
+    
+    ?acquisition a cidoc:E8_Acquisition ;
+                 cidoc:P9_consists_of ?activity .
+    
+    ?activity cidoc:P14_carried_out_by <antonio_spinola> ;
+              cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300028910> .
+    
+    OPTIONAL {
+        ?contract cidoc:P1_is_identified_by ?app .
+        ?app cidoc:P190_has_symbolic_content ?contract_name .
+    }
+    
+    OPTIONAL {
+        ?contract cidoc:P94i_was_created_by ?creation .
+        ?creation cidoc:P4_has_time-span ?timespan .
+        ?timespan cidoc:P82_at_some_time_within ?date .
+    }
+}
+ORDER BY ?date
+```
+
+### Query 2: Count Witnesses per Contract
+
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+# Count how many witnesses each contract has
+SELECT ?contract ?contract_name (COUNT(?witness) AS ?witness_count)
+WHERE {
+    ?contract a gmn:E31_2_Sales_Contract ;
+              cidoc:P70_documents ?acquisition .
+    
+    ?acquisition cidoc:P9_consists_of ?activity .
+    
+    ?activity cidoc:P14_carried_out_by ?witness ;
+              cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300028910> .
+    
+    OPTIONAL {
+        ?contract cidoc:P1_is_identified_by ?app .
+        ?app cidoc:P190_has_symbolic_content ?contract_name .
+    }
+}
+GROUP BY ?contract ?contract_name
+ORDER BY DESC(?witness_count)
+```
+
+### Query 3: Find All Witnesses in the Database
+
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+# List all persons who served as witnesses
+SELECT DISTINCT ?witness ?witness_name (COUNT(?contract) AS ?times_witnessed)
+WHERE {
+    ?contract a gmn:E31_2_Sales_Contract ;
+              cidoc:P70_documents ?acquisition .
+    
+    ?acquisition cidoc:P9_consists_of ?activity .
+    
+    ?activity cidoc:P14_carried_out_by ?witness ;
+              cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/page/aat/300028910> .
+    
+    ?witness a cidoc:E21_Person .
+    
+    OPTIONAL {
+        ?witness cidoc:P1_is_identified_by ?app .
+        ?app cidoc:P190_has_symbolic_content ?witness_name .
+    }
+}
+GROUP BY ?witness ?witness_name
+ORDER BY DESC(?times_witnessed)
+```
+
+
+# ----------------------------------------------------------------------------
+# SECTION 7: Historical Context
+# ----------------------------------------------------------------------------
+# Add this to the "Historical Background" or "Property Context" section:
+
+### Witnesses in Genoese Sales Contracts
+
+In medieval and early modern Genoa, witnesses played an essential role in property transactions:
+
+**Legal Function:**
+- Witnesses provided third-party validation of the transaction
+- Their presence helped establish the legal validity of the transfer
+- In case of later disputes, witnesses could testify about what they observed
+- Some types of transactions legally required a minimum number of witnesses
+
+**Social Function:**
+- The choice of witnesses could indicate social networks and relationships
+- High-status witnesses might lend additional credibility to the transaction
+- Family members or business associates often served as witnesses
+- Witnesses might be called upon to verify details years after the transaction
+
+**Documentary Practice:**
+- Notarial documents typically recorded witnesses by name at the end
+- Witness lists often included patronymic information ("son of...")
+- Professional status or titles might be noted ("notary," "merchant")
+- Witnesses are distinct from the notary who created the document
+
+**Modeling Rationale:**
+Witnesses are modeled as participants in the E8_Acquisition event rather than as merely mentioned persons because:
+1. They were physically present at the transaction
+2. They actively observed the property transfer
+3. They had a specific legal and social role (validation)
+4. They could later testify about the event
+
+
+# ----------------------------------------------------------------------------
+# SECTION 8: Data Entry Guidelines
+# ----------------------------------------------------------------------------
+# Add this to the "Data Entry Manual" or "User Guide" section:
+
+### Entering Witness Information
+
+**When to Use P70.15 (documents witness):**
+- Use this property when the document explicitly identifies persons as witnesses
+- Look for phrases like: "presente testimoni," "in presenza di," "testes," "witnesses"
+- Witnesses were present at the transaction and observed the property transfer
+
+**When NOT to Use P70.15:**
+- Do NOT use for persons merely mentioned in the text (use P70.11 instead)
+- Do NOT use for the notary who created the document (use P94i.1 instead)
+- Do NOT use for parties to the transaction (use P70.1, P70.2, etc.)
+
+**Witness Identity:**
+- Create or link to an E21_Person entity for each witness
+- Record the witness name using P1_is_identified_by
+- Include patronymic information if present (P1.3_has_patrilineal_name)
+- Note any titles or professional roles (P102.1_has_title)
+
+**Multiple Witnesses:**
+- Most contracts have 2-4 witnesses; enter all that are named
+- Each witness should be listed separately
+- Maintain the order of witnesses if significant
+
+**Ambiguous Cases:**
+- If uncertain whether someone is a witness or merely mentioned, default to P70.11
+- If a person has multiple roles (e.g., notary also serving as witness), use both properties
+- If witness identity is unclear or illegible, create a blank node with available information
+
+
+# ----------------------------------------------------------------------------
+# SECTION 9: Technical Implementation Notes
+# ----------------------------------------------------------------------------
+# Add this to the "Technical Documentation" section:
+
+### Implementation Details: P70.15 Witness Transformation
+
+**Transformation Algorithm:**
+1. Check if `gmn:P70_15_documents_witness` exists in data
+2. Retrieve or create E8_Acquisition node
+3. For each witness:
+   - Generate unique activity URI using hash(witness_uri + 'witness')
+   - Create E7_Activity node for witnessing
+   - Link activity to witness via P14_carried_out_by
+   - Assign role via P14.1_in_the_role_of (AAT 300028910)
+   - Append activity to acquisition's P9_consists_of array
+4. Delete shortcut property
+
+**URI Generation:**
+- Activity URIs follow pattern: `{contract_uri}/activity/witness_{hash}`
+- Hash is last 8 characters of hash(witness_uri + 'witness')
+- Ensures unique URIs while remaining deterministic
+
+**Data Preservation:**
+- Witness objects are copied via `.copy()` method
+- All witness properties preserved during transformation
+- Supports both simple URI strings and complex person descriptions
+
+**Performance Considerations:**
+- O(n) complexity where n = number of witnesses
+- Minimal memory overhead
+- No external dependencies beyond Python standard library
+
+
+# ----------------------------------------------------------------------------
+# SECTION 10: Validation Rules
+# ----------------------------------------------------------------------------
+# Add this to the "Validation" or "Quality Control" section:
+
+### Validation Rules for P70.15 Documents Witness
+
+**Required Checks:**
+1. Each witness must be an E21_Person or have URI resolvable to E21_Person
+2. Witness URIs must be unique within a contract (no duplicate witnesses)
+3. At least one witness is typical for contracts (flag if zero)
+4. Witness should have identification (P1_is_identified_by) for completeness
+
+**Warning Checks:**
+1. More than 10 witnesses is unusual (may indicate data entry error)
+2. Witness appearing in every contract may indicate default/placeholder data
+3. Witness also appearing as seller/buyer is unusual (possible role confusion)
+
+**Transformation Validation:**
+1. Verify `gmn:P70_15_documents_witness` removed from output
+2. Verify E7_Activity nodes created for each witness
+3. Verify role assignment (AAT 300028910) present
+4. Verify activities linked to E8_Acquisition via P9_consists_of
+
+
+# ============================================================================
+# END OF DOCUMENTATION ADDITIONS
+# ============================================================================
