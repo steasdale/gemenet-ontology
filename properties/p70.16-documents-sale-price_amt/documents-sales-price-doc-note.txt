@@ -1,0 +1,566 @@
+# Document Additions for gmn:P70_16_documents_sale_price_amount
+
+This file contains examples, tables, and explanatory text that can be added to your main documentation files to explain the P70_16 documents sale price amount property to users and data entry personnel.
+
+================================================================================
+SECTION 1: PROPERTY OVERVIEW
+================================================================================
+
+Add this to your sales contract properties documentation:
+
+---BEGIN INSERTION---
+
+### P70.16 documents sale price amount
+
+**Property**: gmn:P70_16_documents_sale_price_amount
+**Type**: Datatype Property
+**Domain**: gmn:E31_2_Sales_Contract
+**Range**: xsd:decimal
+**Label**: "P70.16 documents sale price amount"
+
+This property allows you to record the numeric monetary amount of a sale price documented in a sales contract. Use this property together with P70.17 (documents sale price currency) to specify complete monetary values.
+
+**Important**: Always record amounts as decimal numbers without currency symbols or thousands separators. For example: 1500.50 (not €1,500.50 or 1.500,50).
+
+The property represents the full CIDOC-CRM path:
+E31_Document → P70_documents → E8_Acquisition → P177_assigned_property_of_type → E97_Monetary_Amount → P181_has_amount → xsd:decimal
+
+**When to use**: When a sales contract explicitly states a monetary amount for the sale price.
+
+**Required companion**: P70.17 documents sale price currency (to specify the currency type)
+
+**Examples**:
+- 1500.50 (one thousand five hundred lira and 10 soldi)
+- 25000.00 (twenty-five thousand lira exactly)
+- 345.75 (three hundred forty-five lira and 15 soldi)
+
+---END INSERTION---
+
+================================================================================
+SECTION 2: DATA ENTRY GUIDELINES
+================================================================================
+
+Add this to your data entry manual:
+
+---BEGIN INSERTION---
+
+## Recording Sale Prices
+
+### Overview
+Sale prices consist of two components that must be recorded together:
+1. **Amount** (P70_16): The numeric value (e.g., 1500.50)
+2. **Currency** (P70_17): The currency type (e.g., Lira Genovese)
+
+### Step-by-Step Instructions
+
+1. **Locate the price in the source document**
+   - Look for phrases like "pro pretio librarum" (for the price of lira)
+   - Check for amounts in numbers or written out
+   - Note both the quantity and the currency mentioned
+
+2. **Record the numeric amount**
+   - Use field: P70_16 documents sale price amount
+   - Enter as a decimal number: 1500.50
+   - Do NOT include:
+     * Currency symbols (€, £, L)
+     * Thousands separators (1,500 or 1.500)
+     * Words (lire, soldi)
+   - DO include:
+     * Decimal point for fractional amounts (1500.50)
+     * All decimal places shown in source (preserve precision)
+
+3. **Record the currency**
+   - Use field: P70_17 documents sale price currency
+   - Select from controlled vocabulary or enter URI
+   - Common currencies: Lira Genovese, Florin, Ducat
+
+### Examples from Historical Documents
+
+**Example 1**: Simple sale price
+```
+Source text: "pro pretio librarum mille quingentarum"
+             (for the price of one thousand five hundred lira)
+
+Field P70_16: 1500.00
+Field P70_17: Lira Genovese
+```
+
+**Example 2**: Price with fractional currency
+```
+Source text: "pro pretio librarum trecentarum quadraginta quinque et solidorum quindecim"
+             (for the price of three hundred forty-five lira and fifteen soldi)
+
+Field P70_16: 345.75
+Field P70_17: Lira Genovese
+
+Note: 15 soldi = 0.75 lira (since 1 lira = 20 soldi)
+```
+
+**Example 3**: Large transaction
+```
+Source text: "pro pretio librarum viginti quinque milium"
+             (for the price of twenty-five thousand lira)
+
+Field P70_16: 25000.00
+Field P70_17: Lira Genovese
+```
+
+### Converting Historical Currency Units
+
+Genoese monetary system:
+- 1 Lira = 20 Soldi = 240 Denari
+- 1 Soldo = 12 Denari
+
+Conversion to decimal:
+- 10 soldi = 0.50 lira
+- 15 soldi = 0.75 lira
+- 5 soldi = 0.25 lira
+- 6 denari = 0.025 lira (6/240)
+
+**Example conversions**:
+| Source Format | Decimal Entry | Explanation |
+|--------------|---------------|-------------|
+| 100 lire | 100.00 | Exact lire |
+| 100 lire 10 soldi | 100.50 | 10÷20 = 0.50 |
+| 100 lire 15 soldi | 100.75 | 15÷20 = 0.75 |
+| 100 lire 5 soldi | 100.25 | 5÷20 = 0.25 |
+| 100 lire 6 denari | 100.025 | 6÷240 = 0.025 |
+
+### Common Mistakes to Avoid
+
+❌ Including currency symbol: €1500.50
+✅ Correct format: 1500.50
+
+❌ Using thousands separator: 1,500.50
+✅ Correct format: 1500.50
+
+❌ Rounding unnecessarily: 1500
+✅ Preserve decimals: 1500.00
+
+❌ Entering only amount (no currency)
+✅ Enter both amount AND currency
+
+❌ Converting to modern currency
+✅ Record original historical currency
+
+### Quality Check
+
+Before submitting, verify:
+- [ ] Amount is a decimal number
+- [ ] No currency symbols or separators
+- [ ] Decimal precision matches source
+- [ ] Currency is specified
+- [ ] Both amount and currency fields are completed
+
+---END INSERTION---
+
+================================================================================
+SECTION 3: PROPERTY REFERENCE TABLE
+================================================================================
+
+Add this table to your property reference section:
+
+---BEGIN INSERTION---
+
+## Sales Contract Price Properties
+
+| Property | Type | Range | Description | Required | Example |
+|----------|------|-------|-------------|----------|---------|
+| P70_16 documents sale price amount | Datatype | xsd:decimal | Numeric monetary amount | Recommended | 1500.50 |
+| P70_17 documents sale price currency | Object | E98_Currency | Currency type | Recommended | Lira Genovese |
+
+**Usage Pattern**: Always use P70_16 and P70_17 together to form complete monetary values.
+
+**Transformation**: These properties create an E97_Monetary_Amount entity with:
+- P181_has_amount (from P70_16)
+- P180_has_currency (from P70_17)
+
+**Related Properties**:
+- P70_1 documents seller (who receives payment)
+- P70_2 documents buyer (who makes payment)
+- P70_3 documents transfer of (what is purchased)
+
+---END INSERTION---
+
+================================================================================
+SECTION 4: USAGE EXAMPLES
+================================================================================
+
+Add these examples to your tutorials or training materials:
+
+---BEGIN INSERTION---
+
+## Complete Sale Contract Examples
+
+### Example 1: Basic House Sale
+
+**Scenario**: Giovanni sells a house to Marco for 1,500 lira and 10 soldi.
+
+**Data Entry**:
+```
+Contract Type: Sales Contract (E31_2)
+Seller (P70_1): Giovanni Rossi
+Buyer (P70_2): Marco Bianchi
+Object (P70_3): House on Via del Campo
+Amount (P70_16): 1500.50
+Currency (P70_17): Lira Genovese
+Notary (P94i_1): Antonio Basso
+Date (P94i_2): 1450-03-15
+```
+
+**Result**: System creates a complete acquisition record with seller, buyer, object, and monetary amount (1500.50 Lira Genovese).
+
+---
+
+### Example 2: Property Sale with Guarantor
+
+**Scenario**: Giacomo sells a palazzo to Oberto for 25,000 lira, with Antonio as guarantor.
+
+**Data Entry**:
+```
+Contract Type: Sales Contract (E31_2)
+Seller (P70_1): Giacomo Spinola
+Buyer (P70_2): Oberto Doria
+Object (P70_3): Palazzo Piazza Fontane Marose
+Amount (P70_16): 25000.00
+Currency (P70_17): Lira Genovese
+Seller's Guarantor (P70_6): Antonio Guarantor
+Notary (P94i_1): Notary Basso
+Date (P94i_2): 1455-11-20
+Place (P94i_3): Genoa
+```
+
+**Result**: Complete acquisition with monetary value, plus guarantor relationship.
+
+---
+
+### Example 3: Goods Sale with Broker
+
+**Scenario**: Antonio sells silk bales to Francesco for 345 lira and 15 soldi, facilitated by broker Pietro.
+
+**Data Entry**:
+```
+Contract Type: Sales Contract (E31_2)
+Seller (P70_1): Antonio Silk Merchant
+Buyer (P70_2): Francesco Trader
+Object (P70_3): Silk Bales (20 bales)
+Amount (P70_16): 345.75
+Currency (P70_17): Florin
+Broker (P70_8): Pietro Broker
+Notary (P94i_1): Notary Giovanni
+Date (P94i_2): 1455-07-20
+```
+
+**Result**: Acquisition record includes broker role and monetary value in florins.
+
+---END INSERTION---
+
+================================================================================
+SECTION 5: HISTORICAL CONTEXT
+================================================================================
+
+Add this to provide context for researchers:
+
+---BEGIN INSERTION---
+
+## Monetary Values in Genoese Contracts
+
+### Price Ranges (15th Century)
+
+Understanding typical price ranges helps validate data entry:
+
+**Real Estate**:
+- Small urban house: 500-2,000 lire
+- Large merchant house: 3,000-10,000 lire
+- Palazzo (noble residence): 10,000-100,000 lire
+- Shop/bottega: 2,000-10,000 lire
+- Vineyard: 1,000-5,000 lire
+- Agricultural land: 500-3,000 lire
+
+**Moveable Property**:
+- Silk (per bale): 20-50 lire
+- Wool cloth (per piece): 10-30 lire
+- Books (manuscript): 5-50 lire
+- Ships (merchant vessel): 5,000-50,000 lire
+- Furniture (complete household): 50-500 lire
+
+**Other**:
+- Enslaved person: 50-200 lire (historical documentation)
+- Dowry (modest): 500-2,000 lire
+- Dowry (wealthy family): 5,000-30,000 lire
+
+### Currency Context
+
+**Lira Genovese**: 
+- Primary accounting unit in Genoa
+- Subdivided into 20 soldi or 240 denari
+- Used for most domestic transactions
+
+**Florin**:
+- Gold coin used in international trade
+- More stable value than lira
+- Preferred for large transactions
+
+**Ducat**:
+- Venetian gold coin
+- Widely accepted in Mediterranean trade
+- Sometimes specified in Genoese contracts
+
+### Research Applications
+
+Precise monetary data enables:
+
+1. **Price Analysis**: Track inflation and deflation over time
+2. **Economic Networks**: Map wealth flows between families
+3. **Property Valuation**: Compare relative values of different properties
+4. **Social Stratification**: Analyze wealth distribution
+5. **Market Studies**: Understand supply and demand dynamics
+6. **Family Wealth**: Track economic status across generations
+
+---END INSERTION---
+
+================================================================================
+SECTION 6: TROUBLESHOOTING
+================================================================================
+
+Add this to your user support documentation:
+
+---BEGIN INSERTION---
+
+## Common Issues: Sale Price Amount
+
+### Issue: "Amount not saving"
+
+**Possible causes**:
+1. Invalid decimal format (using comma instead of period)
+2. Including currency symbols
+3. Non-numeric characters in amount field
+
+**Solution**: Enter only numeric values with decimal point, e.g., 1500.50
+
+---
+
+### Issue: "Currency required error"
+
+**Cause**: Amount entered without currency
+
+**Solution**: Always specify both P70_16 (amount) and P70_17 (currency)
+
+---
+
+### Issue: "Precision lost"
+
+**Cause**: Using wrong number format or rounding
+
+**Solution**: Use decimal format and preserve all decimal places from source:
+- Wrong: 1500 (loses .00)
+- Right: 1500.00
+
+---
+
+### Issue: "Multiple amounts for one contract"
+
+**Situation**: Contract mentions deposit, final payment, and total
+
+**Options**:
+1. Enter only the total amount in P70_16
+2. Add note explaining payment structure in comments
+3. Consider modeling as separate transactions if appropriate
+
+**Example**:
+```
+Amount (P70_16): 2000.00  (total)
+Notes: "Contract specifies 500 lire deposit paid immediately, 
+        balance of 1500 lire due at delivery"
+```
+
+---
+
+### Issue: "Currency conversion in source"
+
+**Situation**: Source states "1000 lire or 200 florins"
+
+**Solution**: 
+- Record the primary currency mentioned first
+- Add note about alternative currency
+- Don't convert; record as stated
+
+**Example**:
+```
+Amount (P70_16): 1000.00
+Currency (P70_17): Lira Genovese
+Notes: "Contract also states equivalent value of 200 florins"
+```
+
+---END INSERTION---
+
+================================================================================
+SECTION 7: VISUAL REFERENCE
+================================================================================
+
+Add this diagram to help users understand the transformation:
+
+---BEGIN INSERTION---
+
+## How Sale Price Transforms to CIDOC-CRM
+
+### User Input (Simplified)
+```
+Sales Contract
+├── Seller: Giovanni
+├── Buyer: Marco  
+├── Object: House
+├── Amount: 1500.50    ← P70_16
+└── Currency: Lira     ← P70_17
+```
+
+### System Output (CIDOC-CRM)
+```
+Sales Contract (E31_2)
+└── documents (P70) → Acquisition (E8)
+    ├── transferred from (P23) → Giovanni (E21)
+    ├── transferred to (P22) → Marco (E21)
+    ├── transferred title of (P24) → House (E18)
+    └── assigned property (P177) → Monetary Amount (E97)
+        ├── has amount (P181) → "1500.50"^^decimal  [from P70_16]
+        └── has currency (P180) → Lira (E98)        [from P70_17]
+```
+
+### Benefits
+- **Simplified Input**: Easy data entry for users
+- **Rich Output**: Full semantic structure for research
+- **Interoperability**: Compatible with other CIDOC-CRM systems
+- **Precision**: Exact monetary values preserved
+
+---END INSERTION---
+
+================================================================================
+SECTION 8: QUICK REFERENCE CARD
+================================================================================
+
+This can be printed as a quick reference for data entry personnel:
+
+---BEGIN INSERTION---
+
+╔══════════════════════════════════════════════════════════════════════╗
+║                    SALE PRICE ENTRY QUICK GUIDE                      ║
+╠══════════════════════════════════════════════════════════════════════╣
+║                                                                      ║
+║  Property: P70_16 documents sale price amount                        ║
+║  Type: Decimal number                                                ║
+║  Required: Recommended (with P70_17)                                 ║
+║                                                                      ║
+║  FORMAT RULES:                                                       ║
+║  ✓ Use decimal point: 1500.50                                        ║
+║  ✓ No thousands separator: 1500.50 (not 1,500.50)                   ║
+║  ✓ No currency symbols: 1500.50 (not €1500.50)                      ║
+║  ✓ Preserve decimals: 1500.00 (not 1500)                            ║
+║                                                                      ║
+║  CURRENCY CONVERSIONS (Genoa):                                       ║
+║  • 1 lira = 20 soldi = 240 denari                                    ║
+║  • 10 soldi = 0.50 lira                                              ║
+║  • 15 soldi = 0.75 lira                                              ║
+║  • 5 soldi = 0.25 lira                                               ║
+║                                                                      ║
+║  EXAMPLES:                                                           ║
+║  Source: "1000 lire" → Enter: 1000.00                                ║
+║  Source: "1000 lire 10 soldi" → Enter: 1000.50                       ║
+║  Source: "1000 lire 15 soldi" → Enter: 1000.75                       ║
+║                                                                      ║
+║  ALWAYS PAIR WITH:                                                   ║
+║  P70_17 documents sale price currency                                ║
+║  (Select: Lira Genovese, Florin, Ducat, etc.)                        ║
+║                                                                      ║
+║  COMMON MISTAKES:                                                    ║
+║  ✗ 1,500.50  (has comma separator)                                   ║
+║  ✗ L.1500    (has currency symbol)                                   ║
+║  ✗ 1500      (missing decimal places)                                ║
+║  ✗ ~1500     (has approximation symbol)                              ║
+║                                                                      ║
+╚══════════════════════════════════════════════════════════════════════╝
+```
+
+---END INSERTION---
+
+================================================================================
+SECTION 9: TRAINING EXERCISES
+================================================================================
+
+Add these exercises to your training materials:
+
+---BEGIN INSERTION---
+
+## Training Exercises: Sale Price Entry
+
+### Exercise 1: Basic Entry
+**Task**: Record the following sale price:
+- Source: "pro pretio librarum quinque centum"
+- Translation: "for the price of five hundred lira"
+
+**Your entry**:
+- P70_16: ___________
+- P70_17: ___________
+
+**Answer**: P70_16: 500.00, P70_17: Lira Genovese
+
+---
+
+### Exercise 2: Fractional Currency
+**Task**: Record this price:
+- Source: "pro pretio librarum ducentarum quinquaginta et solidorum decem"
+- Translation: "for the price of two hundred fifty lira and ten soldi"
+
+**Your entry**:
+- P70_16: ___________
+- P70_17: ___________
+
+**Answer**: P70_16: 250.50, P70_17: Lira Genovese (10 soldi = 0.50 lira)
+
+---
+
+### Exercise 3: Large Amount
+**Task**: Record this price:
+- Source: "pro pretio librarum quinquaginta milium"
+- Translation: "for the price of fifty thousand lira"
+
+**Your entry**:
+- P70_16: ___________
+- P70_17: ___________
+
+**Answer**: P70_16: 50000.00, P70_17: Lira Genovese
+
+---
+
+### Exercise 4: Identify Errors
+**Task**: Which of these entries are correct? Mark with ✓ or ✗
+
+a) 1,500.50  _____
+b) 1500.50   _____
+c) €1500     _____
+d) 1500.00   _____
+e) 1500      _____
+
+**Answers**: 
+a) ✗ (has thousands separator)
+b) ✓ (correct format)
+c) ✗ (has currency symbol)
+d) ✓ (correct format with decimals)
+e) ✗ (missing decimal places)
+
+---END INSERTION---
+
+================================================================================
+END OF DOCUMENT ADDITIONS
+================================================================================
+
+These text blocks can be copied and inserted into your various documentation files as appropriate. Each section is clearly marked with BEGIN INSERTION and END INSERTION tags for easy identification.
+
+For questions about where to insert these sections, consider:
+- Section 1-2: Main user documentation
+- Section 3: Property reference manual
+- Section 4: Tutorial/training materials
+- Section 5: Research guide
+- Section 6: User support/FAQ
+- Section 7: Technical documentation
+- Section 8: Quick reference handout
+- Section 9: Training materials

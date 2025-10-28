@@ -1,0 +1,235 @@
+# TTL Additions for gmn:P70_16_documents_sale_price_amount
+
+## Overview
+This file contains the complete TTL definition for the `gmn:P70_16_documents_sale_price_amount` property. This property should already exist in your gmn_ontology.ttl file (created 2025-10-17). Use this file as a reference to verify the definition or to restore it if needed.
+
+## Location in Ontology File
+This property should be located in the Sales Contract properties section, between P70.15 (documents witness) and P70.17 (documents sale price currency).
+
+## Complete TTL Definition
+
+```turtle
+# Property: P70.16 documents sale price amount
+gmn:P70_16_documents_sale_price_amount
+    a owl:DatatypeProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.16 documents sale price amount"@en ;
+    rdfs:comment "Simplified property for expressing the monetary amount of the sale price documented in a sales contract. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P177_assigned_property_of_type > E97_Monetary_Amount > P181_has_amount > xsd:decimal. This property captures only the numeric value; use P70.17 to specify the currency. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The value should be a decimal number representing the quantity in the specified currency."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range xsd:decimal ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P177_assigned_property_of_type, cidoc:P181_has_amount .
+```
+
+## Verification Checklist
+
+When verifying this definition in your ontology file, check:
+
+- [ ] Property URI is exactly `gmn:P70_16_documents_sale_price_amount`
+- [ ] Declared as both `owl:DatatypeProperty` and `rdf:Property`
+- [ ] Label is "P70.16 documents sale price amount"@en
+- [ ] Comment mentions P181_has_amount (not P180_has_currency_amount)
+- [ ] SubPropertyOf is `cidoc:P70_documents`
+- [ ] Domain is `gmn:E31_2_Sales_Contract`
+- [ ] Range is `xsd:decimal` (not xsd:float, xsd:double, or xsd:integer)
+- [ ] Created date is 2025-10-17
+- [ ] See also references include P70_documents, P177_assigned_property_of_type, and P181_has_amount
+
+## Required Namespace Prefixes
+
+Ensure these prefixes are declared at the top of your gmn_ontology.ttl file:
+
+```turtle
+@prefix gmn: <http://genoese-merchants.org/ontology#> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+```
+
+## Context: Related Properties
+
+This property works closely with other P70.x properties:
+
+### Before P70_16:
+```turtle
+# Property: P70.15 documents witness
+gmn:P70_15_documents_witness
+    a owl:ObjectProperty ;
+    # ... definition ...
+```
+
+### After P70_16:
+```turtle
+# Property: P70.17 documents sale price currency
+gmn:P70_17_documents_sale_price_currency
+    a owl:ObjectProperty ;
+    # ... definition ...
+```
+
+## Usage Example in Instance Data
+
+```turtle
+# Example sales contract with price amount
+<http://genoese-merchants.org/contract/sale_1450_03_15> 
+    a gmn:E31_2_Sales_Contract ;
+    gmn:P1_1_has_name "Sale of House on Via del Campo"@en ;
+    gmn:P70_1_documents_seller <http://genoese-merchants.org/person/andrea_rossi> ;
+    gmn:P70_2_documents_buyer <http://genoese-merchants.org/person/paolo_bianchi> ;
+    gmn:P70_3_documents_transfer_of <http://genoese-merchants.org/place/house_via_campo_12> ;
+    gmn:P70_16_documents_sale_price_amount "1500.50"^^xsd:decimal ;
+    gmn:P70_17_documents_sale_price_currency <http://vocab.getty.edu/aat/lira_genovese> ;
+    gmn:P94i_1_was_created_by <http://genoese-merchants.org/person/notary_basso> ;
+    gmn:P94i_2_has_enactment_date "1450-03-15"^^xsd:date .
+```
+
+## Transformation Output
+
+After transformation, the above example becomes:
+
+```turtle
+<http://genoese-merchants.org/contract/sale_1450_03_15> 
+    a gmn:E31_2_Sales_Contract ;
+    cidoc:P1_is_identified_by <http://genoese-merchants.org/contract/sale_1450_03_15/appellation/1> ;
+    cidoc:P70_documents <http://genoese-merchants.org/contract/sale_1450_03_15/acquisition> ;
+    cidoc:P94i_was_created_by <http://genoese-merchants.org/contract/sale_1450_03_15/creation> .
+
+<http://genoese-merchants.org/contract/sale_1450_03_15/acquisition> 
+    a cidoc:E8_Acquisition ;
+    cidoc:P23_transferred_title_from <http://genoese-merchants.org/person/andrea_rossi> ;
+    cidoc:P22_transferred_title_to <http://genoese-merchants.org/person/paolo_bianchi> ;
+    cidoc:P24_transferred_title_of <http://genoese-merchants.org/place/house_via_campo_12> ;
+    cidoc:P177_assigned_property_of_type <http://genoese-merchants.org/contract/sale_1450_03_15/acquisition/monetary_amount> .
+
+<http://genoese-merchants.org/contract/sale_1450_03_15/acquisition/monetary_amount> 
+    a cidoc:E97_Monetary_Amount ;
+    cidoc:P181_has_amount "1500.50"^^xsd:decimal ;
+    cidoc:P180_has_currency <http://vocab.getty.edu/aat/lira_genovese> .
+
+<http://vocab.getty.edu/aat/lira_genovese> 
+    a cidoc:E98_Currency .
+
+<http://genoese-merchants.org/contract/sale_1450_03_15/appellation/1> 
+    a cidoc:E41_Appellation ;
+    cidoc:P190_has_symbolic_content "Sale of House on Via del Campo"@en .
+
+<http://genoese-merchants.org/contract/sale_1450_03_15/creation> 
+    a cidoc:E65_Creation ;
+    cidoc:P14_carried_out_by <http://genoese-merchants.org/person/notary_basso> ;
+    cidoc:P4_has_time-span <http://genoese-merchants.org/contract/sale_1450_03_15/creation/timespan> .
+
+<http://genoese-merchants.org/contract/sale_1450_03_15/creation/timespan> 
+    a cidoc:E52_Time-Span ;
+    cidoc:P82_at_some_time_within "1450-03-15"^^xsd:date .
+```
+
+## Validation
+
+### SPARQL Query to Verify Property Exists
+
+```sparql
+PREFIX gmn: <http://genoese-merchants.org/ontology#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?label ?comment ?domain ?range ?superProperty
+WHERE {
+    gmn:P70_16_documents_sale_price_amount rdfs:label ?label ;
+                                            rdfs:comment ?comment ;
+                                            rdfs:domain ?domain ;
+                                            rdfs:range ?range ;
+                                            rdfs:subPropertyOf ?superProperty .
+}
+```
+
+Expected result:
+- label: "P70.16 documents sale price amount"@en
+- domain: gmn:E31_2_Sales_Contract
+- range: xsd:decimal
+- superProperty: cidoc:P70_documents
+
+### SPARQL Query to Find All Uses
+
+```sparql
+PREFIX gmn: <http://genoese-merchants.org/ontology#>
+
+SELECT ?contract ?amount
+WHERE {
+    ?contract gmn:P70_16_documents_sale_price_amount ?amount .
+}
+LIMIT 10
+```
+
+This will return contracts that use the property with their monetary amounts.
+
+## Common Issues and Solutions
+
+### Issue: Property Not Found
+**Solution**: Check that the property definition is present in gmn_ontology.ttl and that the file is loaded into your triple store.
+
+### Issue: Wrong Data Type
+**Solution**: Verify that values are specified with `^^xsd:decimal` datatype indicator:
+```turtle
+# Correct
+gmn:P70_16_documents_sale_price_amount "1500.50"^^xsd:decimal .
+
+# Incorrect (no datatype)
+gmn:P70_16_documents_sale_price_amount "1500.50" .
+
+# Incorrect (wrong datatype)
+gmn:P70_16_documents_sale_price_amount "1500.50"^^xsd:float .
+```
+
+### Issue: Validation Errors
+**Solution**: Run a TTL validator:
+```bash
+rapper -i turtle -o ntriples gmn_ontology.ttl > /dev/null
+```
+
+If there are syntax errors, check for:
+- Missing semicolons or periods
+- Incorrect prefix usage
+- Unclosed quotes or brackets
+- Invalid URI characters
+
+## Integration Notes
+
+### With P70_17 Currency Property
+The P70_16 amount property and P70_17 currency property must be coordinated:
+
+1. Both transform to the same E97_Monetary_Amount entity
+2. P70_16 should be processed before P70_17 in the transformation pipeline
+3. They share the same URI pattern for the monetary amount
+4. Both are optional but best practice is to use them together
+
+### With E8_Acquisition Properties
+The monetary amount is embedded in the E8_Acquisition alongside:
+- P23_transferred_title_from (seller via P70_1)
+- P22_transferred_title_to (buyer via P70_2)
+- P24_transferred_title_of (object via P70_3)
+- P9_consists_of (sub-activities for procurators, guarantors, witnesses)
+
+## Best Practices
+
+1. **Always specify decimal datatype**: Use `^^xsd:decimal`
+2. **Use with currency**: Combine with P70_17 for complete monetary values
+3. **Preserve precision**: Record decimals exactly as in source documents
+4. **Don't round**: Keep original precision (e.g., 1500.50, not 1501)
+5. **No formatting**: Don't include currency symbols or thousands separators
+6. **Document uncertainty**: If amount is unclear, add notes rather than guessing
+
+## Additional Resources
+
+- CIDOC-CRM documentation: http://www.cidoc-crm.org/
+- E97_Monetary_Amount: http://www.cidoc-crm.org/Entity/E97-Monetary-Amount
+- P181_has_amount: http://www.cidoc-crm.org/Property/P181-has-amount
+- P180_has_currency: http://www.cidoc-crm.org/Property/P180-has-currency
+
+---
+
+**File Version**: 1.0  
+**Last Updated**: October 2025  
+**Property Created**: 2025-10-17
