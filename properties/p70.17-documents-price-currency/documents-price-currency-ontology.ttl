@@ -1,0 +1,162 @@
+# ============================================================================
+# TTL Additions for gmn:P70_17_documents_sale_price_currency
+# ============================================================================
+# 
+# INSTRUCTIONS:
+# 1. Copy the entire property definition below
+# 2. Paste into gmn_ontology.ttl after the P70.16 property definition
+# 3. Verify all prefixes are declared at the top of your ontology file
+# 4. Validate the TTL syntax after adding
+#
+# LOCATION: Insert after gmn:P70_16_documents_sale_price_amount
+#
+# ============================================================================
+
+# Property: P70.17 documents sale price currency
+gmn:P70_17_documents_sale_price_currency
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.17 documents sale price currency"@en ;
+    rdfs:comment "Simplified property for expressing the currency unit of the sale price documented in a sales contract. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P177_assigned_property_of_type > E97_Monetary_Amount > P180_has_currency > E98_Currency. This property captures the currency type (e.g., Genoese lira, florin, ducat). Use P70.16 to specify the numeric amount. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The value should reference a currency entity or use a controlled vocabulary of currency types."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_2_Sales_Contract ;
+    rdfs:range cidoc:E98_Currency ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P177_assigned_property_of_type, cidoc:P180_has_currency .
+
+# ============================================================================
+# END OF TTL ADDITIONS
+# ============================================================================
+
+# ============================================================================
+# REQUIRED PREFIXES
+# ============================================================================
+# Ensure these prefixes are declared at the top of your gmn_ontology.ttl file:
+#
+# @prefix gmn: <http://genoese-merchants.net/ontology/> .
+# @prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+# @prefix owl: <http://www.w3.org/2002/07/owl#> .
+# @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+# @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+# @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+# @prefix dcterms: <http://purl.org/dc/terms/> .
+#
+# ============================================================================
+
+# ============================================================================
+# VERIFICATION CHECKLIST
+# ============================================================================
+# After adding this property to your ontology file, verify:
+# 
+# [ ] Property IRI is correct: gmn:P70_17_documents_sale_price_currency
+# [ ] Property is declared as both owl:ObjectProperty and rdf:Property
+# [ ] Label is present with @en language tag
+# [ ] Comment explains CIDOC-CRM path and usage
+# [ ] rdfs:subPropertyOf points to cidoc:P70_documents
+# [ ] rdfs:domain is gmn:E31_2_Sales_Contract
+# [ ] rdfs:range is cidoc:E98_Currency
+# [ ] dcterms:created date is present
+# [ ] rdfs:seeAlso references are included
+# [ ] No syntax errors in TTL
+# [ ] Property appears after P70.16 in file
+#
+# ============================================================================
+
+# ============================================================================
+# USAGE EXAMPLES
+# ============================================================================
+
+# Example 1: Simple currency reference
+# <contract001> gmn:P70_17_documents_sale_price_currency <lira_genovese> .
+
+# Example 2: Complete price with amount and currency
+# <contract002> a gmn:E31_2_Sales_Contract ;
+#     gmn:P70_16_documents_sale_price_amount "250.00"^^xsd:decimal ;
+#     gmn:P70_17_documents_sale_price_currency <lira_genovese> .
+
+# Example 3: Currency with additional metadata
+# <contract003> gmn:P70_17_documents_sale_price_currency [
+#     a cidoc:E98_Currency ;
+#     rdfs:label "Florin"@en ;
+#     rdfs:label "Fiorino"@it
+# ] .
+
+# ============================================================================
+# RELATED PROPERTIES
+# ============================================================================
+# This property works together with:
+#
+# - gmn:P70_16_documents_sale_price_amount (numeric amount)
+# - cidoc:P70_documents (parent property)
+# - cidoc:P177_assigned_property_of_type (target property chain)
+# - cidoc:P180_has_currency (final CIDOC property)
+#
+# ============================================================================
+
+# ============================================================================
+# TRANSFORMATION TARGET
+# ============================================================================
+# After transformation, this property becomes:
+#
+# <contract> a gmn:E31_2_Sales_Contract ;
+#     cidoc:P70_documents [
+#         a cidoc:E8_Acquisition ;
+#         cidoc:P177_assigned_property_of_type [
+#             a cidoc:E97_Monetary_Amount ;
+#             cidoc:P180_has_currency <currency_uri>
+#         ]
+#     ] .
+#
+# ============================================================================
+
+# ============================================================================
+# COMMON CURRENCY ENTITIES
+# ============================================================================
+# Here are some common currency URIs for reference:
+#
+# <lira_genovese> a cidoc:E98_Currency ;
+#     rdfs:label "Genoese Lira"@en ;
+#     rdfs:label "Lira Genovese"@it .
+#
+# <florin> a cidoc:E98_Currency ;
+#     rdfs:label "Florin"@en ;
+#     rdfs:label "Fiorino"@it .
+#
+# <ducat> a cidoc:E98_Currency ;
+#     rdfs:label "Ducat"@en ;
+#     rdfs:label "Ducato"@it .
+#
+# <soldo> a cidoc:E98_Currency ;
+#     rdfs:label "Soldo"@en, "Soldo"@it .
+#
+# <denaro> a cidoc:E98_Currency ;
+#     rdfs:label "Denaro"@en, "Denaro"@it .
+#
+# ============================================================================
+
+# ============================================================================
+# NOTES
+# ============================================================================
+# 
+# 1. Property Type: This is an ObjectProperty because it links to E98_Currency
+#    entities (not a literal value like P70.16 which uses xsd:decimal)
+#
+# 2. Domain Restriction: Limited to gmn:E31_2_Sales_Contract - only sales
+#    contracts can have documented sale prices
+#
+# 3. Companion Property: Should typically be used together with P70.16
+#    (amount) to provide complete price information
+#
+# 4. Currency References: Values can be:
+#    - URI references to currency entities
+#    - Blank nodes with currency metadata
+#    - Structured objects with additional properties
+#
+# 5. Historical Accuracy: Use historically appropriate currency types
+#    from controlled vocabularies when available
+#
+# 6. Transformation: This convenience property will be removed during
+#    transformation to CIDOC-CRM compliance, replaced by the full
+#    property chain through E8_Acquisition and E97_Monetary_Amount
+#
+# ============================================================================

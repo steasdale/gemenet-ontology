@@ -1,0 +1,429 @@
+# ============================================================================
+# Document Additions for gmn:P70_17_documents_sale_price_currency
+# ============================================================================
+#
+# INSTRUCTIONS:
+# Copy the relevant sections below and add them to your main documentation
+# file in the Sales Contract Properties section, after P70.16.
+#
+# ============================================================================
+
+# ============================================================================
+# SECTION 1: PROPERTY OVERVIEW
+# ============================================================================
+
+## P70.17 documents sale price currency
+
+**IRI:** `gmn:P70_17_documents_sale_price_currency`
+
+**Label:** "P70.17 documents sale price currency"@en
+
+**Type:** ObjectProperty
+
+**Domain:** gmn:E31_2_Sales_Contract
+
+**Range:** cidoc:E98_Currency
+
+**Definition:** Simplified property for expressing the currency unit of the sale price documented in a sales contract. This property captures the currency type (e.g., Genoese lira, florin, ducat). Use P70.16 to specify the numeric amount.
+
+**CIDOC-CRM Path:**
+```
+E31_Document > P70_documents > E8_Acquisition > P177_assigned_property_of_type > E97_Monetary_Amount > P180_has_currency > E98_Currency
+```
+
+**Companion Property:** Works together with P70.16 (documents sale price amount) to provide complete monetary value information.
+
+**Created:** 2025-10-17
+
+# ============================================================================
+# SECTION 2: USAGE EXAMPLES
+# ============================================================================
+
+### Usage Examples
+
+#### Example 1: Simple Currency Reference
+
+```turtle
+@prefix gmn: <http://genoese-merchants.net/ontology/> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+
+<http://example.org/contract/1455_05_10_001> a gmn:E31_2_Sales_Contract ;
+    gmn:P70_17_documents_sale_price_currency <http://vocab.example.org/currency/lira_genovese> .
+```
+
+#### Example 2: Complete Price with Amount and Currency
+
+```turtle
+<http://example.org/contract/1460_03_15_042> a gmn:E31_2_Sales_Contract ;
+    gmn:P1_1_has_name "Sale of house in Piazza Banchi"@en ;
+    gmn:P70_1_documents_seller <http://example.org/person/giovanni_doria> ;
+    gmn:P70_2_documents_buyer <http://example.org/person/raffaele_sacco> ;
+    gmn:P70_3_documents_transfer_of <http://example.org/property/house_piazza_banchi_12> ;
+    gmn:P70_16_documents_sale_price_amount "350.00"^^xsd:decimal ;
+    gmn:P70_17_documents_sale_price_currency <http://vocab.example.org/currency/lira_genovese> ;
+    gmn:P94i_1_was_created_by <http://example.org/notary/antonio_basso> ;
+    gmn:P94i_2_has_enactment_date "1460-03-15"^^xsd:date .
+```
+
+#### Example 3: Currency with Additional Metadata
+
+```turtle
+<http://example.org/contract/1458_11_20_123> a gmn:E31_2_Sales_Contract ;
+    gmn:P70_16_documents_sale_price_amount "1200.00"^^xsd:decimal ;
+    gmn:P70_17_documents_sale_price_currency [
+        a cidoc:E98_Currency ;
+        rdfs:label "Florin"@en ;
+        rdfs:label "Fiorino"@it ;
+        skos:broader <http://vocab.example.org/currency/gold_coins>
+    ] .
+```
+
+# ============================================================================
+# SECTION 3: TRANSFORMATION EXAMPLES
+# ============================================================================
+
+### Transformation Examples
+
+#### Before Transformation (Simplified)
+
+```turtle
+<http://example.org/contract/1455_05_10_001> a gmn:E31_2_Sales_Contract ;
+    gmn:P70_16_documents_sale_price_amount "250.00"^^xsd:decimal ;
+    gmn:P70_17_documents_sale_price_currency <http://vocab.example.org/currency/lira_genovese> .
+```
+
+#### After Transformation (CIDOC-CRM Compliant)
+
+```turtle
+<http://example.org/contract/1455_05_10_001> a gmn:E31_2_Sales_Contract ;
+    cidoc:P70_documents <http://example.org/contract/1455_05_10_001/acquisition> .
+
+<http://example.org/contract/1455_05_10_001/acquisition> a cidoc:E8_Acquisition ;
+    cidoc:P177_assigned_property_of_type <http://example.org/contract/1455_05_10_001/acquisition/monetary_amount> .
+
+<http://example.org/contract/1455_05_10_001/acquisition/monetary_amount> a cidoc:E97_Monetary_Amount ;
+    cidoc:P180_has_currency_amount "250.00"^^xsd:decimal ;
+    cidoc:P180_has_currency <http://vocab.example.org/currency/lira_genovese> .
+
+<http://vocab.example.org/currency/lira_genovese> a cidoc:E98_Currency ;
+    rdfs:label "Genoese Lira"@en ;
+    rdfs:label "Lira Genovese"@it .
+```
+
+# ============================================================================
+# SECTION 4: COMMON CURRENCIES TABLE
+# ============================================================================
+
+### Common Genoese Currencies
+
+The following table lists common currency types found in Genoese notarial records:
+
+| Currency | Latin Name | Italian Name | Type | Description |
+|----------|-----------|--------------|------|-------------|
+| **Genoese Lira** | libra ianuensis | lira genovese | Money of account | Primary unit, divided into 20 soldi |
+| **Florin** | florenus | fiorino | Gold coin | Florentine gold coin, widely accepted |
+| **Ducat** | ducatus | ducato | Gold coin | Venetian gold coin, premium currency |
+| **Soldo** | solidus | soldo | Money of account | 1/20 of a lira, 12 denari |
+| **Denaro** | denarius | denaro | Money of account | Smallest unit, 1/240 of a lira |
+| **Genoese Genovino** | ianuinus | genovino | Gold coin | Genoese gold coin |
+
+**Currency Relationships:**
+- 1 Lira Genovese = 20 Soldi = 240 Denari
+- 1 Florin ≈ 25-30 Soldi (varied by period and market)
+- 1 Ducat ≈ 28-32 Soldi (varied by period and market)
+
+**Note:** Many prices were recorded in lire, soldi, and denari (£.s.d format), e.g., "£5.10s.6d" meaning 5 lire, 10 soldi, and 6 denari.
+
+# ============================================================================
+# SECTION 5: PROPERTY COMPARISON TABLE
+# ============================================================================
+
+### Comparison: P70.16 vs P70.17
+
+The following table compares the two price-related properties:
+
+| Aspect | P70.16 (Amount) | P70.17 (Currency) |
+|--------|----------------|-------------------|
+| **Purpose** | Documents numeric value | Documents currency type |
+| **Property Type** | DatatypeProperty | ObjectProperty |
+| **Domain** | gmn:E31_2_Sales_Contract | gmn:E31_2_Sales_Contract |
+| **Range** | xsd:decimal | cidoc:E98_Currency |
+| **CIDOC Target** | P180_has_currency_amount | P180_has_currency |
+| **Example Value** | "350.00"^^xsd:decimal | <lira_genovese> |
+| **Usage** | Required for price | Required for price |
+| **Typical Pattern** | Used together with P70.17 | Used together with P70.16 |
+
+**Integration:** Both properties contribute to the same E97_Monetary_Amount entity in the transformed CIDOC-CRM structure.
+
+# ============================================================================
+# SECTION 6: PRACTICAL DATA ENTRY GUIDELINES
+# ============================================================================
+
+### Data Entry Guidelines
+
+**When to Use P70.17:**
+
+1. **Every Sale with a Price:** If a sales contract documents a monetary price, both P70.16 (amount) and P70.17 (currency) should be used together.
+
+2. **Currency Identification:** Identify the currency type from the source document. Common indicators:
+   - "in libre ianuensium" → Genoese lira
+   - "in florenis auri" → Gold florins
+   - "in ducatis venetis" → Venetian ducats
+
+3. **Mixed Currency Amounts:** If the document records a price in multiple currency types (e.g., "50 florins and 10 lire"), create separate monetary amounts or document the primary currency only.
+
+**Currency Reference Format:**
+
+Use controlled vocabulary URIs when possible:
+```turtle
+gmn:P70_17_documents_sale_price_currency <http://vocab.example.org/currency/lira_genovese>
+```
+
+Or create structured currency entities with metadata:
+```turtle
+gmn:P70_17_documents_sale_price_currency [
+    a cidoc:E98_Currency ;
+    rdfs:label "Genoese Lira"@en ;
+    skos:notation "£" ;
+    dcterms:description "Primary unit of account in medieval Genoa"@en
+]
+```
+
+# ============================================================================
+# SECTION 7: RESEARCH QUERIES
+# ============================================================================
+
+### Research Applications and Queries
+
+#### Query 1: Find All Sales in a Specific Currency
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX gmn: <http://genoese-merchants.net/ontology/>
+
+SELECT ?contract ?amount ?seller ?buyer
+WHERE {
+    ?contract a gmn:E31_2_Sales_Contract ;
+              cidoc:P70_documents ?acquisition .
+    
+    ?acquisition cidoc:P23_transferred_title_from ?seller ;
+                 cidoc:P22_transferred_title_to ?buyer ;
+                 cidoc:P177_assigned_property_of_type ?monetary .
+    
+    ?monetary cidoc:P180_has_currency <http://vocab.example.org/currency/florin> ;
+              cidoc:P180_has_currency_amount ?amount .
+}
+ORDER BY DESC(?amount)
+```
+
+#### Query 2: Currency Distribution Analysis
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX gmn: <http://genoese-merchants.net/ontology/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?currency_label (COUNT(?contract) as ?num_contracts) 
+       (AVG(?amount) as ?avg_amount) (SUM(?amount) as ?total_value)
+WHERE {
+    ?contract a gmn:E31_2_Sales_Contract ;
+              cidoc:P70_documents ?acquisition .
+    
+    ?acquisition cidoc:P177_assigned_property_of_type ?monetary .
+    
+    ?monetary cidoc:P180_has_currency ?currency ;
+              cidoc:P180_has_currency_amount ?amount .
+    
+    ?currency rdfs:label ?currency_label .
+    FILTER(lang(?currency_label) = "en")
+}
+GROUP BY ?currency_label
+ORDER BY DESC(?num_contracts)
+```
+
+#### Query 3: Price Range Analysis by Currency
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX gmn: <http://genoese-merchants.net/ontology/>
+
+SELECT ?currency (MIN(?amount) as ?min_price) (MAX(?amount) as ?max_price)
+WHERE {
+    ?contract a gmn:E31_2_Sales_Contract ;
+              cidoc:P70_documents ?acquisition .
+    
+    ?acquisition cidoc:P177_assigned_property_of_type ?monetary .
+    
+    ?monetary cidoc:P180_has_currency ?currency ;
+              cidoc:P180_has_currency_amount ?amount .
+}
+GROUP BY ?currency
+```
+
+# ============================================================================
+# SECTION 8: IMPLEMENTATION CHECKLIST
+# ============================================================================
+
+### Implementation Checklist
+
+Use this checklist when implementing P70.17 in your system:
+
+**Ontology:**
+- [ ] Property definition added to gmn_ontology.ttl
+- [ ] Property placed after P70.16 definition
+- [ ] All required metadata included (label, comment, domain, range)
+- [ ] TTL syntax validated
+
+**Transformation:**
+- [ ] Transformation function added to gmn_to_cidoc_transform.py
+- [ ] Function placed after transform_p70_16_documents_sale_price_amount()
+- [ ] Function called in transform_item()
+- [ ] Required imports present (uuid4)
+
+**Testing:**
+- [ ] Test with currency only
+- [ ] Test with amount and currency together
+- [ ] Test with structured currency objects
+- [ ] Test integration with P70.16
+- [ ] Test edge cases (missing data, multiple currencies)
+- [ ] Validate output structure
+
+**Documentation:**
+- [ ] Examples added to main documentation
+- [ ] Currency vocabulary/reference list created
+- [ ] Data entry guidelines updated
+- [ ] Query examples provided
+
+**Data Quality:**
+- [ ] Currency URI pattern standardized
+- [ ] Historical currency entities created
+- [ ] Currency labels added (multilingual where appropriate)
+- [ ] Validation rules implemented
+
+# ============================================================================
+# SECTION 9: HISTORICAL CONTEXT AND NOTES
+# ============================================================================
+
+### Historical Context
+
+**Medieval Genoese Currency System:**
+
+The Genoese monetary system in the medieval period was complex, involving both actual coins and abstract units of account:
+
+1. **Money of Account (Lira-Soldi-Denari):**
+   - The lira, soldo, and denaro were primarily units of account
+   - Not all were minted as physical coins
+   - Used for bookkeeping and price documentation
+
+2. **Actual Coinage:**
+   - Gold coins: genovino, florin (Florentine), ducat (Venetian)
+   - Silver coins: grosso, various denominations
+   - Base metal: piccolo, various small denominations
+
+3. **Currency Fluctuation:**
+   - Values of gold coins relative to lira fluctuated
+   - Exchange rates varied by market conditions
+   - Contracts often specified "good and legal" currency
+
+**Common Notarial Phrases:**
+
+- "libre ianuensium" - Genoese pounds/lire
+- "in florenis auri de florentia" - in gold florins of Florence
+- "in ducatis venetorum" - in Venetian ducats
+- "in bona et legali moneta" - in good and legal money
+
+**Research Considerations:**
+
+When analyzing prices in historical documents:
+- Consider inflation and purchasing power over time
+- Account for currency debasement
+- Note whether amounts are in money of account or specie
+- Recognize regional and temporal variations in exchange rates
+
+# ============================================================================
+# SECTION 10: RELATED PROPERTIES CROSS-REFERENCE
+# ============================================================================
+
+### Related Properties
+
+P70.17 works in conjunction with several other properties:
+
+**Direct Companion:**
+- **P70.16** - documents sale price amount: Provides the numeric value
+
+**Shared Structure:**
+- **P70.1** - documents seller: Identifies the transferring party
+- **P70.2** - documents buyer: Identifies the receiving party
+- **P70.3** - documents transfer of: Identifies the property being sold
+
+**Contextual Properties:**
+- **P94i.2** - has enactment date: Date of transaction (useful for currency value analysis)
+- **P94i.3** - has place of enactment: Location affects currency preferences
+- **P46i.1** - is contained in: Links to archival source
+
+**Similar Structures:**
+- Dowry contracts (P70.32-34) may also use P70.16-17 for documenting dowry values
+- Other transfer types may document monetary values using the same properties
+
+# ============================================================================
+# SECTION 11: TROUBLESHOOTING GUIDE
+# ============================================================================
+
+### Common Issues and Solutions
+
+**Issue 1: Currency Not Appearing After Transformation**
+- **Symptom:** P180_has_currency missing from E97_Monetary_Amount
+- **Solution:** Verify property name is exactly 'gmn:P70_17_documents_sale_price_currency'
+- **Solution:** Check that transformation function is called in transform_item()
+- **Solution:** Ensure currency value is provided as a list
+
+**Issue 2: Separate Monetary Amount Nodes for Amount and Currency**
+- **Symptom:** P70.16 and P70.17 create different E97_Monetary_Amount entities
+- **Solution:** Verify both transformations check for existing P177_assigned_property_of_type
+- **Solution:** Ensure consistent URI generation pattern
+- **Solution:** Process P70.16 before P70.17 in transform_item()
+
+**Issue 3: Invalid Currency Type**
+- **Symptom:** Currency entity missing cidoc:E98_Currency type
+- **Solution:** Check type assignment logic in transformation function
+- **Solution:** Verify structured currency objects include @type
+- **Solution:** Ensure simple URIs get wrapped with proper type
+
+**Issue 4: Historical Currency Identification**
+- **Symptom:** Uncertain which currency URI to use
+- **Solution:** Consult numismatic references for medieval Genoese currencies
+- **Solution:** Examine Latin/Italian terms in source documents
+- **Solution:** Create currency entities with source documentation
+
+# ============================================================================
+# SECTION 12: BEST PRACTICES
+# ============================================================================
+
+### Best Practices
+
+1. **Always Pair with P70.16:** Document both amount and currency for complete price information
+
+2. **Use Controlled Vocabularies:** Reference standardized currency URIs from established vocabularies (e.g., Nomisma for historical currencies)
+
+3. **Document Currency Variations:** Note spelling variants and regional terms in currency entity labels
+
+4. **Preserve Source Language:** Include both Latin and Italian labels for currency entities
+
+5. **Record Exchange Rates:** When available, document historical exchange rates in separate entities
+
+6. **Date-Specific Currency Values:** Consider linking currency values to specific time periods
+
+7. **Validate Currency References:** Implement validation to ensure currency URIs exist and are properly formed
+
+8. **Multilingual Support:** Provide currency labels in English, Italian, and Latin at minimum
+
+9. **Link to Numismatic Resources:** Reference external numismatic authorities when available
+
+10. **Document Uncertainty:** Use appropriate CIDOC-CRM properties to express uncertainty in currency identification
+
+# ============================================================================
+# END OF DOCUMENT ADDITIONS
+# ============================================================================
+
+NOTE: These sections can be copied and pasted into your main documentation file.
+Adjust formatting and structure to match your documentation style.
