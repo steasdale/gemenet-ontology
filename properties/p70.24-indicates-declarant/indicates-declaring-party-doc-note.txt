@@ -1,0 +1,592 @@
+# GMN P70.24 Indicates Declaring Party - Documentation Additions
+
+This file contains examples, tables, and text snippets to add to your main documentation file for the gmn:P70_24_indicates_declarant property.
+
+================================================================================
+SECTION 1: PROPERTY DEFINITION
+================================================================================
+
+Add this to the "Declaration Properties" section of your documentation:
+
+---BEGIN SNIPPET---
+
+### P70.24 indicates declarant
+
+**Property URI**: `gmn:P70_24_indicates_declarant`
+
+**Label**: "P70.24 indicates declarant" (English)
+
+**Domain**: `gmn:E31_5_Declaration`
+
+**Range**: `cidoc:E39_Actor`
+
+**Superproperty**: `cidoc:P70_documents`
+
+**Definition**: Simplified property for associating a declaration document with the person or entity making the declaration. The declarant is the party who is formally stating, acknowledging, or asserting something.
+
+**CIDOC-CRM Path**:
+```
+E31_Document > P70_documents > E7_Activity > P14_carried_out_by > E39_Actor
+```
+
+**Inverse**: `cidoc:P14i_performed` (from E39_Actor to E7_Activity)
+
+**Quantification**: Many to many (0,n:0,n) - A declaration can have multiple declarants (joint declarations), and an actor can be the declarant in multiple declarations.
+
+**Implicit Activity Type**: AAT 300027623 (declaration)
+
+**Scope Note**: The declarant is the person or organization formally making the statement, acknowledgment, or assertion. This is distinct from P70_22 (receiving party), which can be used for the recipient of the declaration. Multiple declarants indicate joint declarations where all parties are making the same statement together.
+
+**Examples**:
+- A debtor declaring a debt owed
+- Multiple heirs jointly declaring property rights
+- An official making a formal statement
+- Business partners declaring contractual obligations
+
+---END SNIPPET---
+
+
+================================================================================
+SECTION 2: TRANSFORMATION EXAMPLE
+================================================================================
+
+Add this to your "Transformation Examples" section:
+
+---BEGIN SNIPPET---
+
+### Example: Declaration with Declarant
+
+**Input (shortcut)**:
+```turtle
+<debt_declaration_01> a gmn:E31_5_Declaration ;
+    gmn:P1_1_has_name "Marco's debt acknowledgment" ;
+    gmn:P70_24_indicates_declarant <merchant_marco> ;
+    gmn:P70_25_indicates_declaration_subject <debt_500_lire> ;
+    gmn:P94i_2_has_enactment_date "1445-03-20"^^xsd:date .
+```
+
+**Output (CIDOC-CRM compliant)**:
+```turtle
+<debt_declaration_01> a gmn:E31_5_Declaration ;
+    cidoc:P1_is_identified_by <debt_declaration_01/appellation> ;
+    cidoc:P70_documents <debt_declaration_01/declaration> ;
+    cidoc:P94i_was_created_by <debt_declaration_01/creation> .
+
+<debt_declaration_01/appellation> a cidoc:E41_Appellation ;
+    cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300404650> ;
+    cidoc:P190_has_symbolic_content "Marco's debt acknowledgment" .
+
+<debt_declaration_01/declaration> a cidoc:E7_Activity ;
+    cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300027623> ;
+    cidoc:P14_carried_out_by <merchant_marco> ;
+    cidoc:P16_used_specific_object <debt_500_lire> .
+
+<debt_declaration_01/creation> a cidoc:E65_Creation ;
+    cidoc:P4_has_time-span <debt_declaration_01/creation/timespan> .
+
+<debt_declaration_01/creation/timespan> a cidoc:E52_Time-Span ;
+    cidoc:P82_at_some_time_within "1445-03-20"^^xsd:date .
+```
+
+---END SNIPPET---
+
+
+================================================================================
+SECTION 3: JOINT DECLARATION EXAMPLE
+================================================================================
+
+Add this example showing multiple declarants:
+
+---BEGIN SNIPPET---
+
+### Example: Joint Declaration (Multiple Declarants)
+
+**Input (shortcut)**:
+```turtle
+<property_declaration_02> a gmn:E31_5_Declaration ;
+    gmn:P1_1_has_name "Joint declaration of vineyard ownership" ;
+    gmn:P70_24_indicates_declarant <brother_antonio> ,
+                                   <brother_giovanni> ,
+                                   <brother_francesco> ;
+    gmn:P70_25_indicates_declaration_subject <family_vineyard> .
+```
+
+**Output (CIDOC-CRM compliant)**:
+```turtle
+<property_declaration_02> a gmn:E31_5_Declaration ;
+    cidoc:P1_is_identified_by <property_declaration_02/appellation> ;
+    cidoc:P70_documents <property_declaration_02/declaration> .
+
+<property_declaration_02/appellation> a cidoc:E41_Appellation ;
+    cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300404650> ;
+    cidoc:P190_has_symbolic_content "Joint declaration of vineyard ownership" .
+
+<property_declaration_02/declaration> a cidoc:E7_Activity ;
+    cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300027623> ;
+    cidoc:P14_carried_out_by <brother_antonio> ,
+                             <brother_giovanni> ,
+                             <brother_francesco> ;
+    cidoc:P16_used_specific_object <family_vineyard> .
+```
+
+**Note**: All three brothers are linked to the same declaration activity via separate P14_carried_out_by statements, indicating they jointly made the declaration.
+
+---END SNIPPET---
+
+
+================================================================================
+SECTION 4: COMPARISON TABLE
+================================================================================
+
+Add this table to compare P70.24 with related properties:
+
+---BEGIN SNIPPET---
+
+## Declaration Property Comparison
+
+| Property | Purpose | Range | CIDOC Path |
+|----------|---------|-------|------------|
+| **P70.24 indicates declarant** | Who makes the declaration | E39_Actor | E7 > P14 carried_out_by |
+| **P70.25 indicates declaration subject** | What is being declared | E1_CRM_Entity | E7 > P16 used_specific_object |
+| **P70.22 indicates receiving party** | To whom it is directed | E39_Actor | E7 > P01 has_domain |
+
+**Typical Usage Pattern**:
+```turtle
+<declaration> a gmn:E31_5_Declaration ;
+    gmn:P70_24_indicates_declarant <actor> ;       # Required: who declares
+    gmn:P70_25_indicates_declaration_subject <object> ;  # Required: what is declared
+    gmn:P70_22_indicates_receiving_party <recipient> .   # Optional: to whom
+```
+
+---END SNIPPET---
+
+
+================================================================================
+SECTION 5: ROLE DISTINCTION TABLE
+================================================================================
+
+Add this to clarify different actor roles in declarations:
+
+---BEGIN SNIPPET---
+
+## Declaration Roles Distinction
+
+| Role | Property | Meaning | Example |
+|------|----------|---------|---------|
+| **Declarant** | P70.24 | Makes the statement | Marco declares he owes money |
+| **Recipient** | P70.22 | Receives the statement | City official receives the declaration |
+| **Notary** | P94i_1 | Creates the document | Notary Pietro writes the document |
+| **Subject** | P70.25 | What is declared about | The debt being acknowledged |
+
+**Important**: The declarant (who makes the statement) is different from the notary (who writes the document). One person can be both, but they are conceptually distinct roles.
+
+---END SNIPPET---
+
+
+================================================================================
+SECTION 6: USE CASE EXAMPLES
+================================================================================
+
+Add these practical use cases to your documentation:
+
+---BEGIN SNIPPET---
+
+## Common Declaration Use Cases
+
+### 1. Debt Acknowledgment (Confessio Debiti)
+
+A merchant acknowledges owing money to another merchant:
+
+```turtle
+<debt_acknowledgment_01> a gmn:E31_5_Declaration ;
+    gmn:P1_1_has_name "Marco acknowledges debt to Giovanni" ;
+    gmn:P70_24_indicates_declarant <merchant_marco_doria> ;
+    gmn:P70_25_indicates_declaration_subject <debt_500_lire> ;
+    gmn:P94i_2_has_enactment_date "1445-06-15"^^xsd:date .
+```
+
+### 2. Property Rights Declaration
+
+A widow declares her ownership of inherited property:
+
+```turtle
+<property_claim_02> a gmn:E31_5_Declaration ;
+    gmn:P1_1_has_name "Lucia's property rights declaration" ;
+    gmn:P70_24_indicates_declarant <widow_lucia_cattaneo> ;
+    gmn:P70_25_indicates_declaration_subject <house_via_tommaso> ;
+    gmn:P70_22_indicates_receiving_party <city_magistrate> .
+```
+
+### 3. Partnership Share Declaration
+
+Business partners jointly declare their shares in a venture:
+
+```turtle
+<partnership_declaration_03> a gmn:E31_5_Declaration ;
+    gmn:P1_1_has_name "Declaration of partnership shares in spice trade" ;
+    gmn:P70_24_indicates_declarant <partner_antonio> ,
+                                   <partner_battista> ,
+                                   <partner_carlo> ;
+    gmn:P70_25_indicates_declaration_subject <partnership_shares> .
+```
+
+### 4. Obligation Recognition
+
+An heir declares acceptance of estate obligations:
+
+```turtle
+<obligation_acceptance_04> a gmn:E31_5_Declaration ;
+    gmn:P1_1_has_name "Francesco accepts estate obligations" ;
+    gmn:P70_24_indicates_declarant <heir_francesco> ;
+    gmn:P70_25_indicates_declaration_subject <estate_debts> ;
+    gmn:P94i_1_was_created_by <notary_pietro> .
+```
+
+### 5. Fact Statement
+
+An official makes a formal statement of fact:
+
+```turtle
+<official_statement_05> a gmn:E31_5_Declaration ;
+    gmn:P1_1_has_name "Harbor master's statement on ship arrival" ;
+    gmn:P70_24_indicates_declarant <harbor_master_domenico> ;
+    gmn:P70_25_indicates_declaration_subject <ship_arrival_event> ;
+    gmn:P94i_3_has_place_of_enactment <genoa_port> .
+```
+
+---END SNIPPET---
+
+
+================================================================================
+SECTION 7: ACTIVITY TYPE INFORMATION
+================================================================================
+
+Add this information about the AAT typing:
+
+---BEGIN SNIPPET---
+
+## Activity Typing for Declarations
+
+All declaration activities are typed using Getty AAT:
+
+**AAT URI**: http://vocab.getty.edu/page/aat/300027623
+
+**AAT Label**: "declaration"
+
+**AAT Definition**: "Written or oral statements made, as under oath before a notary public, by one who has knowledge of facts"
+
+**Usage in GMN**:
+```turtle
+<declaration/activity> a cidoc:E7_Activity ;
+    cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300027623> .
+```
+
+This typing is automatically added during transformation and distinguishes declaration activities from other types of documented activities (sales, arbitrations, etc.).
+
+---END SNIPPET---
+
+
+================================================================================
+SECTION 8: PROPERTY COMPARISON ACROSS DOCUMENT TYPES
+================================================================================
+
+Add this comprehensive comparison table:
+
+---BEGIN SNIPPET---
+
+## "Active Party" Properties Across Document Types
+
+Different document types use different properties for the "active party" role, even though they may map to similar CIDOC-CRM structures:
+
+| Document Type | Property | Active Party Role | CIDOC Activity | CIDOC Link |
+|--------------|----------|-------------------|----------------|------------|
+| Sales Contract | P70.1 | Seller | E8_Acquisition | P23 transferred_title_from |
+| **Declaration** | **P70.24** | **Declarant** | **E7_Activity** | **P14 carried_out_by** |
+| Cession | P70.21 | Conceding party | E7_Activity | P14 carried_out_by |
+| Donation | P70.32 | Donor | E8_Acquisition | P23 transferred_title_from |
+| Correspondence | P70.26 | Sender | E7_Activity | P14 carried_out_by |
+| Arbitration | P70.18 | Disputing party | E7_Activity | P14 carried_out_by |
+
+**Key Insight**: While many properties map to P14_carried_out_by or P23_transferred_title_from, each property has distinct semantics appropriate to its document type.
+
+---END SNIPPET---
+
+
+================================================================================
+SECTION 9: INTEGRATION NOTES
+================================================================================
+
+Add this implementation guidance:
+
+---BEGIN SNIPPET---
+
+## Implementation Notes
+
+### Activity Sharing
+
+P70.24 and P70.25 share the same E7_Activity node:
+
+```turtle
+# Both properties contribute to the same activity
+<declaration> cidoc:P70_documents <declaration/activity> .
+
+<declaration/activity> a cidoc:E7_Activity ;
+    cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300027623> ;
+    cidoc:P14_carried_out_by <declarant> ;         # From P70.24
+    cidoc:P16_used_specific_object <subject> .     # From P70.25
+```
+
+The transformation functions check for existing activities and reuse them to ensure proper integration.
+
+### URI Pattern
+
+Declaration activities follow this URI pattern:
+```
+{document_uri}/declaration
+```
+
+Example:
+- Document: `http://example.org/doc123`
+- Activity: `http://example.org/doc123/declaration`
+
+### Processing Order
+
+In the transformation pipeline, P70.24 should be processed in this order:
+1. Creation properties (P94i_1, P94i_2, P94i_3)
+2. Cession properties (P70.21-P70.23)
+3. **Declaration properties (P70.24-P70.25)** ← HERE
+4. Correspondence properties (P70.26+)
+
+---END SNIPPET---
+
+
+================================================================================
+SECTION 10: SPARQL QUERY EXAMPLES
+================================================================================
+
+Add these SPARQL queries to your documentation:
+
+---BEGIN SNIPPET---
+
+## SPARQL Queries for Declarations
+
+### Find all declarations and their declarants
+
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?declaration ?declarant ?name
+WHERE {
+    ?declaration a gmn:E31_5_Declaration ;
+                 cidoc:P70_documents ?activity .
+    ?activity cidoc:P14_carried_out_by ?declarant .
+    
+    OPTIONAL {
+        ?declarant cidoc:P1_is_identified_by/cidoc:P190_has_symbolic_content ?name .
+    }
+}
+```
+
+### Find joint declarations (multiple declarants)
+
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?declaration ?declarationName (COUNT(DISTINCT ?declarant) as ?count)
+WHERE {
+    ?declaration a gmn:E31_5_Declaration ;
+                 cidoc:P1_is_identified_by/cidoc:P190_has_symbolic_content ?declarationName ;
+                 cidoc:P70_documents ?activity .
+    ?activity cidoc:P14_carried_out_by ?declarant .
+}
+GROUP BY ?declaration ?declarationName
+HAVING (COUNT(DISTINCT ?declarant) > 1)
+ORDER BY DESC(?count)
+```
+
+### Find all declarations by a specific person
+
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?declaration ?subject ?date
+WHERE {
+    ?declaration a gmn:E31_5_Declaration ;
+                 cidoc:P70_documents ?activity .
+    
+    # The person we're looking for
+    ?activity cidoc:P14_carried_out_by <http://example.org/person_marco> .
+    
+    # What they declared
+    OPTIONAL {
+        ?activity cidoc:P16_used_specific_object ?subject .
+    }
+    
+    # When the document was created
+    OPTIONAL {
+        ?declaration cidoc:P94i_was_created_by/cidoc:P4_has_time-span/cidoc:P82_at_some_time_within ?date .
+    }
+}
+ORDER BY ?date
+```
+
+### Find most frequent declarants
+
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?declarant ?name (COUNT(?declaration) as ?declaration_count)
+WHERE {
+    ?declaration a gmn:E31_5_Declaration ;
+                 cidoc:P70_documents ?activity .
+    ?activity cidoc:P14_carried_out_by ?declarant .
+    
+    OPTIONAL {
+        ?declarant cidoc:P1_is_identified_by/cidoc:P190_has_symbolic_content ?name .
+    }
+}
+GROUP BY ?declarant ?name
+ORDER BY DESC(?declaration_count)
+LIMIT 20
+```
+
+---END SNIPPET---
+
+
+================================================================================
+SECTION 11: DATA VALIDATION EXAMPLES
+================================================================================
+
+Add these validation checks:
+
+---BEGIN SNIPPET---
+
+## Data Validation
+
+### Valid Declaration Examples
+
+✓ **Valid: Single declarant**
+```turtle
+<declaration> gmn:P70_24_indicates_declarant <person_marco> .
+```
+
+✓ **Valid: Multiple declarants**
+```turtle
+<declaration> gmn:P70_24_indicates_declarant <person_a> , <person_b> .
+```
+
+✓ **Valid: With declaration subject**
+```turtle
+<declaration> gmn:P70_24_indicates_declarant <declarant> ;
+              gmn:P70_25_indicates_declaration_subject <subject> .
+```
+
+### Invalid Declaration Examples
+
+✗ **Invalid: Wrong domain (not a declaration)**
+```turtle
+<sales_contract> gmn:P70_24_indicates_declarant <person> .
+# Error: P70.24 can only be used with E31_5_Declaration
+```
+
+✗ **Invalid: Wrong range (not an actor)**
+```turtle
+<declaration> gmn:P70_24_indicates_declarant <building> .
+# Error: Declarant must be E39_Actor (person or group)
+```
+
+✗ **Invalid: Using both shortcut and expanded form**
+```turtle
+<declaration> gmn:P70_24_indicates_declarant <person> ;
+              cidoc:P70_documents [ cidoc:P14_carried_out_by <person> ] .
+# Error: Don't mix shortcut and expanded forms
+```
+
+---END SNIPPET---
+
+
+================================================================================
+SECTION 12: TROUBLESHOOTING GUIDE
+================================================================================
+
+Add this troubleshooting section:
+
+---BEGIN SNIPPET---
+
+## Troubleshooting
+
+### Problem: Transformation not working
+
+**Symptom**: Declaration documents still have `gmn:P70_24_indicates_declarant` after transformation
+
+**Solution**: 
+1. Verify transformation function is in the script
+2. Check function is called in `transform_item()` pipeline
+3. Ensure function is called in correct order (after cession, before correspondence)
+
+### Problem: Multiple activities created
+
+**Symptom**: Both P70.24 and P70.25 create separate activity nodes
+
+**Solution**: 
+1. Verify activity reuse logic in transformation functions
+2. Both functions should check for existing `cidoc:P70_documents` before creating new activity
+3. Process in consistent order
+
+### Problem: Declarant not linked
+
+**Symptom**: Activity exists but has no `P14_carried_out_by`
+
+**Solution**: 
+1. Check that declarant list is not empty
+2. Verify `P14_carried_out_by` initialization in function
+3. Ensure append logic is working correctly
+
+### Problem: Wrong activity type
+
+**Symptom**: Activity typed as something other than AAT 300027623
+
+**Solution**: 
+1. Verify `AAT_DECLARATION` constant is defined correctly
+2. Check type assignment in activity creation
+3. Ensure no other function overwrites the type
+
+---END SNIPPET---
+
+
+================================================================================
+SECTION 13: SUMMARY TABLE
+================================================================================
+
+Add this quick reference table:
+
+---BEGIN SNIPPET---
+
+## Quick Reference
+
+| Aspect | Details |
+|--------|---------|
+| **Property URI** | `gmn:P70_24_indicates_declarant` |
+| **Property ID** | P70.24 |
+| **Domain** | `gmn:E31_5_Declaration` |
+| **Range** | `cidoc:E39_Actor` |
+| **Cardinality** | 0,n (zero or more) |
+| **CIDOC Path** | E31 > P70 > E7 > P14 > E39 |
+| **Activity Type** | AAT 300027623 (declaration) |
+| **Activity URI** | `{document_uri}/declaration` |
+| **Shares Activity With** | P70.25 (declaration subject) |
+| **Related Properties** | P70.25 (subject), P70.22 (recipient) |
+| **Transformation Status** | Removed (replaced with CIDOC structure) |
+
+---END SNIPPET---
+
+
+================================================================================
+END OF DOCUMENTATION ADDITIONS
+================================================================================
+
+These snippets should be integrated into your main documentation file in the appropriate sections. Copy and paste the content between the "BEGIN SNIPPET" and "END SNIPPET" markers, adjusting formatting as needed for your documentation style.

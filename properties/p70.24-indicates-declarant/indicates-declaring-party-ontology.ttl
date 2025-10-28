@@ -1,0 +1,324 @@
+# GMN P70.24 Indicates Declaring Party - TTL Additions
+
+This file contains ready-to-copy TTL (Turtle) snippets for adding the `gmn:P70_24_indicates_declarant` property to the GMN ontology file.
+
+---
+
+## Main Property Definition
+
+Add this to the declaration properties section of `gmn_ontology.ttl` (around line 1100-1200):
+
+```turtle
+# Property: P70.24 indicates party issuing declaration
+gmn:P70_24_indicates_declarant
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.24 indicates declarant"@en ;
+    rdfs:comment "Simplified property for associating a declaration document with the person or entity making the declaration. The declarant is the party who is formally stating, acknowledging, or asserting something. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E7_Activity > P14_carried_out_by > E39_Actor. The E7_Activity should be typed as a declaration (AAT 300027623). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_5_Declaration ;
+    rdfs:range cidoc:E39_Actor ;
+    dcterms:created "2025-10-18"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by .
+```
+
+---
+
+## Alternative Labels (Optional)
+
+If your ontology uses alternative labels (skos:altLabel), add these:
+
+```turtle
+gmn:P70_24_indicates_declarant
+    skos:altLabel "indicates party issuing declaration"@en ;
+    skos:altLabel "has declarant"@en ;
+    skos:altLabel "documents declarant"@en .
+```
+
+---
+
+## Example Usage in Instance Data
+
+### Example 1: Simple Debt Declaration
+
+```turtle
+@prefix gmn: <http://example.org/gmn/> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://example.org/declaration001> a gmn:E31_5_Declaration ;
+    gmn:P1_1_has_name "Marco's debt acknowledgment" ;
+    gmn:P70_24_indicates_declarant <http://example.org/person_marco> ;
+    gmn:P70_25_indicates_declaration_subject <http://example.org/debt_500_lire> ;
+    gmn:P94i_2_has_enactment_date "1445-03-20"^^xsd:date .
+
+<http://example.org/person_marco> a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Marco Doria" ;
+    gmn:P1_3_has_patrilineal_name "Doria" .
+
+<http://example.org/debt_500_lire> a cidoc:E72_Legal_Object ;
+    gmn:P1_1_has_name "Debt of 500 lire to Giovanni Spinola" .
+```
+
+### Example 2: Joint Property Declaration
+
+```turtle
+@prefix gmn: <http://example.org/gmn/> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+
+<http://example.org/declaration002> a gmn:E31_5_Declaration ;
+    gmn:P1_1_has_name "Joint declaration of vineyard ownership" ;
+    gmn:P70_24_indicates_declarant <http://example.org/brother_antonio> ,
+                                   <http://example.org/brother_giovanni> ,
+                                   <http://example.org/brother_francesco> ;
+    gmn:P70_25_indicates_declaration_subject <http://example.org/vineyard_levanto> .
+
+<http://example.org/brother_antonio> a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Antonio" ;
+    gmn:P1_3_has_patrilineal_name "Grimaldi" .
+
+<http://example.org/brother_giovanni> a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Giovanni" ;
+    gmn:P1_3_has_patrilineal_name "Grimaldi" .
+
+<http://example.org/brother_francesco> a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Francesco" ;
+    gmn:P1_3_has_patrilineal_name "Grimaldi" .
+
+<http://example.org/vineyard_levanto> a gmn:E22_1_Building ;
+    gmn:P1_1_has_name "Vineyard in Levanto" .
+```
+
+### Example 3: Declaration with Recipient
+
+```turtle
+@prefix gmn: <http://example.org/gmn/> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+
+<http://example.org/declaration003> a gmn:E31_5_Declaration ;
+    gmn:P1_1_has_name "Property rights declaration to magistrate" ;
+    gmn:P70_24_indicates_declarant <http://example.org/widow_lucia> ;
+    gmn:P70_25_indicates_declaration_subject <http://example.org/house_via_tommaso> ;
+    gmn:P70_22_indicates_receiving_party <http://example.org/city_magistrate> .
+
+<http://example.org/widow_lucia> a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Lucia" ;
+    gmn:P1_3_has_patrilineal_name "Cattaneo" .
+
+<http://example.org/house_via_tommaso> a gmn:E22_1_Building ;
+    gmn:P1_1_has_name "House on Via Tommaso" .
+
+<http://example.org/city_magistrate> a cidoc:E39_Actor ;
+    gmn:P1_1_has_name "Genoese City Magistrate" .
+```
+
+### Example 4: Complete Declaration with Full Metadata
+
+```turtle
+@prefix gmn: <http://example.org/gmn/> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://example.org/declaration004> a gmn:E31_5_Declaration ;
+    gmn:P1_1_has_name "Declaration of inheritance rights by Margherita" ;
+    gmn:P70_24_indicates_declarant <http://example.org/heir_margherita> ;
+    gmn:P70_25_indicates_declaration_subject <http://example.org/estate_vineyard> ;
+    gmn:P70_22_indicates_receiving_party <http://example.org/court_official> ;
+    gmn:P94i_1_was_created_by <http://example.org/notary_domenico> ;
+    gmn:P94i_2_has_enactment_date "1448-09-12"^^xsd:date ;
+    gmn:P94i_3_has_place_of_enactment <http://example.org/genoa_city> .
+
+<http://example.org/heir_margherita> a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Margherita" ;
+    gmn:P1_3_has_patrilineal_name "Spinola" .
+
+<http://example.org/estate_vineyard> a gmn:E22_1_Building ;
+    gmn:P1_1_has_name "Vineyard estate inherited from deceased husband" .
+
+<http://example.org/court_official> a cidoc:E39_Actor ;
+    gmn:P1_1_has_name "Court Official of Genoa" .
+
+<http://example.org/notary_domenico> a cidoc:E21_Person ;
+    gmn:P1_1_has_name "Domenico de Aste" ;
+    gmn:P102_1_has_title "Notary" .
+
+<http://example.org/genoa_city> a cidoc:E53_Place ;
+    gmn:P1_1_has_name "Genoa" .
+```
+
+---
+
+## SPARQL Queries for Testing
+
+After adding the property, use these queries to verify it's working:
+
+### Query 1: List all declarations with declarants
+
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?declaration ?declarant
+WHERE {
+    ?declaration a gmn:E31_5_Declaration ;
+                 gmn:P70_24_indicates_declarant ?declarant .
+}
+```
+
+### Query 2: Count declarations by number of declarants
+
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+
+SELECT ?declaration (COUNT(?declarant) as ?num_declarants)
+WHERE {
+    ?declaration gmn:P70_24_indicates_declarant ?declarant .
+}
+GROUP BY ?declaration
+ORDER BY DESC(?num_declarants)
+```
+
+### Query 3: Find all declarations by a specific person
+
+```sparql
+PREFIX gmn: <http://example.org/gmn/>
+
+SELECT ?declaration ?name
+WHERE {
+    ?declaration a gmn:E31_5_Declaration ;
+                 gmn:P1_1_has_name ?name ;
+                 gmn:P70_24_indicates_declarant <http://example.org/person_marco> .
+}
+```
+
+---
+
+## Validation Constraints (SHACL)
+
+Optional: Add these SHACL constraints to validate proper usage:
+
+```turtle
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix gmn: <http://example.org/gmn/> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+
+# Shape for P70.24 property
+gmn:P70_24_Shape
+    a sh:PropertyShape ;
+    sh:path gmn:P70_24_indicates_declarant ;
+    sh:name "indicates declarant" ;
+    sh:description "The declarant making the declaration" ;
+    sh:class cidoc:E39_Actor ;
+    sh:minCount 0 ;
+    sh:severity sh:Warning ;
+    sh:message "Declarant should be an E39_Actor or subclass" .
+
+# Shape for E31_5_Declaration
+gmn:E31_5_Declaration_Shape
+    a sh:NodeShape ;
+    sh:targetClass gmn:E31_5_Declaration ;
+    sh:property gmn:P70_24_Shape ;
+    sh:property [
+        sh:path gmn:P70_24_indicates_declarant ;
+        sh:minCount 1 ;
+        sh:severity sh:Info ;
+        sh:message "Declaration should have at least one declarant"
+    ] .
+```
+
+---
+
+## Integration with Related Properties
+
+The property works together with these related properties:
+
+```turtle
+# The three core declaration properties work together:
+
+# WHO declares (P70.24)
+<declaration> gmn:P70_24_indicates_declarant <person> .
+
+# WHAT is declared (P70.25)
+<declaration> gmn:P70_25_indicates_declaration_subject <subject> .
+
+# TO WHOM it is declared - optional (P70.22)
+<declaration> gmn:P70_22_indicates_receiving_party <recipient> .
+```
+
+---
+
+## Expected Transformation Output
+
+After transformation, the shortcut property should be converted to CIDOC-CRM:
+
+### Before Transformation (Input)
+
+```turtle
+<http://example.org/declaration001> a gmn:E31_5_Declaration ;
+    gmn:P70_24_indicates_declarant <http://example.org/person_marco> .
+```
+
+### After Transformation (Output)
+
+```turtle
+<http://example.org/declaration001> a gmn:E31_5_Declaration ;
+    cidoc:P70_documents <http://example.org/declaration001/declaration> .
+
+<http://example.org/declaration001/declaration> a cidoc:E7_Activity ;
+    cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300027623> ;
+    cidoc:P14_carried_out_by <http://example.org/person_marco> .
+
+<http://example.org/person_marco> a cidoc:E39_Actor .
+```
+
+---
+
+## AAT Reference
+
+The declaration activity type uses Getty AAT:
+
+```turtle
+<http://vocab.getty.edu/page/aat/300027623> a cidoc:E55_Type ;
+    rdfs:label "declaration"@en .
+```
+
+**AAT 300027623 Definition**: "Written or oral statements made, as under oath before a notary public, by one who has knowledge of facts"
+
+---
+
+## Namespace Declarations
+
+Ensure these prefixes are declared at the top of your TTL file:
+
+```turtle
+@prefix gmn: <http://example.org/gmn/> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+```
+
+---
+
+## Notes
+
+1. **Position in File**: Add after P70.23 (indicates object of cession) and before P70.25 (indicates declaration subject)
+
+2. **Date**: The dcterms:created date should reflect when the property was added to your ontology
+
+3. **Domain**: Strictly limited to `gmn:E31_5_Declaration` - do not use with other document types
+
+4. **Range**: Must be `cidoc:E39_Actor` or a subclass (E21_Person, E74_Group)
+
+5. **Cardinality**: Zero or more (0,n) - declarations can have multiple declarants for joint declarations
+
+6. **Transformation**: This is a shortcut property that will be transformed to the full CIDOC-CRM path during processing
+
+---
+
+**File Version**: 1.0  
+**Last Updated**: October 2025  
+**Compatible with**: GMN Ontology 2.0, CIDOC-CRM 7.1.1
