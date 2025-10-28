@@ -1,0 +1,521 @@
+# Documentation Additions for P70.18 Documents Disputing Party Property
+#
+# This file contains text, examples, and tables to add to your main documentation
+# Copy and paste sections as needed into your documentation files
+#
+# ==============================================================================
+
+# SECTION 1: PROPERTY OVERVIEW
+# Add this section to your arbitration agreement documentation
+
+### gmn:P70_18_documents_disputing_party
+
+**Label:** P70.18 documents disputing party
+
+**Definition:** Simplified property for associating an arbitration agreement 
+with a party involved in the dispute.
+
+**Domain:** gmn:E31_3_Arbitration_Agreement
+
+**Range:** cidoc:E39_Actor
+
+**Superproperty:** cidoc:P70_documents
+
+**CIDOC-CRM Path:**
+```
+E31_Document → P70_documents → E7_Activity → P14_carried_out_by → E39_Actor
+```
+
+**Description:**
+This property links an arbitration agreement document to the parties who are 
+involved in the dispute. Disputing parties are the individuals or groups who 
+have a conflict and agree to submit it to arbitration. They are active principals 
+in the arbitration agreement, not passive participants. Both/all disputing parties 
+use this same property, and they are linked to the same E7_Activity used by 
+arbitrators.
+
+**Usage Notes:**
+- Typically two or more parties (bilateral or multilateral disputes)
+- Parties are active principals who carry out the arbitration agreement
+- Uses P14_carried_out_by (not P11_had_participant) to reflect active agency
+- Transforms to full CIDOC-CRM structure during processing
+
+**Example:**
+```json
+{
+  "@type": "gmn:E31_3_Arbitration_Agreement",
+  "gmn:P70_18_documents_disputing_party": [
+    {"@id": "http://example.org/persons/merchant1"},
+    {"@id": "http://example.org/persons/merchant2"}
+  ]
+}
+```
+
+# ==============================================================================
+
+# SECTION 2: PROPERTY COMPARISON TABLE
+# Add this table to show relationships between arbitration properties
+
+## Arbitration Agreement Properties Comparison
+
+| Property | Label | Range | Purpose | CIDOC-CRM Property |
+|----------|-------|-------|---------|-------------------|
+| **P70.18** | documents disputing party | E39_Actor | Parties to the dispute | P14_carried_out_by |
+| **P70.19** | documents arbitrator | E39_Actor | Neutral decision-maker | P14_carried_out_by |
+| **P70.20** | documents dispute subject | E1_CRM_Entity | What dispute is about | P16_used_specific_object |
+
+**Note:** P70.18 and P70.19 both use P14_carried_out_by because disputing parties 
+and arbitrators are both active principals carrying out the arbitration agreement.
+
+# ==============================================================================
+
+# SECTION 3: TRANSFORMATION BEHAVIOR TABLE
+# Add this to explain how the property transforms
+
+## Transformation Behavior
+
+| Input Format | Output Format | Notes |
+|--------------|---------------|-------|
+| Party as dict with @id | Party dict with @type added | Preserves structure |
+| Party as string URI | Party wrapped in dict with @type | Standardizes format |
+| Multiple parties | All added to same P14 array | No duplicates |
+| Empty array | No transformation | Property removed |
+| Missing property | No transformation | Data unchanged |
+
+# ==============================================================================
+
+# SECTION 4: USAGE EXAMPLES FOR DOCUMENTATION
+# Add these examples to show common use cases
+
+## Usage Examples
+
+### Example 1: Two-Party Commercial Dispute
+
+**Scenario:** Two merchants dispute payment terms for a shipment
+
+```json
+{
+  "@id": "http://example.org/contracts/arb_1450_001",
+  "@type": "gmn:E31_3_Arbitration_Agreement",
+  "gmn:P1_1_has_name": [
+    {"@value": "Arbitration - Payment Dispute"}
+  ],
+  "gmn:P94i_2_has_enactment_date": [
+    {"@value": "1450-03-15", "@type": "xsd:date"}
+  ],
+  "gmn:P70_18_documents_disputing_party": [
+    {"@id": "http://example.org/persons/antonio_spinola"},
+    {"@id": "http://example.org/persons/paolo_grimaldi"}
+  ],
+  "gmn:P70_19_documents_arbitrator": [
+    {"@id": "http://example.org/persons/giovanni_judge"}
+  ]
+}
+```
+
+### Example 2: Three-Way Inheritance Dispute
+
+**Scenario:** Three heirs dispute division of estate property
+
+```json
+{
+  "@id": "http://example.org/contracts/arb_1455_023",
+  "@type": "gmn:E31_3_Arbitration_Agreement",
+  "gmn:P1_1_has_name": [
+    {"@value": "Arbitration - Doria Estate Division"}
+  ],
+  "gmn:P70_18_documents_disputing_party": [
+    {"@id": "http://example.org/persons/marco_doria"},
+    {"@id": "http://example.org/persons/lucia_doria"},
+    {"@id": "http://example.org/persons/francesco_doria"}
+  ],
+  "gmn:P70_19_documents_arbitrator": [
+    {"@id": "http://example.org/persons/arbitrator_panel"}
+  ],
+  "gmn:P70_20_documents_dispute_subject": [
+    {"@id": "http://example.org/property/palazzo_genoa_main"}
+  ]
+}
+```
+
+### Example 3: Family Business Partnership Dispute
+
+**Scenario:** Partners in family business dispute profit distribution
+
+```json
+{
+  "@id": "http://example.org/contracts/arb_1460_045",
+  "@type": "gmn:E31_3_Arbitration_Agreement",
+  "gmn:P1_1_has_name": [
+    {"@value": "Arbitration - Centurione Trading Company"}
+  ],
+  "gmn:P70_18_documents_disputing_party": [
+    {"@id": "http://example.org/families/centurione_branch_a"},
+    {"@id": "http://example.org/families/centurione_branch_b"}
+  ],
+  "gmn:P70_19_documents_arbitrator": [
+    {"@id": "http://example.org/persons/neutral_merchant"}
+  ],
+  "gmn:P70_20_documents_dispute_subject": [
+    {"@id": "http://example.org/organizations/centurione_trading"}
+  ]
+}
+```
+
+# ==============================================================================
+
+# SECTION 5: SPARQL QUERY EXAMPLES FOR DOCUMENTATION
+# Add these queries to help users retrieve arbitration data
+
+## SPARQL Query Examples
+
+### Query 1: Find All Arbitrations for a Specific Person
+
+```sparql
+PREFIX gmn: <http://www.genoesemerchantnetworks.com/ontology#>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?agreement ?name ?date
+WHERE {
+  ?agreement a gmn:E31_3_Arbitration_Agreement ;
+             cidoc:P70_documents ?activity .
+  ?activity cidoc:P14_carried_out_by <http://example.org/persons/antonio_spinola> .
+  
+  OPTIONAL {
+    ?agreement cidoc:P1_is_identified_by ?appellation .
+    ?appellation cidoc:P190_has_symbolic_content ?name .
+  }
+  
+  OPTIONAL {
+    ?agreement gmn:P94i_2_has_enactment_date ?date .
+  }
+}
+ORDER BY ?date
+```
+
+### Query 2: Count Arbitrations by Number of Parties
+
+```sparql
+PREFIX gmn: <http://www.genoesemerchantnetworks.com/ontology#>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?agreement (COUNT(DISTINCT ?party) AS ?party_count)
+WHERE {
+  ?agreement a gmn:E31_3_Arbitration_Agreement ;
+             cidoc:P70_documents ?activity .
+  ?activity cidoc:P14_carried_out_by ?party .
+}
+GROUP BY ?agreement
+HAVING (COUNT(DISTINCT ?party) >= 2)
+ORDER BY DESC(?party_count)
+```
+
+### Query 3: Find Arbitrations Between Specific Parties
+
+```sparql
+PREFIX gmn: <http://www.genoesemerchantnetworks.com/ontology#>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?agreement ?date ?other_party
+WHERE {
+  ?agreement a gmn:E31_3_Arbitration_Agreement ;
+             cidoc:P70_documents ?activity .
+  
+  # Must include the first party
+  ?activity cidoc:P14_carried_out_by <http://example.org/persons/spinola> .
+  
+  # Get other parties
+  ?activity cidoc:P14_carried_out_by ?other_party .
+  FILTER(?other_party != <http://example.org/persons/spinola>)
+  
+  OPTIONAL {
+    ?agreement gmn:P94i_2_has_enactment_date ?date .
+  }
+}
+```
+
+### Query 4: Find Most Frequent Arbitration Participants
+
+```sparql
+PREFIX gmn: <http://www.genoesemerchantnetworks.com/ontology#>
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+SELECT ?party ?party_name (COUNT(DISTINCT ?agreement) AS ?count)
+WHERE {
+  ?agreement a gmn:E31_3_Arbitration_Agreement ;
+             cidoc:P70_documents ?activity .
+  ?activity cidoc:P14_carried_out_by ?party .
+  
+  OPTIONAL {
+    ?party cidoc:P1_is_identified_by ?appellation .
+    ?appellation cidoc:P190_has_symbolic_content ?party_name .
+  }
+}
+GROUP BY ?party ?party_name
+ORDER BY DESC(?count)
+LIMIT 20
+```
+
+# ==============================================================================
+
+# SECTION 6: DESIGN RATIONALE TABLE
+# Add this table to explain key design decisions
+
+## Design Decisions
+
+| Decision | Rationale |
+|----------|-----------|
+| **Use E7_Activity** | Arbitration is a process, not an acquisition; E7 allows flexible modeling of dispute resolution |
+| **Use P14_carried_out_by** | Disputing parties are active principals who carry out the agreement, not passive participants |
+| **Single shared activity** | All arbitration properties contribute to one E7_Activity for semantic unity and data integrity |
+| **Shortcut property** | Simplifies data entry while ensuring CIDOC-CRM compliance in output |
+| **Domain restriction** | Limited to E31_3_Arbitration_Agreement to prevent misuse with other document types |
+
+# ==============================================================================
+
+# SECTION 7: SEMANTIC PATH DIAGRAM
+# Add this ASCII diagram to visualize the transformation
+
+## Semantic Path Visualization
+
+```
+INPUT (Shortcut):
+┌─────────────────────────────────────┐
+│ E31_3_Arbitration_Agreement         │
+│ @id: .../arb001                     │
+├─────────────────────────────────────┤
+│ P70.18_documents_disputing_party    │
+│   ├─ E39_Actor (@id: .../party1)    │
+│   └─ E39_Actor (@id: .../party2)    │
+└─────────────────────────────────────┘
+
+TRANSFORMATION:
+        ↓
+
+OUTPUT (Full CIDOC-CRM):
+┌─────────────────────────────────────┐
+│ E31_3_Arbitration_Agreement         │
+│ @id: .../arb001                     │
+├─────────────────────────────────────┤
+│ P70_documents                       │
+│   └─ E7_Activity                    │
+│      @id: .../arb001/arbitration    │
+│      @type: E7_Activity             │
+│      P2_has_type → AAT 300417271    │
+│      P14_carried_out_by             │
+│        ├─ E39_Actor (.../party1)    │
+│        └─ E39_Actor (.../party2)    │
+└─────────────────────────────────────┘
+```
+
+# ==============================================================================
+
+# SECTION 8: HISTORICAL CONTEXT
+# Add this section to provide historical background
+
+## Historical Context: Arbitration in Medieval Genoa
+
+Arbitration was a common and efficient method of dispute resolution in medieval 
+Italian commerce, particularly in Genoa. Merchants and families preferred 
+arbitration over formal court proceedings for several reasons:
+
+**Advantages of Arbitration:**
+- **Speed**: Arbitration was faster than lengthy court cases
+- **Expertise**: Arbitrators had specialized knowledge of commercial practices
+- **Privacy**: Proceedings could be conducted privately
+- **Enforceability**: Decisions were binding and enforceable
+- **Cost**: Generally less expensive than formal litigation
+- **Flexibility**: Parties could choose their arbitrator(s)
+
+**Typical Disputes:**
+- Payment terms and debt collection
+- Partnership profit distribution
+- Property division among heirs
+- Contract interpretation
+- Ship damage and cargo loss
+- Trade route access and rights
+
+**Arbitration Process:**
+1. Parties acknowledge the existence of a dispute
+2. Parties agree to submit dispute to arbitration
+3. Parties select and appoint arbitrator(s)
+4. Arbitrator(s) hear evidence and arguments
+5. Arbitrator(s) render binding decision
+6. Parties agree to abide by the decision
+
+**Legal Framework:**
+Medieval arbitration agreements were legally binding contracts. The disputing 
+parties' consent was essential, and they were considered active participants 
+carrying out the arbitration process alongside the arbitrator(s). This is why 
+the GMN ontology models them using P14_carried_out_by rather than 
+P11_had_participant.
+
+# ==============================================================================
+
+# SECTION 9: PROPERTY USAGE STATISTICS TABLE
+# Add this template for documenting usage statistics
+
+## Property Usage Statistics
+
+| Metric | Value |
+|--------|-------|
+| Total arbitration agreements in corpus | [TO BE FILLED] |
+| Arbitrations with P70.18 | [TO BE FILLED] |
+| Average parties per arbitration | [TO BE FILLED] |
+| Most common number of parties | 2 (bilateral) |
+| Maximum parties in single arbitration | [TO BE FILLED] |
+| Arbitrations with 2 parties | [TO BE FILLED] |
+| Arbitrations with 3+ parties | [TO BE FILLED] |
+
+# ==============================================================================
+
+# SECTION 10: VALIDATION CHECKLIST
+# Add this checklist for quality assurance
+
+## Data Entry Validation Checklist
+
+When entering arbitration agreement data with P70.18:
+
+- [ ] Document is typed as gmn:E31_3_Arbitration_Agreement
+- [ ] At least two disputing parties are specified (recommended)
+- [ ] Each party URI resolves to a valid E39_Actor
+- [ ] Parties are distinct from arbitrator(s) (if specified)
+- [ ] No duplicate party entries
+- [ ] Party URIs follow project naming conventions
+- [ ] Property name is spelled correctly (case-sensitive)
+- [ ] Data format follows JSON-LD structure
+- [ ] Related properties (P70.19, P70.20) use consistent URIs
+
+## Transformation Validation Checklist
+
+After transformation:
+
+- [ ] Shortcut property (P70.18) is removed
+- [ ] cidoc:P70_documents array exists
+- [ ] E7_Activity node is created
+- [ ] Activity URI follows pattern: {doc_uri}/arbitration
+- [ ] Activity has @type: "cidoc:E7_Activity"
+- [ ] Activity has P14_carried_out_by array
+- [ ] All parties appear in P14 array
+- [ ] Each party has @type: "cidoc:E39_Actor"
+- [ ] If P70.19 present, same activity used
+- [ ] If P70.20 present, same activity used
+
+# ==============================================================================
+
+# SECTION 11: COMMON ERRORS AND SOLUTIONS
+# Add this troubleshooting guide
+
+## Common Errors and Solutions
+
+### Error: Property not transforming
+
+**Symptoms:** gmn:P70_18_documents_disputing_party still present after transformation
+
+**Causes:**
+- Transformation function not called
+- Property name misspelled
+- Function returns early due to condition
+
+**Solutions:**
+- Verify function is in transformation pipeline
+- Check property name (case-sensitive)
+- Add debug logging to function
+
+### Error: Activity not created
+
+**Symptoms:** cidoc:P70_documents is missing or empty
+
+**Causes:**
+- Empty party array
+- Missing document @id
+- Logic error in activity creation
+
+**Solutions:**
+- Ensure parties array is not empty
+- Check document has @id property
+- Review activity creation logic
+
+### Error: Parties missing type
+
+**Symptoms:** Party objects lack @type: "cidoc:E39_Actor"
+
+**Causes:**
+- Type assignment logic not working
+- Party format not handled correctly
+
+**Solutions:**
+- Review type assignment in party loop
+- Test with both dict and string formats
+- Check conditional logic
+
+### Error: Multiple activities created
+
+**Symptoms:** Different P70 properties create separate activities
+
+**Causes:**
+- Inconsistent activity URI generation
+- Activity reuse logic not working
+- Functions called in wrong order
+
+**Solutions:**
+- Ensure all functions use same URI pattern
+- Check existing activity detection logic
+- Verify function call order doesn't matter
+
+# ==============================================================================
+
+# SECTION 12: REFERENCES AND RESOURCES
+# Add this section with relevant resources
+
+## References
+
+### CIDOC-CRM Documentation
+- E7_Activity: http://www.cidoc-crm.org/Entity/E7-Activity/version-7.1.1
+- E31_Document: http://www.cidoc-crm.org/Entity/E31-Document/version-7.1.1
+- E39_Actor: http://www.cidoc-crm.org/Entity/E39-Actor/version-7.1.1
+- P14_carried_out_by: http://www.cidoc-crm.org/Property/P14-carried-out-by/version-7.1.1
+- P70_documents: http://www.cidoc-crm.org/Property/P70-documents/version-7.1.1
+
+### Getty AAT
+- Arbitration (process): http://vocab.getty.edu/page/aat/300417271
+
+### Academic References
+1. Greif, A. (2006). *Institutions and the Path to the Modern Economy: Lessons 
+   from Medieval Trade*. Cambridge University Press.
+2. Padgett, J. F., & McLean, P. D. (2006). "Organizational Invention and Elite 
+   Transformation: The Birth of Partnership Systems in Renaissance Florence." 
+   *American Journal of Sociology*, 111(5), 1463-1568.
+3. Muldrew, C. (1998). *The Economy of Obligation: The Culture of Credit and 
+   Social Relations in Early Modern England*. Macmillan.
+
+### Project Documentation
+- Arbitration Agreement Ontology: arbitration-ontology.md
+- GMN Ontology Main File: gmn_ontology.ttl
+- Transformation Script: gmn_to_cidoc_transform.py
+- Implementation Guide: documents-disputing-property-implementation-guide.md
+
+# ==============================================================================
+
+# SECTION 13: VERSION HISTORY TABLE
+# Add this table to track changes
+
+## Version History
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0 | 2025-10-28 | Initial property implementation | GMN Team |
+| 1.1 | TBD | Future enhancements | TBD |
+
+# ==============================================================================
+
+# END OF DOCUMENTATION ADDITIONS
+#
+# Remember to:
+# 1. Copy relevant sections to your documentation files
+# 2. Fill in any [TO BE FILLED] placeholders with actual data
+# 3. Adjust examples to match your specific data
+# 4. Update dates and version numbers as appropriate
+# 5. Add local project-specific information as needed
+#
+# ==============================================================================

@@ -1,0 +1,155 @@
+# TTL Additions for P70.18 Documents Disputing Party Property
+# 
+# Copy this entire block to your gmn_ontology.ttl file
+# Place it in the appropriate section with other P70 properties
+#
+# ==============================================================================
+
+# Property: P70.18 documents disputing party
+gmn:P70_18_documents_disputing_party
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.18 documents disputing party"@en ;
+    rdfs:comment "Simplified property for associating an arbitration agreement with a party involved in the dispute. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E7_Activity > P14_carried_out_by > E39_Actor. The E7_Activity should be typed as an arbitration agreement (AAT 300417271). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. Disputing parties are the active principals who have agreed to submit their dispute to arbitration and are carrying out the arbitration agreement alongside the arbitrator(s)."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_3_Arbitration_Agreement ;
+    rdfs:range cidoc:E39_Actor ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    dcterms:modified "2025-10-28"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by .
+
+# ==============================================================================
+#
+# NOTES:
+# 
+# 1. This property is part of the arbitration agreement property set:
+#    - gmn:P70_18_documents_disputing_party (this property)
+#    - gmn:P70_19_documents_arbitrator
+#    - gmn:P70_20_documents_dispute_subject
+#
+# 2. All three properties should transform to the same E7_Activity node
+#
+# 3. The E7_Activity should be typed with AAT 300417271 (arbitration)
+#
+# 4. Disputing parties use P14_carried_out_by (not P11_had_participant)
+#    because they are active principals carrying out the agreement
+#
+# 5. Domain is restricted to gmn:E31_3_Arbitration_Agreement to ensure
+#    this property is only used with arbitration documents
+#
+# 6. Range is cidoc:E39_Actor, which can represent individuals or groups
+#
+# 7. This is a shortcut property - the full CIDOC-CRM path is:
+#    E31_Document → P70_documents → E7_Activity → P14_carried_out_by → E39_Actor
+#
+# ==============================================================================
+
+# EXAMPLE USAGE IN OMEKA-S OR DATA ENTRY:
+#
+# {
+#   "@id": "http://example.org/contracts/arb001",
+#   "@type": "gmn:E31_3_Arbitration_Agreement",
+#   "gmn:P1_1_has_name": [
+#     {"@value": "Arbitration Agreement - Spinola v. Doria"}
+#   ],
+#   "gmn:P70_18_documents_disputing_party": [
+#     {"@id": "http://example.org/persons/antonio_spinola"},
+#     {"@id": "http://example.org/persons/giovanni_doria"}
+#   ],
+#   "gmn:P70_19_documents_arbitrator": [
+#     {"@id": "http://example.org/persons/judge_marco"}
+#   ]
+# }
+#
+# ==============================================================================
+
+# TRANSFORMATION OUTPUT:
+#
+# {
+#   "@id": "http://example.org/contracts/arb001",
+#   "@type": "gmn:E31_3_Arbitration_Agreement",
+#   "cidoc:P1_is_identified_by": [{
+#     "@type": "cidoc:E41_Appellation",
+#     "cidoc:P190_has_symbolic_content": "Arbitration Agreement - Spinola v. Doria"
+#   }],
+#   "cidoc:P70_documents": [{
+#     "@id": "http://example.org/contracts/arb001/arbitration",
+#     "@type": "cidoc:E7_Activity",
+#     "cidoc:P2_has_type": {
+#       "@id": "http://vocab.getty.edu/page/aat/300417271",
+#       "@type": "cidoc:E55_Type"
+#     },
+#     "cidoc:P14_carried_out_by": [
+#       {"@id": "http://example.org/persons/antonio_spinola", "@type": "cidoc:E39_Actor"},
+#       {"@id": "http://example.org/persons/giovanni_doria", "@type": "cidoc:E39_Actor"},
+#       {"@id": "http://example.org/persons/judge_marco", "@type": "cidoc:E39_Actor"}
+#     ]
+#   }]
+# }
+#
+# ==============================================================================
+
+# SPARQL QUERY EXAMPLE:
+#
+# Find all arbitrations involving a specific person:
+#
+# PREFIX gmn: <http://www.genoesemerchantnetworks.com/ontology#>
+# PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+# 
+# SELECT ?agreement ?date
+# WHERE {
+#   ?agreement a gmn:E31_3_Arbitration_Agreement ;
+#              cidoc:P70_documents ?activity .
+#   ?activity cidoc:P14_carried_out_by <http://example.org/persons/antonio_spinola> .
+#   
+#   OPTIONAL {
+#     ?agreement gmn:P94i_2_has_enactment_date ?date .
+#   }
+# }
+# ORDER BY ?date
+#
+# ==============================================================================
+
+# VALIDATION CHECKLIST:
+#
+# [ ] Property URI follows GMN ontology naming convention
+# [ ] Property is typed as both owl:ObjectProperty and rdf:Property
+# [ ] rdfs:label is present and in English
+# [ ] rdfs:comment provides complete explanation including CIDOC-CRM path
+# [ ] rdfs:subPropertyOf is set to cidoc:P70_documents
+# [ ] rdfs:domain is gmn:E31_3_Arbitration_Agreement
+# [ ] rdfs:range is cidoc:E39_Actor
+# [ ] dcterms:created has correct date
+# [ ] dcterms:modified has correct date
+# [ ] rdfs:seeAlso references relevant CIDOC-CRM properties
+#
+# ==============================================================================
+
+# RELATED PROPERTIES TO VERIFY:
+#
+# Ensure these related properties are also defined in your ontology:
+# - gmn:E31_3_Arbitration_Agreement (class)
+# - gmn:P70_19_documents_arbitrator (property)
+# - gmn:P70_20_documents_dispute_subject (property)
+# - cidoc:P70_documents (imported from CIDOC-CRM)
+# - cidoc:P14_carried_out_by (imported from CIDOC-CRM)
+# - cidoc:E7_Activity (imported from CIDOC-CRM)
+# - cidoc:E39_Actor (imported from CIDOC-CRM)
+#
+# ==============================================================================
+
+# NAMESPACE DECLARATIONS REQUIRED:
+#
+# Make sure your ontology file includes these namespace declarations:
+#
+# @prefix owl: <http://www.w3.org/2002/07/owl#> .
+# @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+# @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+# @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+# @prefix dcterms: <http://purl.org/dc/terms/> .
+# @prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+# @prefix gmn: <http://www.genoesemerchantnetworks.com/ontology#> .
+#
+# ==============================================================================
+
+# END OF TTL ADDITIONS
