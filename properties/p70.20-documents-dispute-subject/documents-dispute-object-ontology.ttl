@@ -1,0 +1,50 @@
+# GMN Ontology TTL Additions
+# Property: P70.20 Documents Dispute Subject
+# 
+# INSTRUCTIONS:
+# Copy the content below and paste it into your main gmn_ontology.ttl file
+# Location: After the P70.19 documents arbitrator property definition
+# 
+# VERSION: 1.0
+# LAST UPDATED: 2025-10-28
+# ============================================================================
+
+# Property: P70.20 documents dispute subject
+gmn:P70_20_documents_dispute_subject
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.20 documents dispute subject"@en ;
+    rdfs:comment "Simplified property for associating an arbitration agreement with the subject matter of the dispute being arbitrated. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E7_Activity > P16_used_specific_object > E1_CRM_Entity. The E7_Activity should be typed as an arbitration agreement (AAT 300417271). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The dispute subject can be any entity - a property (E18_Physical_Thing), a legal right (E72_Legal_Object), a debt, a contract claim, or any other matter in contention."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_3_Arbitration_Agreement ;
+    rdfs:range cidoc:E1_CRM_Entity ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    dcterms:modified "2025-10-18"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P16_used_specific_object .
+
+# ============================================================================
+# END OF ADDITIONS
+# ============================================================================
+
+# VALIDATION NOTES:
+# - Ensure all namespace prefixes are declared at the top of your ontology file
+# - Required prefixes: gmn:, cidoc:, owl:, rdf:, rdfs:, dcterms:, xsd:
+# - Verify AAT reference 300417271 is documented in comments
+# - Check that E31_3_Arbitration_Agreement class is defined
+# - Confirm no duplicate property definitions exist
+#
+# EXAMPLE NAMESPACE DECLARATIONS (if not already present):
+#
+# @prefix gmn: <http://www.genoesemerchantnetworks.com/ontology#> .
+# @prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+# @prefix owl: <http://www.w3.org/2002/07/owl#> .
+# @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+# @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+# @prefix dcterms: <http://purl.org/dc/terms/> .
+# @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+#
+# TESTING:
+# After adding, validate your TTL file:
+#   rapper -i turtle -o ntriples gmn_ontology.ttl > /dev/null
+# Or using Python:
+#   python3 -c "from rdflib import Graph; g = Graph(); g.parse('gmn_ontology.ttl', format='turtle'); print('Valid!')"
