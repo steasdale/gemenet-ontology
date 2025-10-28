@@ -1,0 +1,792 @@
+# Document Additions for gmn:P70_1_indicates_seller
+# Examples and tables to add to main documentation text file
+# Using E13 Attribute Assignment Pattern
+
+================================================================================
+SECTION 1: PROPERTY OVERVIEW TABLE
+================================================================================
+Add this table to the "Sales Contract Properties" section of the main 
+documentation, in the subsection covering transactional roles.
+
+TABLE: Primary Transactional Properties for Sales Contracts (E13 Pattern)
+┌─────────────────────┬───────────────────────────┬────────────────────────┬─────────────────────────────────────┐
+│ Property            │ Label                     │ Role in Transaction    │ CIDOC-CRM Path (E13 Pattern)        │
+├─────────────────────┼───────────────────────────┼────────────────────────┼─────────────────────────────────────┤
+│ gmn:P70_1           │ indicates seller          │ Transfers ownership    │ P70 > E7 > P140i > E13 > P141 > E21 │
+│                     │                           │ (from)                 │ (+ P177 → "P14", P14.1 → "seller")  │
+├─────────────────────┼───────────────────────────┼────────────────────────┼─────────────────────────────────────┤
+│ gmn:P70_2           │ indicates buyer           │ Receives ownership     │ P70 > E7 > P140i > E13 > P141 > E21 │
+│                     │                           │ (to)                   │ (+ P177 → "P14", P14.1 → "buyer")   │
+├─────────────────────┼───────────────────────────┼────────────────────────┼─────────────────────────────────────┤
+│ gmn:P70_3           │ indicates transfer of     │ Object transferred     │ P70 > E7 > P16 > E18_Physical_Thing │
+└─────────────────────┴───────────────────────────┴────────────────────────┴─────────────────────────────────────┘
+
+Usage Notes:
+- Properties use E13_Attribute_Assignment for role specification
+- E7_Activity (typed as "sale") replaces E8_Acquisition
+- P177 and P14.1 provide explicit property and role typing
+- Multiple sellers each get separate E13 attribution instances
+
+
+================================================================================
+SECTION 2: E13 ATTRIBUTION PATTERN EXPLANATION
+================================================================================
+Add this conceptual explanation to help users understand the E13 pattern.
+
+UNDERSTANDING THE E13 ATTRIBUTE ASSIGNMENT PATTERN
+
+The E13_Attribute_Assignment pattern is a CIDOC-CRM best practice for formally
+documenting role assignments and attribute attributions. Instead of directly
+linking persons to events, E13 provides an intermediate attribution node.
+
+Basic Structure:
+```
+E7_Activity (sale event)
+    ↓ P140i_was_attributed_by
+E13_Attribute_Assignment (the attribution)
+    ├─ P141_assigned → E21_Person (the seller)
+    ├─ P177_assigned_property_of_type → E55_Type ("P14 carried out by")
+    └─ P14.1_in_the_role_of → E55_Type ("seller")
+```
+
+This structure reads as:
+"The sale event was attributed by [an assignment] which assigned [Giovanni Rossi]
+ as the value of the property [P14 carried out by] in the role of [seller]."
+
+WHY USE E13 INSTEAD OF DIRECT LINKS?
+
+Traditional Direct Approach (NOT used):
+    E7_Activity --P14_carried_out_by--> E21_Person
+    
+Problems:
+- No explicit role specification (is it seller? buyer? broker?)
+- No documentation of property type
+- Difficult to add provenance metadata
+- Cannot distinguish multiple participant types clearly
+
+E13 Approach (USED in GMN):
+    E7_Activity --P140i--> E13_Attribute_Assignment
+                            ├─ P141 → E21_Person
+                            ├─ P177 → "P14 carried out by"
+                            └─ P14.1 → "seller"
+
+Advantages:
+- Explicit role specification via P14.1_in_the_role_of
+- Property type documentation via P177_assigned_property_of_type
+- Extensible for attribution metadata (who made attribution, when, where)
+- Clear separation of seller, buyer, and other roles
+- Follows CIDOC-CRM best practices for complex participant modeling
+- Supports provenance: can document the attribution itself
+
+
+================================================================================
+SECTION 3: DOCUMENT AND EVENT TYPES
+================================================================================
+Add this explanation of the architectural choices.
+
+DOCUMENT AND EVENT TYPE CHOICES
+
+Sales Contract Document (E70 not E31.2):
+Instead of creating a gmn:E31_2_Sales_Contract subclass, we use the standard
+cidoc:E70_Document class with P2_has_type to indicate "sales contract".
+
+Example:
+```json
+{
+  "@id": "contract_001",
+  "@type": "cidoc:E70_Document",
+  "cidoc:P2_has_type": {
+    "@id": "http://example.org/type/sales_contract",
+    "@type": "cidoc:E55_Type",
+    "rdfs:label": "sales contract"
+  }
+}
+```
+
+Advantages:
+- Uses standard CIDOC-CRM classes
+- More flexible (easy to add other document types)
+- Follows CRM best practices
+- Avoids proliferation of subclasses
+
+Sale Event (E7 not E8):
+The sale is modeled as cidoc:E7_Activity (typed as "sale") rather than
+E8_Acquisition. This allows us to use the E13 pattern for role attribution.
+
+Example:
+```json
+{
+  "@id": "contract_001/sale",
+  "@type": "cidoc:E7_Activity",
+  "cidoc:P2_has_type": {
+    "@id": "http://vocab.getty.edu/aat/300054751",
+    "@type": "cidoc:E55_Type",
+    "rdfs:label": "sale"
+  }
+}
+```
+
+Advantages:
+- E7 is more general, accommodates various transaction types
+- Compatible with E13 Attribute Assignment pattern
+- Uses AAT controlled vocabulary for event typing
+- Supports additional sub-activities if needed
+
+
+================================================================================
+SECTION 4: SIMPLE USAGE EXAMPLE WITH E13
+================================================================================
+Add this basic example to demonstrate minimal usage with E13 pattern.
+
+EXAMPLE: Basic Sales Contract with Seller (E13 Pattern)
+
+This example shows a minimal sales contract with a seller using the E13
+Attribute Assignment pattern.
+
+Input Data (Simplified GMN):
+```json
+{
+  "@context": {
+    "gmn": "http://example.org/gmn/",
+    "cidoc": "http://www.cidoc-crm.org/cidoc-crm/"
+  },
+  "@id": "http://example.org/contract/genoa_1435_03_15_sale",
+  "@type": "cidoc:E70_Document",
+  "cidoc:P2_has_type": {
+    "@id": "http://example.org/type/sales_contract",
+    "@type": "cidoc:E55_Type",
+    "rdfs:label": "sales contract"
+  },
+  "gmn:P70_1_indicates_seller": [
+    {
+      "@id": "http://example.org/person/giovanni_de_rossi",
+      "@type": "cidoc:E21_Person",
+      "cidoc:P1_is_identified_by": [
+        {
+          "@type": "cidoc:E41_Appellation",
+          "cidoc:P190_has_symbolic_content": "Giovanni de Rossi"
+        }
+      ]
+    }
+  ]
+}
+```
+
+After Transformation (Full CIDOC-CRM with E13):
+```json
+{
+  "@context": {
+    "cidoc": "http://www.cidoc-crm.org/cidoc-crm/"
+  },
+  "@id": "http://example.org/contract/genoa_1435_03_15_sale",
+  "@type": "cidoc:E70_Document",
+  "cidoc:P2_has_type": {
+    "@id": "http://example.org/type/sales_contract",
+    "@type": "cidoc:E55_Type",
+    "rdfs:label": "sales contract"
+  },
+  "cidoc:P70_documents": [
+    {
+      "@id": "http://example.org/contract/genoa_1435_03_15_sale/sale",
+      "@type": "cidoc:E7_Activity",
+      "cidoc:P2_has_type": {
+        "@id": "http://vocab.getty.edu/aat/300054751",
+        "@type": "cidoc:E55_Type",
+        "rdfs:label": "sale"
+      },
+      "cidoc:P140i_was_attributed_by": [
+        {
+          "@id": "http://example.org/contract/genoa_1435_03_15_sale/attribution/seller_abc12345",
+          "@type": "cidoc:E13_Attribute_Assignment",
+          "cidoc:P141_assigned": {
+            "@id": "http://example.org/person/giovanni_de_rossi",
+            "@type": "cidoc:E21_Person",
+            "cidoc:P1_is_identified_by": [
+              {
+                "@type": "cidoc:E41_Appellation",
+                "cidoc:P190_has_symbolic_content": "Giovanni de Rossi"
+              }
+            ]
+          },
+          "cidoc:P177_assigned_property_of_type": {
+            "@id": "http://www.cidoc-crm.org/cidoc-crm/P14_carried_out_by",
+            "@type": "cidoc:E55_Type",
+            "rdfs:label": "P14 carried out by"
+          },
+          "cidoc:P14.1_in_the_role_of": {
+            "@id": "http://vocab.getty.edu/aat/300410369",
+            "@type": "cidoc:E55_Type",
+            "rdfs:label": "seller"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+Explanation:
+1. Document typed as "sales contract" via P2
+2. E7_Activity (sale) created and typed via AAT
+3. E13_Attribute_Assignment created for seller
+4. E13 has three components:
+   - P141: Links to the person (Giovanni de Rossi)
+   - P177: Specifies property type ("P14 carried out by")
+   - P14.1: Specifies role ("seller")
+5. All person data preserved in transformation
+
+
+================================================================================
+SECTION 5: COMPLETE TRANSACTION EXAMPLE WITH E13
+================================================================================
+Add this comprehensive example showing seller and buyer with E13 pattern.
+
+EXAMPLE: Complete Sales Transaction (Seller + Buyer with E13 Pattern)
+
+This example demonstrates a complete sales transaction with both seller and
+buyer, each assigned through separate E13 Attribute Assignment instances.
+
+Contract Details:
+- Date: March 15, 1435
+- Seller: Giovanni de Rossi
+- Buyer: Antonio Ferrari
+- Property: House on Via Garibaldi
+- Location: Genoa
+
+Input Data (Simplified GMN):
+```json
+{
+  "@id": "http://example.org/contract/genoa_1435_03_15_casa_garibaldi",
+  "@type": "cidoc:E70_Document",
+  "cidoc:P2_has_type": {
+    "@id": "sales_contract_type",
+    "@type": "cidoc:E55_Type",
+    "rdfs:label": "sales contract"
+  },
+  "gmn:P94i_2_has_enactment_date": [
+    {
+      "@value": "1435-03-15",
+      "@type": "xsd:date"
+    }
+  ],
+  "gmn:P70_1_indicates_seller": [
+    {
+      "@id": "http://example.org/person/giovanni_de_rossi",
+      "@type": "cidoc:E21_Person"
+    }
+  ],
+  "gmn:P70_2_indicates_buyer": [
+    {
+      "@id": "http://example.org/person/antonio_ferrari",
+      "@type": "cidoc:E21_Person"
+    }
+  ],
+  "gmn:P70_3_indicates_transfer_of": [
+    {
+      "@id": "http://example.org/building/casa_via_garibaldi_42",
+      "@type": "gmn:E22_1_Building"
+    }
+  ]
+}
+```
+
+After Transformation (showing both seller and buyer E13 attributions):
+```json
+{
+  "@id": "http://example.org/contract/genoa_1435_03_15_casa_garibaldi",
+  "@type": "cidoc:E70_Document",
+  "cidoc:P2_has_type": {
+    "@id": "sales_contract_type",
+    "@type": "cidoc:E55_Type",
+    "rdfs:label": "sales contract"
+  },
+  "gmn:P94i_2_has_enactment_date": [
+    {
+      "@value": "1435-03-15",
+      "@type": "xsd:date"
+    }
+  ],
+  "cidoc:P70_documents": [
+    {
+      "@id": "http://example.org/contract/genoa_1435_03_15_casa_garibaldi/sale",
+      "@type": "cidoc:E7_Activity",
+      "cidoc:P2_has_type": {
+        "@id": "http://vocab.getty.edu/aat/300054751",
+        "@type": "cidoc:E55_Type",
+        "rdfs:label": "sale"
+      },
+      "cidoc:P140i_was_attributed_by": [
+        {
+          "@id": "http://example.org/contract/genoa_1435_03_15_casa_garibaldi/attribution/seller_...",
+          "@type": "cidoc:E13_Attribute_Assignment",
+          "cidoc:P141_assigned": {
+            "@id": "http://example.org/person/giovanni_de_rossi",
+            "@type": "cidoc:E21_Person"
+          },
+          "cidoc:P177_assigned_property_of_type": {
+            "@id": "http://www.cidoc-crm.org/cidoc-crm/P14_carried_out_by",
+            "@type": "cidoc:E55_Type",
+            "rdfs:label": "P14 carried out by"
+          },
+          "cidoc:P14.1_in_the_role_of": {
+            "@id": "http://vocab.getty.edu/aat/300410369",
+            "@type": "cidoc:E55_Type",
+            "rdfs:label": "seller"
+          }
+        },
+        {
+          "@id": "http://example.org/contract/genoa_1435_03_15_casa_garibaldi/attribution/buyer_...",
+          "@type": "cidoc:E13_Attribute_Assignment",
+          "cidoc:P141_assigned": {
+            "@id": "http://example.org/person/antonio_ferrari",
+            "@type": "cidoc:E21_Person"
+          },
+          "cidoc:P177_assigned_property_of_type": {
+            "@id": "http://www.cidoc-crm.org/cidoc-crm/P14_carried_out_by",
+            "@type": "cidoc:E55_Type",
+            "rdfs:label": "P14 carried out by"
+          },
+          "cidoc:P14.1_in_the_role_of": {
+            "@id": "http://vocab.getty.edu/aat/300239436",
+            "@type": "cidoc:E55_Type",
+            "rdfs:label": "buyer"
+          }
+        }
+      ],
+      "cidoc:P16_used_specific_object": [
+        {
+          "@id": "http://example.org/building/casa_via_garibaldi_42",
+          "@type": "gmn:E22_1_Building"
+        }
+      ]
+    }
+  ]
+}
+```
+
+Key Points:
+- Both seller and buyer use E13 pattern
+- Each has separate E13_Attribute_Assignment instance
+- E13 instances differentiated by P14.1 role ("seller" vs "buyer")
+- Both share same P177 property type ("P14 carried out by")
+- Property being sold linked via P16_used_specific_object
+
+
+================================================================================
+SECTION 6: MULTIPLE SELLERS EXAMPLE WITH E13
+================================================================================
+Add this example for co-ownership and joint sales scenarios using E13.
+
+EXAMPLE: Multiple Co-Sellers (Multiple E13 Attributions)
+
+Historical context: Properties were often held in co-ownership by family members
+or business partners. When such properties were sold, all co-owners appeared
+as sellers in the contract. Each seller gets a separate E13 attribution.
+
+Scenario: Two brothers jointly selling their inherited family house.
+
+Input Data:
+```json
+{
+  "@id": "http://example.org/contract/genoa_1435_04_20_joint_sale",
+  "@type": "cidoc:E70_Document",
+  "cidoc:P2_has_type": {
+    "@id": "sales_contract_type",
+    "@type": "cidoc:E55_Type"
+  },
+  "gmn:P70_1_indicates_seller": [
+    {
+      "@id": "http://example.org/person/marco_bianchi",
+      "@type": "cidoc:E21_Person",
+      "cidoc:P1_is_identified_by": [
+        {
+          "@type": "cidoc:E41_Appellation",
+          "cidoc:P190_has_symbolic_content": "Marco Bianchi"
+        }
+      ]
+    },
+    {
+      "@id": "http://example.org/person/paolo_bianchi",
+      "@type": "cidoc:E21_Person",
+      "cidoc:P1_is_identified_by": [
+        {
+          "@type": "cidoc:E41_Appellation",
+          "cidoc:P190_has_symbolic_content": "Paolo Bianchi"
+        }
+      ]
+    }
+  ]
+}
+```
+
+After Transformation (showing two separate E13 attributions):
+```json
+{
+  "@id": "http://example.org/contract/genoa_1435_04_20_joint_sale",
+  "@type": "cidoc:E70_Document",
+  "cidoc:P2_has_type": {
+    "@id": "sales_contract_type",
+    "@type": "cidoc:E55_Type"
+  },
+  "cidoc:P70_documents": [
+    {
+      "@id": "http://example.org/contract/genoa_1435_04_20_joint_sale/sale",
+      "@type": "cidoc:E7_Activity",
+      "cidoc:P2_has_type": {
+        "@id": "http://vocab.getty.edu/aat/300054751",
+        "@type": "cidoc:E55_Type"
+      },
+      "cidoc:P140i_was_attributed_by": [
+        {
+          "@id": "http://example.org/contract/genoa_1435_04_20_joint_sale/attribution/seller_xyz11111",
+          "@type": "cidoc:E13_Attribute_Assignment",
+          "cidoc:P141_assigned": {
+            "@id": "http://example.org/person/marco_bianchi",
+            "@type": "cidoc:E21_Person",
+            "cidoc:P1_is_identified_by": [
+              {
+                "@type": "cidoc:E41_Appellation",
+                "cidoc:P190_has_symbolic_content": "Marco Bianchi"
+              }
+            ]
+          },
+          "cidoc:P177_assigned_property_of_type": {
+            "@id": "http://www.cidoc-crm.org/cidoc-crm/P14_carried_out_by",
+            "@type": "cidoc:E55_Type"
+          },
+          "cidoc:P14.1_in_the_role_of": {
+            "@id": "http://vocab.getty.edu/aat/300410369",
+            "@type": "cidoc:E55_Type"
+          }
+        },
+        {
+          "@id": "http://example.org/contract/genoa_1435_04_20_joint_sale/attribution/seller_xyz22222",
+          "@type": "cidoc:E13_Attribute_Assignment",
+          "cidoc:P141_assigned": {
+            "@id": "http://example.org/person/paolo_bianchi",
+            "@type": "cidoc:E21_Person",
+            "cidoc:P1_is_identified_by": [
+              {
+                "@type": "cidoc:E41_Appellation",
+                "cidoc:P190_has_symbolic_content": "Paolo Bianchi"
+              }
+            ]
+          },
+          "cidoc:P177_assigned_property_of_type": {
+            "@id": "http://www.cidoc-crm.org/cidoc-crm/P14_carried_out_by",
+            "@type": "cidoc:E55_Type"
+          },
+          "cidoc:P14.1_in_the_role_of": {
+            "@id": "http://vocab.getty.edu/aat/300410369",
+            "@type": "cidoc:E55_Type"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+Note: Each co-seller has a distinct E13_Attribute_Assignment instance.
+Both E13 instances have:
+- Same P177 value ("P14 carried out by")
+- Same P14.1 role value ("seller")
+- Different P141_assigned values (different persons)
+- Unique URIs (different hash suffixes)
+
+
+================================================================================
+SECTION 7: AAT TERMS REFERENCE TABLE
+================================================================================
+Add this reference table for the AAT terms used in the transformation.
+
+TABLE: Getty AAT Terms Used in E13 Pattern
+┌──────────────────────┬────────────────────────────────────────────┬──────────────────────┬────────────────┐
+│ Term Type            │ AAT URI                                    │ Label                │ Used In        │
+├──────────────────────┼────────────────────────────────────────────┼──────────────────────┼────────────────┤
+│ Event Type (Sale)    │ http://vocab.getty.edu/aat/300054751      │ sale (event)         │ E7 P2_has_type │
+├──────────────────────┼────────────────────────────────────────────┼──────────────────────┼────────────────┤
+│ Role Type (Seller)   │ http://vocab.getty.edu/aat/300410369      │ sellers (people)     │ E13 P14.1      │
+├──────────────────────┼────────────────────────────────────────────┼──────────────────────┼────────────────┤
+│ Property Type (P14)  │ http://www.cidoc-crm.org/cidoc-crm/       │ P14 carried out by   │ E13 P177       │
+│                      │ P14_carried_out_by                         │                      │                │
+└──────────────────────┴────────────────────────────────────────────┴──────────────────────┴────────────────┘
+
+Additional AAT Terms for Related Roles:
+- Buyer: http://vocab.getty.edu/aat/300239436 (buyers, people)
+- Witness: http://vocab.getty.edu/aat/300028910 (witnesses, people)
+- Guarantor: http://vocab.getty.edu/aat/300025245 (guarantors)
+
+
+================================================================================
+SECTION 8: TURTLE/RDF SERIALIZATION EXAMPLE WITH E13
+================================================================================
+Add this example for users working with Turtle format directly.
+
+EXAMPLE: Sales Contract with E13 Pattern in Turtle Format
+
+This example shows how to express a sales contract with seller using E13
+Attribute Assignment in Turtle serialization.
+
+```turtle
+@prefix gmn: <http://example.org/gmn/> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix ex: <http://example.org/> .
+@prefix aat: <http://vocab.getty.edu/aat/> .
+
+# The sales contract document
+ex:contract/sale_1435_06_01 
+    a cidoc:E70_Document ;
+    cidoc:P2_has_type [
+        a cidoc:E55_Type ;
+        rdfs:label "sales contract"
+    ] ;
+    cidoc:P70_documents ex:contract/sale_1435_06_01/sale .
+
+# The sale event
+ex:contract/sale_1435_06_01/sale
+    a cidoc:E7_Activity ;
+    cidoc:P2_has_type aat:300054751 ;  # sale (event)
+    cidoc:P140i_was_attributed_by ex:contract/sale_1435_06_01/attribution/seller_abc12345 .
+
+# The E13 Attribute Assignment for seller
+ex:contract/sale_1435_06_01/attribution/seller_abc12345
+    a cidoc:E13_Attribute_Assignment ;
+    cidoc:P141_assigned ex:person/lorenzo_medici ;
+    cidoc:P177_assigned_property_of_type [
+        a cidoc:E55_Type ;
+        cidoc:P2_has_type cidoc:P14_carried_out_by ;
+        rdfs:label "P14 carried out by"
+    ] ;
+    cidoc:P14.1_in_the_role_of aat:300410369 .  # sellers (people)
+
+# The seller
+ex:person/lorenzo_medici 
+    a cidoc:E21_Person ;
+    cidoc:P1_is_identified_by [
+        a cidoc:E41_Appellation ;
+        cidoc:P190_has_symbolic_content "Lorenzo de' Medici"
+    ] .
+```
+
+Key Elements in Turtle:
+1. Document (E70) links to sale (E7) via P70_documents
+2. Sale (E7) typed with AAT sale term
+3. Sale linked to E13 via P140i_was_attributed_by
+4. E13 has three key links:
+   - P141 to person (the seller)
+   - P177 to property type (P14)
+   - P14.1 to role type (seller from AAT)
+
+
+================================================================================
+SECTION 9: COMPARISON WITH OTHER PATTERNS
+================================================================================
+Add this comparison table to show differences between approaches.
+
+TABLE: E13 Pattern vs. Alternative Approaches
+┌────────────────────┬─────────────────────────────┬──────────────────────────────┬─────────────────────────────┐
+│ Approach           │ Structure                   │ Advantages                   │ Disadvantages               │
+├────────────────────┼─────────────────────────────┼──────────────────────────────┼─────────────────────────────┤
+│ Direct P14         │ E7 --P14--> E21             │ • Simple                     │ • No role specification     │
+│ (Not used)         │                             │ • Fewer nodes                │ • No property documentation │
+│                    │                             │                              │ • Cannot distinguish roles  │
+├────────────────────┼─────────────────────────────┼──────────────────────────────┼─────────────────────────────┤
+│ E13 Attribution    │ E7 --P140i--> E13           │ • Explicit roles (P14.1)     │ • More complex              │
+│ (GMN approach)     │      ├─P141--> E21          │ • Property type (P177)       │ • More nodes                │
+│                    │      ├─P177--> "P14"        │ • Provenance support         │ • Requires AAT terms        │
+│                    │      └─P14.1--> "seller"    │ • Best practices             │                             │
+│                    │                             │ • Clear role separation      │                             │
+├────────────────────┼─────────────────────────────┼──────────────────────────────┼─────────────────────────────┤
+│ E8 Acquisition     │ E8 --P23--> E21             │ • Standard for transfers     │ • Less flexible for roles   │
+│ (Alternative)      │                             │ • Built-in semantics         │ • No E13 attribution        │
+│                    │                             │                              │ • Fixed to transfers only   │
+└────────────────────┴─────────────────────────────┴──────────────────────────────┴─────────────────────────────┘
+
+Why GMN Chose E13 Pattern:
+1. Explicit role specification needed for complex transactions
+2. Support for multiple participants with different roles
+3. Extensibility for future attribution metadata
+4. Alignment with CIDOC-CRM best practices
+5. Flexibility for various transaction types beyond simple acquisitions
+
+
+================================================================================
+SECTION 10: FREQUENTLY ASKED QUESTIONS
+================================================================================
+Add these FAQs to help users understand the E13 pattern.
+
+FAQ: gmn:P70_1_indicates_seller with E13 Pattern
+
+Q: Why use E13_Attribute_Assignment instead of direct P14_carried_out_by?
+A: E13 provides explicit role specification via P14.1 ("seller" vs "buyer"),
+   property type documentation via P177, and extensibility for attribution
+   metadata. This follows CIDOC-CRM best practices for complex participant
+   modeling.
+
+Q: What is the difference between P177 and P14.1 in the E13 structure?
+A: P177_assigned_property_of_type specifies WHAT property is being assigned
+   (in this case, "P14 carried out by"). P14.1_in_the_role_of specifies the
+   ROLE in which the person is assigned (in this case, "seller").
+
+Q: Can a sales contract have multiple sellers with E13?
+A: Yes. Each co-seller gets a separate E13_Attribute_Assignment instance.
+   All E13 instances are linked to the same E7_Activity (sale) via P140i,
+   and each has P14.1 specifying "seller" role.
+
+Q: What AAT terms are required for the E13 pattern?
+A: Three AAT terms are required:
+   1. Sale event: http://vocab.getty.edu/aat/300054751
+   2. Seller role: http://vocab.getty.edu/aat/300410369
+   3. P14 property URI: http://www.cidoc-crm.org/cidoc-crm/P14_carried_out_by
+
+Q: Does the E13 pattern work for buyers as well?
+A: Yes. The buyer uses the same E13 pattern but with a different P14.1 role
+   value (AAT term for "buyer" instead of "seller"). Both seller and buyer
+   E13 instances attach to the same E7_Activity.
+
+Q: Why use E70_Document instead of gmn:E31_2_Sales_Contract?
+A: Using cidoc:E70_Document with P2_has_type provides more flexibility,
+   avoids proliferation of subclasses, and follows CIDOC-CRM best practices.
+   Document types are specified through controlled vocabulary rather than
+   class hierarchy.
+
+Q: Why use E7_Activity instead of E8_Acquisition for the sale?
+A: E7_Activity is more general and works better with the E13 attribution
+   pattern. It allows us to type the event as "sale" via AAT and apply
+   the E13 pattern for participant roles. E8 is more specific to property
+   transfers and has built-in properties that may not align with E13.
+
+Q: Can I add more information to the E13_Attribute_Assignment?
+A: Yes! E13 can have additional properties such as:
+   - P4_has_time-span (when the attribution was made)
+   - P7_took_place_at (where the attribution was documented)
+   - P14_carried_out_by (who made the attribution)
+   This provides provenance for the attribution itself.
+
+Q: How does the transformation handle URI generation for E13 instances?
+A: The transformation generates unique URIs for E13 instances using a hash
+   of the seller URI plus the role type. This ensures:
+   - Stable URIs across transformations
+   - Unique URIs for each seller
+   - Predictable URI patterns
+
+
+================================================================================
+SECTION 11: IMPLEMENTATION TIPS
+================================================================================
+Add these practical tips for implementers using the E13 pattern.
+
+IMPLEMENTATION TIPS: Using gmn:P70_1_indicates_seller with E13
+
+1. URI CONSISTENCY
+   Use consistent URI patterns for persons across contracts:
+   ✓ Good: http://example.org/person/{normalized_name}
+   ✗ Bad: Different URIs for same person in different contracts
+
+2. DOCUMENT TYPING
+   Always include P2_has_type on the E70_Document:
+   ```json
+   {
+     "@type": "cidoc:E70_Document",
+     "cidoc:P2_has_type": {
+       "@type": "cidoc:E55_Type",
+       "rdfs:label": "sales contract"
+     }
+   }
+   ```
+
+3. AAT CONSTANTS
+   Define AAT constants in your transformation script:
+   ```python
+   AAT_SALE_EVENT = 'http://vocab.getty.edu/aat/300054751'
+   AAT_SELLER_ROLE = 'http://vocab.getty.edu/aat/300410369'
+   CIDOC_P14 = 'http://www.cidoc-crm.org/cidoc-crm/P14_carried_out_by'
+   ```
+
+4. E13 STRUCTURE VALIDATION
+   Always verify E13 has all three required components:
+   - P141_assigned (the person)
+   - P177_assigned_property_of_type ("P14 carried out by")
+   - P14.1_in_the_role_of ("seller")
+
+5. ARRAY USAGE
+   Even for single sellers, use array syntax for consistency:
+   ✓ Good: "gmn:P70_1_indicates_seller": [{"@id": "person_uri"}]
+   ✗ Bad: "gmn:P70_1_indicates_seller": {"@id": "person_uri"}
+
+6. ROLE DIFFERENTIATION
+   When transforming both seller and buyer, ensure:
+   - Both use same P177 value (CIDOC_P14)
+   - Different P14.1 values (AAT_SELLER_ROLE vs AAT_BUYER_ROLE)
+   - Separate E13 instances
+   - All attached to same E7_Activity
+
+7. TRANSFORMATION TIMING
+   Transform to full CIDOC-CRM with E13 before:
+   - Publishing data externally
+   - Linking with other knowledge graphs
+   - Long-term archival
+   Keep simplified form during data entry and editing.
+
+
+================================================================================
+SECTION 12: SUMMARY REFERENCE CARD
+================================================================================
+Add this quick reference card for easy lookup.
+
+QUICK REFERENCE: gmn:P70_1_indicates_seller (E13 Pattern)
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Property: gmn:P70_1_indicates_seller                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Label:        P70.1 indicates seller                                        │
+│ Domain:       cidoc:E70_Document                                            │
+│ Range:        cidoc:E21_Person                                              │
+│ Cardinality:  0..* (zero or more)                                           │
+│ Parent:       cidoc:P70_documents                                           │
+│ Pattern:      E13 Attribute Assignment                                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Transformation:                                                             │
+│   E70_Document                                                              │
+│     > P70_documents                                                         │
+│     > E7_Activity (type: "sale")                                            │
+│       > P140i_was_attributed_by                                             │
+│       > E13_Attribute_Assignment                                            │
+│         > P141_assigned → E21_Person                                        │
+│         > P177_assigned_property_of_type → "P14 carried out by"            │
+│         > P14.1_in_the_role_of → "seller"                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ AAT Terms Required:                                                         │
+│   • Sale event: http://vocab.getty.edu/aat/300054751                        │
+│   • Seller role: http://vocab.getty.edu/aat/300410369                       │
+│   • P14 property: http://www.cidoc-crm.org/cidoc-crm/P14_carried_out_by    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Use For:                                                                    │
+│   • Actual property owners selling                                          │
+│   • Individual persons (not organizations)                                  │
+│   • Principal sellers (not their representatives)                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Do Not Use For:                                                             │
+│   • Procurators/legal representatives → use P70.4                           │
+│   • Guarantors → use P70.6                                                  │
+│   • Payment recipients → use P70.10                                         │
+│   • Referenced persons → use P70.11                                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Key Advantages of E13 Pattern:                                             │
+│   • Explicit role specification via P14.1                                   │
+│   • Property type documentation via P177                                    │
+│   • Support for multiple sellers with clear roles                           │
+│   • Extensible for attribution metadata                                     │
+│   • CIDOC-CRM best practice compliance                                      │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+================================================================================
+END OF DOCUMENT ADDITIONS
+================================================================================
+
+These additions should be integrated into the main documentation file in the
+appropriate sections. Each example and table is designed to explain the E13
+Attribute Assignment pattern clearly and provide practical guidance for
+implementation.

@@ -1,0 +1,307 @@
+# TTL Additions for gmn:P70_1_indicates_seller
+# Ready-to-copy snippets for gmn_ontology.ttl
+
+# ==============================================================================
+# PROPERTY DEFINITION
+# ==============================================================================
+# Location: Add to sales contract properties section
+# Context: With other P70 properties
+
+# Property: P70.1 indicates seller
+gmn:P70_1_indicates_seller
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.1 indicates seller"@en ;
+    rdfs:comment "Simplified property for associating a sales contract document with the person who acts as the seller in the sale event. Represents the full CIDOC-CRM path: E70_Document > P70_documents > E7_Activity (typed as 'sale') > P140i_was_attributed_by > E13_Attribute_Assignment > P141_assigned > E21_Person, with P177_assigned_property_of_type indicating 'P14 carried out by' and P14.1_in_the_role_of indicating 'seller'. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The seller is the party transferring ownership of the property being sold."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain cidoc:E70_Document ;
+    rdfs:range cidoc:E21_Person ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P140i_was_attributed_by, cidoc:E13_Attribute_Assignment, cidoc:P141_assigned .
+
+# ==============================================================================
+# USAGE NOTES
+# ==============================================================================
+
+# 1. ARCHITECTURAL APPROACH
+#    This property uses the E13_Attribute_Assignment pattern instead of direct
+#    property links. This provides:
+#    - Explicit role specification (via P14.1_in_the_role_of)
+#    - Property type documentation (via P177_assigned_property_of_type)
+#    - Attribution provenance capabilities
+#    - Support for complex participant scenarios
+
+# 2. DOCUMENT TYPE
+#    Sales contract documents should be typed using E70_Document with P2_has_type:
+#    
+#    <contract_001>
+#        a cidoc:E70_Document ;
+#        cidoc:P2_has_type [
+#            a cidoc:E55_Type ;
+#            rdfs:label "sales contract"
+#        ] .
+#
+#    This replaces the use of a E31.2 Sales Contract subclass.
+
+# 3. EVENT TYPE
+#    The documented event is E7_Activity (not E8_Acquisition), typed as "sale":
+#    
+#    <contract_001/sale>
+#        a cidoc:E7_Activity ;
+#        cidoc:P2_has_type <http://vocab.getty.edu/aat/300054751> ;  # sale
+#
+#    AAT term 300054751 represents "sale (event)"
+
+# 4. PLACEMENT
+#    This property should be added with other P70.x properties.
+#    Suggested order:
+#    - P70.1 indicates seller (this property)
+#    - P70.2 indicates buyer
+#    - P70.3 indicates transfer of
+#    - ... other P70 properties
+
+# 5. DEPENDENCIES
+#    Required prefix declarations (should be at top of file):
+#    @prefix gmn: <http://example.org/gmn/> .
+#    @prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+#    @prefix owl: <http://www.w3.org/2002/07/owl#> .
+#    @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+#    @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+#    @prefix dcterms: <http://purl.org/dc/terms/> .
+#    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# 6. REQUIRED CIDOC-CRM CLASSES
+#    - cidoc:E70_Document (domain)
+#    - cidoc:E21_Person (range)
+#    - cidoc:E7_Activity (transformation target)
+#    - cidoc:E13_Attribute_Assignment (transformation intermediate)
+#    - cidoc:E55_Type (for typing)
+
+# 7. REQUIRED CIDOC-CRM PROPERTIES
+#    - cidoc:P70_documents (parent property)
+#    - cidoc:P140i_was_attributed_by (E7 to E13 link)
+#    - cidoc:P141_assigned (E13 to person link)
+#    - cidoc:P177_assigned_property_of_type (property type specification)
+#    - cidoc:P14.1_in_the_role_of (role specification)
+
+# 8. AAT TERMS REQUIRED
+#    The transformation uses these Getty AAT terms:
+#    - Sale event: http://vocab.getty.edu/aat/300054751
+#    - Seller role: http://vocab.getty.edu/aat/300410369
+#    - P14 property: http://www.cidoc-crm.org/cidoc-crm/P14_carried_out_by
+
+# 9. VALIDATION
+#    After adding, validate with:
+#    - Turtle parser (e.g., rapper, rdflib)
+#    - OWL reasoner (e.g., Pellet, HermiT)
+#    - Check for consistency with existing properties
+
+# ==============================================================================
+# EXAMPLE USAGE IN DATA
+# ==============================================================================
+
+# Example 1: Single seller (simplified)
+# <http://example.org/contract/sale_001>
+#     a cidoc:E70_Document ;
+#     cidoc:P2_has_type [
+#         a cidoc:E55_Type ;
+#         rdfs:label "sales contract"
+#     ] ;
+#     gmn:P70_1_indicates_seller <http://example.org/person/giovanni_rossi> .
+
+# Example 2: Multiple co-sellers
+# <http://example.org/contract/sale_002>
+#     a cidoc:E70_Document ;
+#     cidoc:P2_has_type [
+#         a cidoc:E55_Type ;
+#         rdfs:label "sales contract"
+#     ] ;
+#     gmn:P70_1_indicates_seller 
+#         <http://example.org/person/marco_bianchi> ,
+#         <http://example.org/person/paolo_verdi> .
+
+# Example 3: Seller with full person data
+# <http://example.org/contract/sale_003>
+#     a cidoc:E70_Document ;
+#     cidoc:P2_has_type [
+#         a cidoc:E55_Type ;
+#         rdfs:label "sales contract"
+#     ] ;
+#     gmn:P70_1_indicates_seller <http://example.org/person/antonio_ferrari> .
+#
+# <http://example.org/person/antonio_ferrari>
+#     a cidoc:E21_Person ;
+#     cidoc:P1_is_identified_by [
+#         a cidoc:E41_Appellation ;
+#         cidoc:P190_has_symbolic_content "Antonio Ferrari"
+#     ] .
+
+# ==============================================================================
+# TRANSFORMATION NOTES
+# ==============================================================================
+
+# This property is designed for convenience during data entry and should be
+# transformed to full CIDOC-CRM structure before publication or formal use.
+#
+# Transformation target structure:
+#
+# E70_Document
+#   --P70_documents--> E7_Activity (type: "sale")
+#     --P140i_was_attributed_by--> E13_Attribute_Assignment
+#       --P141_assigned--> E21_Person (seller)
+#       --P177_assigned_property_of_type--> E55_Type ("P14 carried out by")
+#       --P14.1_in_the_role_of--> E55_Type ("seller")
+#
+# The transformation is handled by the Python script:
+# transform_p70_1_indicates_seller() in gmn_to_cidoc_transform.py
+
+# ==============================================================================
+# FULL TRANSFORMATION EXAMPLE IN TURTLE
+# ==============================================================================
+
+# Before transformation (simplified):
+# <http://example.org/contract/sale_1435_03_15>
+#     a cidoc:E70_Document ;
+#     cidoc:P2_has_type [
+#         a cidoc:E55_Type ;
+#         rdfs:label "sales contract"
+#     ] ;
+#     gmn:P70_1_indicates_seller <http://example.org/person/giovanni_rossi> .
+
+# After transformation (full CIDOC-CRM):
+# <http://example.org/contract/sale_1435_03_15>
+#     a cidoc:E70_Document ;
+#     cidoc:P2_has_type [
+#         a cidoc:E55_Type ;
+#         rdfs:label "sales contract"
+#     ] ;
+#     cidoc:P70_documents <http://example.org/contract/sale_1435_03_15/sale> .
+#
+# <http://example.org/contract/sale_1435_03_15/sale>
+#     a cidoc:E7_Activity ;
+#     cidoc:P2_has_type <http://vocab.getty.edu/aat/300054751> ;  # sale
+#     cidoc:P140i_was_attributed_by 
+#         <http://example.org/contract/sale_1435_03_15/attribution/seller_abc12345> .
+#
+# <http://example.org/contract/sale_1435_03_15/attribution/seller_abc12345>
+#     a cidoc:E13_Attribute_Assignment ;
+#     cidoc:P141_assigned <http://example.org/person/giovanni_rossi> ;
+#     cidoc:P177_assigned_property_of_type 
+#         <http://www.cidoc-crm.org/cidoc-crm/P14_carried_out_by> ;
+#     cidoc:P14.1_in_the_role_of <http://vocab.getty.edu/aat/300410369> .  # seller
+#
+# <http://example.org/person/giovanni_rossi>
+#     a cidoc:E21_Person .
+
+# ==============================================================================
+# SEMANTIC CHARACTERISTICS
+# ==============================================================================
+
+# Property Type:        owl:ObjectProperty
+# Functional:           No (multiple sellers allowed)
+# Inverse Functional:   No
+# Transitive:           No
+# Symmetric:            No
+# Reflexive:            No
+# Asymmetric:           No
+# Cardinality:          0..* (zero or more)
+
+# ==============================================================================
+# E13 PATTERN EXPLANATION
+# ==============================================================================
+
+# The E13_Attribute_Assignment pattern is used to formally document the
+# assignment of an attribute to an entity. In this case:
+#
+# 1. WHAT is being assigned: A person (E21_Person)
+# 2. TO WHAT: A sale event (E7_Activity)
+# 3. AS WHAT PROPERTY: "P14 carried out by"
+# 4. IN WHAT ROLE: "seller"
+#
+# This pattern provides:
+# - Explicit documentation of role assignments
+# - Clear property type specification
+# - Support for multiple roles on same event
+# - Extensibility for attribution metadata
+# - Provenance capabilities
+
+# The E13 structure reads as:
+# "The sale event was attributed by [an assignment] which assigned 
+#  [Giovanni Rossi] as the value of [P14 carried out by] in the role of [seller]"
+
+# ==============================================================================
+# ADVANTAGES OF E13 PATTERN
+# ==============================================================================
+
+# 1. ROLE SPECIFICATION
+#    P14.1_in_the_role_of explicitly specifies "seller" vs "buyer" vs other roles
+#
+# 2. PROPERTY TYPE DOCUMENTATION
+#    P177_assigned_property_of_type indicates we're assigning "P14 carried out by"
+#
+# 3. MULTIPLE PARTICIPANTS
+#    Multiple E13 instances allow multiple sellers, buyers, etc. with clear roles
+#
+# 4. ATTRIBUTION METADATA
+#    E13 can have additional properties (time, place, agent) for provenance
+#
+# 5. SEMANTIC CLARITY
+#    Explicit structure vs. implied roles in direct P14 links
+#
+# 6. CIDOC-CRM BEST PRACTICE
+#    Follows CRM guidelines for complex participant role modeling
+
+# ==============================================================================
+# INTEGRATION CHECKLIST
+# ==============================================================================
+
+# After adding this property to gmn_ontology.ttl:
+# [ ] Property definition is in correct section
+# [ ] All required prefixes are declared
+# [ ] Domain class (cidoc:E70_Document) is accessible
+# [ ] Range class (cidoc:E21_Person) is accessible
+# [ ] rdfs:subPropertyOf reference is valid
+# [ ] rdfs:seeAlso includes E13-related references
+# [ ] File validates without errors
+# [ ] Transformation function is implemented
+# [ ] AAT constants are defined in Python script
+# [ ] Documentation explains E13 pattern
+# [ ] Examples show full E13 structure
+
+# ==============================================================================
+# PROPERTY METADATA SUMMARY
+# ==============================================================================
+
+# Property URI:         gmn:P70_1_indicates_seller
+# Label:                "P70.1 indicates seller"@en
+# Type:                 owl:ObjectProperty, rdf:Property
+# Parent Property:      cidoc:P70_documents
+# Domain:               cidoc:E70_Document
+# Range:                cidoc:E21_Person
+# Created:              2025-10-17
+# Status:               Active
+# Transformation:       Required (to E13 pattern)
+# Pattern:              E13 Attribute Assignment
+
+# ==============================================================================
+# RELATED AAT TERMS
+# ==============================================================================
+
+# Sale Event:
+#   URI: http://vocab.getty.edu/aat/300054751
+#   Label: "sale (event)"
+#   Definition: Activities involving the exchange of goods for money
+#
+# Seller Role:
+#   URI: http://vocab.getty.edu/aat/300410369
+#   Label: "sellers (people)"
+#   Definition: People who sell goods or services
+#
+# P14 Property Type:
+#   URI: http://www.cidoc-crm.org/cidoc-crm/P14_carried_out_by
+#   Label: "P14 carried out by"
+#   Used as: E55_Type in P177_assigned_property_of_type
+
+# ==============================================================================
+# END OF TTL ADDITIONS
+# ==============================================================================
