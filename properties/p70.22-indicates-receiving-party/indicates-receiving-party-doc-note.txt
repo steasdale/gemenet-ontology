@@ -1,0 +1,516 @@
+# Document Additions for P70.22 Indicates Receiving Party
+# Examples and Tables to Add to Main Documentation Files
+
+================================================================================
+SECTION 1: ADDITIONS FOR DONATION DOCUMENTATION (donation-documentation.md)
+================================================================================
+
+### P70.22 indicates receiving party (updated)
+
+**Property URI**: `gmn:P70_22_indicates_receiving_party`
+
+**Label**: "P70.22 indicates receiving party" (English)
+
+**Domain**: Union of `gmn:E31_4_Cession_of_Rights_Contract`, `gmn:E31_5_Declaration`, `gmn:E31_7_Donation_Contract`, `gmn:E31_8_Dowry_Contract`
+
+**Range**: `cidoc:E39_Actor`
+
+**Superproperty**: `cidoc:P70_documents`
+
+**Definition**: Simplified property for associating a document with the person or entity receiving something in the documented activity. In donation contracts, this is the donee receiving the donated property.
+
+**CIDOC-CRM Path for Donations**:
+```
+E31_Document > P70_documents > E8_Acquisition > P22_transferred_title_to > E39_Actor
+```
+
+**Inverse**: `P22i_acquired_title_through`
+
+**Quantification**: Many to many (0,n:0,n)
+
+**Scope Note**: The receiving party in a donation is the donee or beneficiary who acquires ownership of the donated property without providing payment. This party may be an individual, a religious institution, a charitable organization, or any legal entity capable of holding property. The property is used for acquisitions where actual ownership is transferred.
+
+**Examples**:
+- Hospital Pammatone receiving a warehouse donation
+- Monastery of St. Francis receiving vineyard property
+- Family member receiving gifted real estate
+- Charitable institution receiving endowment property
+
+---
+
+### Example 1: Basic Donation with P70.22
+
+**Input (shortcut):**
+```turtle
+<donation001> a gmn:E31_7_Donation_Contract ;
+    gmn:P70_32_indicates_donor <widow_maria> ;
+    gmn:P70_22_indicates_receiving_party <hospital_pammatone> ;
+    gmn:P70_33_indicates_object_of_donation <warehouse_porto> .
+```
+
+**Output (CIDOC-CRM compliant):**
+```turtle
+<donation001> a gmn:E31_7_Donation_Contract ;
+    cidoc:P70_documents <donation001/acquisition> .
+
+<donation001/acquisition> a cidoc:E8_Acquisition ;
+    cidoc:P23_transferred_title_from <widow_maria> ;
+    cidoc:P22_transferred_title_to <hospital_pammatone> ;
+    cidoc:P24_transferred_title_of <warehouse_porto> .
+```
+
+**Explanation**: The E8_Acquisition node connects the donor (P23), receiving party/donee (P22), and the donated property (P24), forming a complete ownership transfer structure.
+
+---
+
+### Example 2: Donation with Multiple Receiving Parties
+
+**Scenario**: A wealthy patron donates a vineyard to three religious institutions jointly.
+
+**Input (shortcut):**
+```turtle
+<donation_multi> a gmn:E31_7_Donation_Contract ;
+    gmn:P70_32_indicates_donor <wealthy_patron> ;
+    gmn:P70_22_indicates_receiving_party <monastery_st_francis> ,
+                                          <convent_st_clare> ,
+                                          <church_st_john> ;
+    gmn:P70_33_indicates_object_of_donation <vineyard_countryside> .
+```
+
+**Output (CIDOC-CRM compliant):**
+```turtle
+<donation_multi> a gmn:E31_7_Donation_Contract ;
+    cidoc:P70_documents <donation_multi/acquisition> .
+
+<donation_multi/acquisition> a cidoc:E8_Acquisition ;
+    cidoc:P23_transferred_title_from <wealthy_patron> ;
+    cidoc:P22_transferred_title_to <monastery_st_francis> ,
+                                    <convent_st_clare> ,
+                                    <church_st_john> ;
+    cidoc:P24_transferred_title_of <vineyard_countryside> .
+```
+
+**Explanation**: Multiple receiving parties can jointly receive ownership through a single acquisition event, representing shared or joint ownership arrangements.
+
+---
+
+### Updated Property Comparison Table
+
+| Property | Label | Domain | Range | CIDOC Path | Semantic Role |
+|----------|-------|--------|-------|------------|---------------|
+| P70.32 | indicates donor | Donation, Dowry | E39_Actor | P23_transferred_title_from | Transferor of gift |
+| **P70.22** | **indicates receiving party** | **Donation, Dowry, Cession, Declaration** | **E39_Actor** | **P22_transferred_title_to (donations/dowries)** | **Recipient/beneficiary** |
+| P70.33 | indicates object of donation | Donation | E18_Physical_Thing | P24_transferred_title_of | Property donated |
+
+---
+
+
+================================================================================
+SECTION 2: ADDITIONS FOR DOWRY DOCUMENTATION (dowry-documentation.md)
+================================================================================
+
+### P70.22 indicates receiving party (updated for dowries)
+
+**Property URI**: `gmn:P70_22_indicates_receiving_party`
+
+**Label**: "P70.22 indicates receiving party" (English)
+
+**Domain**: Union of `gmn:E31_4_Cession_of_Rights_Contract`, `gmn:E31_5_Declaration`, `gmn:E31_7_Donation_Contract`, `gmn:E31_8_Dowry_Contract`
+
+**Range**: `cidoc:E39_Actor`
+
+**Superproperty**: `cidoc:P70_documents`
+
+**Definition**: Simplified property for associating a document with the person or entity receiving something in the documented activity. In dowry contracts, this is the party (often the spouse or the couple) receiving the dowry property.
+
+**CIDOC-CRM Path for Dowries**:
+```
+E31_Document > P70_documents > E8_Acquisition > P22_transferred_title_to > E39_Actor
+```
+
+**Inverse**: `P22i_acquired_title_through`
+
+**Quantification**: Many to many (0,n:0,n)
+
+**Scope Note**: The receiving party in a dowry contract is typically the husband or the married couple who acquire ownership of the dowry property. This is distinguished from the donor (often a parent or family member). The dowry receiving party becomes the legal owner of the transferred property as part of the marriage arrangement.
+
+**Examples**:
+- Husband receiving house as dowry from wife's father
+- Married couple jointly receiving dowry property
+- Spouse receiving moveable property as part of marriage settlement
+- Son-in-law receiving land parcel from bride's family
+
+---
+
+### Example 1: Simple Dowry Transfer
+
+**Input (shortcut):**
+```turtle
+<dowry001> a gmn:E31_8_Dowry_Contract ;
+    gmn:P70_32_indicates_donor <father_filippo> ;
+    gmn:P70_22_indicates_receiving_party <husband_luca> ;
+    gmn:P70_34_indicates_object_of_dowry <house_city_center> .
+```
+
+**Output (CIDOC-CRM compliant):**
+```turtle
+<dowry001> a gmn:E31_8_Dowry_Contract ;
+    cidoc:P70_documents <dowry001/acquisition> .
+
+<dowry001/acquisition> a cidoc:E8_Acquisition ;
+    cidoc:P23_transferred_title_from <father_filippo> ;
+    cidoc:P22_transferred_title_to <husband_luca> ;
+    cidoc:P24_transferred_title_of <house_city_center> .
+```
+
+---
+
+### Example 2: Dowry with Valuation
+
+**Input (shortcut):**
+```turtle
+<dowry002> a gmn:E31_8_Dowry_Contract ;
+    gmn:P70_32_indicates_donor <mother_caterina> ;
+    gmn:P70_22_indicates_receiving_party <son_in_law_pietro> ;
+    gmn:P70_34_indicates_object_of_dowry <vineyard_parcel> ;
+    gmn:P70_16_documents_sale_price "500" ;
+    gmn:P70_17_documents_sale_price_currency <lire_currency> .
+```
+
+**Output (CIDOC-CRM compliant):**
+```turtle
+<dowry002> a gmn:E31_8_Dowry_Contract ;
+    cidoc:P70_documents <dowry002/acquisition> .
+
+<dowry002/acquisition> a cidoc:E8_Acquisition ;
+    cidoc:P23_transferred_title_from <mother_caterina> ;
+    cidoc:P22_transferred_title_to <son_in_law_pietro> ;
+    cidoc:P24_transferred_title_of <vineyard_parcel> ;
+    cidoc:P177_assigned_property_type <dowry002/price> .
+
+<dowry002/price> a cidoc:E54_Dimension ;
+    cidoc:P90_has_value "500"^^xsd:decimal ;
+    cidoc:P91_has_unit <lire_currency> .
+```
+
+**Explanation**: The dowry value is captured through the E54_Dimension linked via P177, documenting the monetary value of the transfer.
+
+---
+
+### Updated Dowry Property Comparison Table
+
+| Property | Label | CIDOC Path | Semantic Role | Notes |
+|----------|-------|------------|---------------|-------|
+| P70.32 | indicates donor | P23_transferred_title_from | Dowry provider | Usually parent or family |
+| **P70.22** | **indicates receiving party** | **P22_transferred_title_to** | **Dowry recipient** | **Usually spouse or couple** |
+| P70.34 | indicates object of dowry | P24_transferred_title_of | Dowry property | Physical property transferred |
+| P70.16 | documents sale price | P177 > P90_has_value | Property value | Monetary value of dowry |
+
+---
+
+
+================================================================================
+SECTION 3: ADDITIONS FOR CESSION DOCUMENTATION
+================================================================================
+
+### P70.22 indicates receiving party (for cessions)
+
+**Property URI**: `gmn:P70_22_indicates_receiving_party`
+
+**Label**: "P70.22 indicates receiving party" (English)
+
+**Domain**: Union of `gmn:E31_4_Cession_of_Rights_Contract`, `gmn:E31_5_Declaration`, `gmn:E31_7_Donation_Contract`, `gmn:E31_8_Dowry_Contract`
+
+**Range**: `cidoc:E39_Actor`
+
+**Superproperty**: `cidoc:P70_documents`
+
+**Definition**: Simplified property for associating a document with the person or entity receiving something in the documented activity. In cession of rights contracts, this is the party receiving the ceded rights.
+
+**CIDOC-CRM Path for Cessions**:
+```
+E31_Document > P70_documents > E7_Activity > P14_carried_out_by > E39_Actor
+```
+
+**Inverse**: `P14i_performed`
+
+**Quantification**: Many to many (0,n:0,n)
+
+**Scope Note**: In cession contracts, both the conceding party and receiving party are linked via P14_carried_out_by, modeling the cession as a bilateral activity where both parties actively participate in the rights transfer. The receiving party is the actor who acquires the legal rights being transferred.
+
+**Examples**:
+- Merchant acquiring debt collection rights
+- Business partner receiving usufruct rights
+- Creditor receiving assigned contract claims
+- Heir receiving transferred inheritance rights
+
+---
+
+### Example: Cession of Debt Collection Rights
+
+**Input (shortcut):**
+```turtle
+<cession001> a gmn:E31_4_Cession_of_Rights_Contract ;
+    gmn:P70_21_indicates_conceding_party <merchant_marco> ;
+    gmn:P70_22_indicates_receiving_party <merchant_pietro> ;
+    gmn:P70_23_indicates_object_of_cession <debt_claim_001> .
+```
+
+**Output (CIDOC-CRM compliant):**
+```turtle
+<cession001> a gmn:E31_4_Cession_of_Rights_Contract ;
+    cidoc:P70_documents <cession001/cession> .
+
+<cession001/cession> a cidoc:E7_Activity ;
+    cidoc:P2_has_type <http://vocab.getty.edu/aat/300417639> ;  # transfers of rights
+    cidoc:P14_carried_out_by <merchant_marco> ;
+    cidoc:P14_carried_out_by <merchant_pietro> ;
+    cidoc:P16_used_specific_object <debt_claim_001> .
+```
+
+**Explanation**: Both parties appear as P14_carried_out_by participants in the cession activity, reflecting the bilateral nature of rights transfers. The legal object (rights) is connected via P16_used_specific_object.
+
+---
+
+### Cession Property Relationships
+
+| Property | Label | CIDOC Path | Semantic Role |
+|----------|-------|------------|---------------|
+| P70.21 | indicates conceding party | P14_carried_out_by | Rights transferor |
+| **P70.22** | **indicates receiving party** | **P14_carried_out_by** | **Rights acquirer** |
+| P70.23 | indicates object of cession | P16_used_specific_object | Rights being transferred |
+
+**Note**: Unlike donations (which use P23/P22 for asymmetric transfer), cessions use P14 for both parties to represent mutual participation.
+
+---
+
+
+================================================================================
+SECTION 4: ADDITIONS FOR DECLARATION DOCUMENTATION
+================================================================================
+
+### P70.22 indicates receiving party (for declarations)
+
+**Property URI**: `gmn:P70_22_indicates_receiving_party`
+
+**Label**: "P70.22 indicates receiving party" (English)
+
+**Domain**: Union of `gmn:E31_4_Cession_of_Rights_Contract`, `gmn:E31_5_Declaration`, `gmn:E31_7_Donation_Contract`, `gmn:E31_8_Dowry_Contract`
+
+**Range**: `cidoc:E39_Actor`
+
+**Superproperty**: `cidoc:P70_documents`
+
+**Definition**: Simplified property for associating a document with the person or entity receiving something in the documented activity. In declarations, this is the party to whom the declaration is addressed or directed.
+
+**CIDOC-CRM Path for Declarations**:
+```
+E31_Document > P70_documents > E7_Activity > P01_has_domain > E39_Actor
+```
+
+**Inverse**: `P01i_is_domain_of`
+
+**Quantification**: Many to many (0,n:0,n)
+
+**Scope Note**: The receiving party in a declaration is the addressee or target of the declaration - the party to whom the statement is directed. This is semantically distinct from the declarant (who carries out the declaration via P14_carried_out_by). The use of P01_has_domain establishes the receiving party as the "subject" or target of the declaration activity.
+
+**Examples**:
+- Magistrate receiving debt acknowledgment
+- Official receiving formal statement
+- Creditor addressed in debt declaration
+- Authority figure receiving sworn testimony
+
+---
+
+### Example: Declaration to Magistrate
+
+**Input (shortcut):**
+```turtle
+<declaration001> a gmn:E31_5_Declaration ;
+    gmn:P70_24_indicates_declarant <merchant_pietro> ;
+    gmn:P70_22_indicates_receiving_party <magistrate_antonio> ;
+    gmn:P70_25_indicates_declaration_subject <debt_acknowledgment> .
+```
+
+**Output (CIDOC-CRM compliant):**
+```turtle
+<declaration001> a gmn:E31_5_Declaration ;
+    cidoc:P70_documents <declaration001/declaration> .
+
+<declaration001/declaration> a cidoc:E7_Activity ;
+    cidoc:P2_has_type <http://vocab.getty.edu/aat/300027623> ;  # declarations
+    cidoc:P14_carried_out_by <merchant_pietro> ;
+    cidoc:P01_has_domain <magistrate_antonio> ;
+    cidoc:P16_used_specific_object <debt_acknowledgment> .
+```
+
+**Explanation**: The declarant (Pietro) carries out the act (P14), while the receiving party (Antonio) is the target (P01). This asymmetric structure captures the directed nature of declarations.
+
+---
+
+### Declaration Property Relationships
+
+| Property | Label | CIDOC Path | Semantic Role | Property Type |
+|----------|-------|------------|---------------|---------------|
+| P70.24 | indicates declarant | P14_carried_out_by | Speaker/maker | Active participant |
+| **P70.22** | **indicates receiving party** | **P01_has_domain** | **Addressee/target** | **Passive recipient** |
+| P70.25 | indicates declaration subject | P16_used_specific_object | Subject matter | Object of statement |
+
+---
+
+
+================================================================================
+SECTION 5: COMPREHENSIVE COMPARISON TABLE
+================================================================================
+
+### P70.22 Across All Document Types
+
+This table shows how P70.22 adapts to different document contexts:
+
+| Document Type | Receiving Party Role | CIDOC Event Class | CIDOC Property | Complementary Party Property | Object Property |
+|--------------|---------------------|-------------------|----------------|------------------------------|-----------------|
+| **Cession** | Rights acquirer | E7_Activity | P14_carried_out_by | P70.21 (conceding party) | P70.23 (rights object) |
+| **Declaration** | Addressee/target | E7_Activity | P01_has_domain | P70.24 (declarant) | P70.25 (subject) |
+| **Donation** | Donee/beneficiary | E8_Acquisition | P22_transferred_title_to | P70.32 (donor) | P70.33 (donated object) |
+| **Dowry** | Receiving spouse | E8_Acquisition | P22_transferred_title_to | P70.32 (donor) | P70.34 (dowry object) |
+
+---
+
+### Transformation Logic Summary
+
+```
+IF document type = Donation OR Dowry:
+    USE: E8_Acquisition with P22_transferred_title_to
+    REASON: Actual ownership transfer
+
+ELSE IF document type = Declaration:
+    USE: E7_Activity with P01_has_domain
+    REASON: Communication/directed statement
+
+ELSE IF document type = Cession:
+    USE: E7_Activity with P14_carried_out_by
+    REASON: Bilateral rights transfer
+
+```
+
+---
+
+
+================================================================================
+SECTION 6: USAGE GUIDELINES FOR DOCUMENTATION
+================================================================================
+
+### When to Use P70.22
+
+**Use P70.22** when:
+- Documenting the recipient of donated property
+- Recording the spouse receiving dowry property
+- Identifying the party acquiring ceded rights
+- Specifying the addressee of a declaration
+
+**Do NOT use P70.22** for:
+- The party transferring property (use P70.32 for donations/dowries, P70.21 for cessions)
+- The party making a declaration (use P70.24)
+- Witnesses or notaries (use appropriate witness properties)
+- Property being transferred (use P70.33, P70.34, or P70.23)
+
+---
+
+### Data Entry Best Practices
+
+1. **Always specify document type first**: The @type determines which transformation path is used
+2. **Use consistent URIs**: Ensure actor URIs are consistent across properties
+3. **Provide complete data**: Include complementary properties (donor, object, etc.)
+4. **Multiple recipients**: Use array format for joint recipients
+5. **Actor typing**: Actors will be automatically typed as E39_Actor during transformation
+
+---
+
+### Common Patterns
+
+**Pattern 1: Simple Donation**
+```turtle
+<doc> a gmn:E31_7_Donation_Contract ;
+    gmn:P70_32_indicates_donor <donor> ;
+    gmn:P70_22_indicates_receiving_party <recipient> ;
+    gmn:P70_33_indicates_object_of_donation <property> .
+```
+
+**Pattern 2: Dowry with Value**
+```turtle
+<doc> a gmn:E31_8_Dowry_Contract ;
+    gmn:P70_32_indicates_donor <parent> ;
+    gmn:P70_22_indicates_receiving_party <spouse> ;
+    gmn:P70_34_indicates_object_of_dowry <property> ;
+    gmn:P70_16_documents_sale_price "1000" ;
+    gmn:P70_17_documents_sale_price_currency <currency> .
+```
+
+**Pattern 3: Declaration**
+```turtle
+<doc> a gmn:E31_5_Declaration ;
+    gmn:P70_24_indicates_declarant <speaker> ;
+    gmn:P70_22_indicates_receiving_party <addressee> ;
+    gmn:P70_25_indicates_declaration_subject <matter> .
+```
+
+---
+
+
+================================================================================
+SECTION 7: IMPLEMENTATION NOTES FOR DOCUMENTATION
+================================================================================
+
+### Technical Considerations
+
+1. **Shared Event Nodes**: All related properties for a document reference the same E7_Activity or E8_Acquisition node
+2. **URI Generation**: Event URIs follow pattern: `{document_uri}/acquisition` or `{document_uri}/declaration` or `{document_uri}/cession`
+3. **Type Detection**: Transformation checks @type (handling both string and list formats)
+4. **Array Handling**: Multiple receiving parties are correctly processed as separate P22/P01/P14 statements
+
+---
+
+### Validation Queries
+
+**Query 1: Find all receiving parties in the dataset**
+```sparql
+PREFIX gmn: <http://genoese-merchants.org/ontology/>
+
+SELECT ?doc ?type ?party
+WHERE {
+    ?doc gmn:P70_22_indicates_receiving_party ?party .
+    ?doc a ?type .
+}
+```
+
+**Query 2: Verify transformation for donations**
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX gmn: <http://genoese-merchants.org/ontology/>
+
+SELECT ?doc ?recipient
+WHERE {
+    ?doc a gmn:E31_7_Donation_Contract ;
+         cidoc:P70_documents ?acq .
+    ?acq cidoc:P22_transferred_title_to ?recipient .
+}
+```
+
+---
+
+
+================================================================================
+END OF DOCUMENT ADDITIONS
+================================================================================
+
+USAGE INSTRUCTIONS:
+
+1. Copy relevant sections to the appropriate documentation files
+2. Adjust formatting to match existing documentation style
+3. Update cross-references to match your document structure
+4. Add examples that fit your dataset's specific content
+5. Ensure consistency with other property documentation
+6. Update table of contents if documentation has one
+
+These additions provide comprehensive coverage of P70.22 across all four 
+document types with clear examples, comparisons, and usage guidelines.

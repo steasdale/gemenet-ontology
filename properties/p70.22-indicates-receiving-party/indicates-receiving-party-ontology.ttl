@@ -1,0 +1,295 @@
+# TTL Additions for P70.22 Indicates Receiving Party
+# Ready-to-Copy Snippets for gmn_ontology.ttl
+
+# ============================================================================
+# MAIN PROPERTY DEFINITION
+# ============================================================================
+# Copy this entire block to replace the existing P70.22 definition in gmn_ontology.ttl
+
+# Property: P70.22 indicates receiving party
+gmn:P70_22_indicates_receiving_party
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.22 indicates receiving party"@en ;
+    rdfs:comment "Simplified property for associating a document with the person or entity receiving something in the documented activity. In cession of rights contracts, this is the party receiving the ceded rights. In declarations, this is the party to whom the declaration is addressed or directed. In donation contracts, this is the donee receiving the donated property. In dowry contracts, this is the party (often the spouse or the couple) receiving the dowry property. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E7_Activity > P01_has_domain > E39_Actor (using the inverse P01i_is_domain_of for declarations) OR E31_Document > P70_documents > E8_Acquisition > P22_transferred_title_to > E39_Actor (for cessions, donations, and dowries, where the receiving party acquires ownership or rights). The E7_Activity or E8_Acquisition should be typed appropriately (AAT 300417639 for cessions, AAT 300027623 for declarations, or appropriate type for donations and dowries). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain [
+        a owl:Class ;
+        owl:unionOf (
+            gmn:E31_4_Cession_of_Rights_Contract
+            gmn:E31_5_Declaration
+            gmn:E31_7_Donation_Contract
+            gmn:E31_8_Dowry_Contract
+        )
+    ] ;
+    rdfs:range cidoc:E39_Actor ;
+    dcterms:created "2025-10-18"^^xsd:date ;
+    dcterms:modified "2025-10-25"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P22_transferred_title_to, cidoc:P01_has_domain .
+
+# ============================================================================
+# USAGE EXAMPLES
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# Example 1: Cession of Rights Contract
+# ----------------------------------------------------------------------------
+# This example shows a rights transfer where Pietro receives the right to 
+# collect a debt from Giovanni, transferred by Marco.
+
+<http://gmn.org/document/cession001> a gmn:E31_4_Cession_of_Rights_Contract ;
+    rdfs:label "Cession of debt collection right"@en ;
+    gmn:P70_21_indicates_conceding_party <http://gmn.org/actor/merchant_marco> ;
+    gmn:P70_22_indicates_receiving_party <http://gmn.org/actor/merchant_pietro> ;
+    gmn:P70_23_indicates_object_of_cession <http://gmn.org/legal/debt_right_001> .
+
+<http://gmn.org/actor/merchant_marco> a cidoc:E39_Actor ;
+    rdfs:label "Marco, merchant"@en .
+
+<http://gmn.org/actor/merchant_pietro> a cidoc:E39_Actor ;
+    rdfs:label "Pietro, merchant"@en .
+
+<http://gmn.org/legal/debt_right_001> a cidoc:E72_Legal_Object ;
+    rdfs:label "Right to collect 100 lire from Giovanni"@en .
+
+# After transformation, this becomes:
+# <http://gmn.org/document/cession001> a gmn:E31_4_Cession_of_Rights_Contract ;
+#     cidoc:P70_documents <http://gmn.org/document/cession001/cession> .
+# 
+# <http://gmn.org/document/cession001/cession> a cidoc:E7_Activity ;
+#     cidoc:P2_has_type <http://vocab.getty.edu/aat/300417639> ;
+#     cidoc:P14_carried_out_by <http://gmn.org/actor/merchant_marco> ;
+#     cidoc:P14_carried_out_by <http://gmn.org/actor/merchant_pietro> ;
+#     cidoc:P16_used_specific_object <http://gmn.org/legal/debt_right_001> .
+
+# ----------------------------------------------------------------------------
+# Example 2: Declaration Document
+# ----------------------------------------------------------------------------
+# This example shows a formal declaration where Pietro declares something
+# to Magistrate Antonio.
+
+<http://gmn.org/document/declaration001> a gmn:E31_5_Declaration ;
+    rdfs:label "Declaration of debt acknowledgment"@en ;
+    gmn:P70_24_indicates_declarant <http://gmn.org/actor/merchant_pietro> ;
+    gmn:P70_22_indicates_receiving_party <http://gmn.org/actor/magistrate_antonio> ;
+    gmn:P70_25_indicates_declaration_subject <http://gmn.org/legal/debt_acknowledgment> .
+
+<http://gmn.org/actor/magistrate_antonio> a cidoc:E39_Actor ;
+    rdfs:label "Antonio, magistrate"@en .
+
+# After transformation, this becomes:
+# <http://gmn.org/document/declaration001> a gmn:E31_5_Declaration ;
+#     cidoc:P70_documents <http://gmn.org/document/declaration001/declaration> .
+# 
+# <http://gmn.org/document/declaration001/declaration> a cidoc:E7_Activity ;
+#     cidoc:P2_has_type <http://vocab.getty.edu/aat/300027623> ;
+#     cidoc:P14_carried_out_by <http://gmn.org/actor/merchant_pietro> ;
+#     cidoc:P01_has_domain <http://gmn.org/actor/magistrate_antonio> ;
+#     cidoc:P16_used_specific_object <http://gmn.org/legal/debt_acknowledgment> .
+
+# ----------------------------------------------------------------------------
+# Example 3: Donation Contract
+# ----------------------------------------------------------------------------
+# This example shows a donation where widow Maria donates a warehouse to
+# Hospital Pammatone.
+
+<http://gmn.org/document/donation001> a gmn:E31_7_Donation_Contract ;
+    rdfs:label "Donation of warehouse to hospital"@en ;
+    gmn:P70_32_indicates_donor <http://gmn.org/actor/widow_maria> ;
+    gmn:P70_22_indicates_receiving_party <http://gmn.org/actor/hospital_pammatone> ;
+    gmn:P70_33_indicates_object_of_donation <http://gmn.org/property/warehouse_porto> .
+
+<http://gmn.org/actor/widow_maria> a cidoc:E39_Actor ;
+    rdfs:label "Maria, widow"@en .
+
+<http://gmn.org/actor/hospital_pammatone> a cidoc:E39_Actor ;
+    rdfs:label "Hospital Pammatone"@en .
+
+<http://gmn.org/property/warehouse_porto> a cidoc:E18_Physical_Thing ;
+    a gmn:E22_1_Building ;
+    rdfs:label "Warehouse near the port"@en .
+
+# After transformation, this becomes:
+# <http://gmn.org/document/donation001> a gmn:E31_7_Donation_Contract ;
+#     cidoc:P70_documents <http://gmn.org/document/donation001/acquisition> .
+# 
+# <http://gmn.org/document/donation001/acquisition> a cidoc:E8_Acquisition ;
+#     cidoc:P23_transferred_title_from <http://gmn.org/actor/widow_maria> ;
+#     cidoc:P22_transferred_title_to <http://gmn.org/actor/hospital_pammatone> ;
+#     cidoc:P24_transferred_title_of <http://gmn.org/property/warehouse_porto> .
+
+# ----------------------------------------------------------------------------
+# Example 4: Dowry Contract
+# ----------------------------------------------------------------------------
+# This example shows a dowry transfer where father Filippo provides a house
+# as dowry for his daughter's marriage to Luca.
+
+<http://gmn.org/document/dowry001> a gmn:E31_8_Dowry_Contract ;
+    rdfs:label "Dowry contract - house transfer"@en ;
+    gmn:P70_32_indicates_donor <http://gmn.org/actor/father_filippo> ;
+    gmn:P70_22_indicates_receiving_party <http://gmn.org/actor/husband_luca> ;
+    gmn:P70_34_indicates_object_of_dowry <http://gmn.org/property/house_center> ;
+    gmn:P70_16_documents_sale_price "1000" ;
+    gmn:P70_17_documents_sale_price_currency <http://gmn.org/currency/lire> .
+
+<http://gmn.org/actor/father_filippo> a cidoc:E39_Actor ;
+    rdfs:label "Filippo, father of bride"@en .
+
+<http://gmn.org/actor/husband_luca> a cidoc:E39_Actor ;
+    rdfs:label "Luca, husband"@en .
+
+<http://gmn.org/property/house_center> a cidoc:E18_Physical_Thing ;
+    a gmn:E22_1_Building ;
+    rdfs:label "House in city center"@en .
+
+<http://gmn.org/currency/lire> a cidoc:E58_Measurement_Unit ;
+    rdfs:label "Genoese lire"@en .
+
+# After transformation, this becomes:
+# <http://gmn.org/document/dowry001> a gmn:E31_8_Dowry_Contract ;
+#     cidoc:P70_documents <http://gmn.org/document/dowry001/acquisition> .
+# 
+# <http://gmn.org/document/dowry001/acquisition> a cidoc:E8_Acquisition ;
+#     cidoc:P23_transferred_title_from <http://gmn.org/actor/father_filippo> ;
+#     cidoc:P22_transferred_title_to <http://gmn.org/actor/husband_luca> ;
+#     cidoc:P24_transferred_title_of <http://gmn.org/property/house_center> ;
+#     cidoc:P177_assigned_property_type <http://gmn.org/document/dowry001/price> .
+
+# ----------------------------------------------------------------------------
+# Example 5: Multiple Receiving Parties
+# ----------------------------------------------------------------------------
+# This example shows a donation to multiple religious institutions.
+
+<http://gmn.org/document/donation_multi> a gmn:E31_7_Donation_Contract ;
+    rdfs:label "Donation to multiple institutions"@en ;
+    gmn:P70_32_indicates_donor <http://gmn.org/actor/wealthy_patron> ;
+    gmn:P70_22_indicates_receiving_party <http://gmn.org/actor/monastery_st_francis> ,
+                                          <http://gmn.org/actor/convent_st_clare> ,
+                                          <http://gmn.org/actor/church_st_john> ;
+    gmn:P70_33_indicates_object_of_donation <http://gmn.org/property/vineyard> .
+
+<http://gmn.org/actor/wealthy_patron> a cidoc:E39_Actor ;
+    rdfs:label "Wealthy patron"@en .
+
+<http://gmn.org/actor/monastery_st_francis> a cidoc:E39_Actor ;
+    rdfs:label "Monastery of St. Francis"@en .
+
+<http://gmn.org/actor/convent_st_clare> a cidoc:E39_Actor ;
+    rdfs:label "Convent of St. Clare"@en .
+
+<http://gmn.org/actor/church_st_john> a cidoc:E39_Actor ;
+    rdfs:label "Church of St. John"@en .
+
+<http://gmn.org/property/vineyard> a cidoc:E18_Physical_Thing ;
+    rdfs:label "Vineyard in the countryside"@en .
+
+# After transformation, this becomes:
+# <http://gmn.org/document/donation_multi> a gmn:E31_7_Donation_Contract ;
+#     cidoc:P70_documents <http://gmn.org/document/donation_multi/acquisition> .
+# 
+# <http://gmn.org/document/donation_multi/acquisition> a cidoc:E8_Acquisition ;
+#     cidoc:P23_transferred_title_from <http://gmn.org/actor/wealthy_patron> ;
+#     cidoc:P22_transferred_title_to <http://gmn.org/actor/monastery_st_francis> ,
+#                                     <http://gmn.org/actor/convent_st_clare> ,
+#                                     <http://gmn.org/actor/church_st_john> ;
+#     cidoc:P24_transferred_title_of <http://gmn.org/property/vineyard> .
+
+# ============================================================================
+# VALIDATION QUERIES
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# Query 1: Find all documents with receiving parties
+# ----------------------------------------------------------------------------
+# PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+# PREFIX gmn: <http://genoese-merchants.org/ontology/>
+# 
+# SELECT ?document ?type ?receiving_party
+# WHERE {
+#     VALUES ?type {
+#         gmn:E31_4_Cession_of_Rights_Contract
+#         gmn:E31_5_Declaration
+#         gmn:E31_7_Donation_Contract
+#         gmn:E31_8_Dowry_Contract
+#     }
+#     ?document a ?type ;
+#               gmn:P70_22_indicates_receiving_party ?receiving_party .
+# }
+
+# ----------------------------------------------------------------------------
+# Query 2: Find receiving parties after transformation (donations)
+# ----------------------------------------------------------------------------
+# PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+# PREFIX gmn: <http://genoese-merchants.org/ontology/>
+# 
+# SELECT ?document ?donor ?donee ?property
+# WHERE {
+#     ?document a gmn:E31_7_Donation_Contract ;
+#               cidoc:P70_documents ?acquisition .
+#     
+#     ?acquisition a cidoc:E8_Acquisition ;
+#                  cidoc:P23_transferred_title_from ?donor ;
+#                  cidoc:P22_transferred_title_to ?donee ;
+#                  cidoc:P24_transferred_title_of ?property .
+# }
+
+# ----------------------------------------------------------------------------
+# Query 3: Find declaration recipients after transformation
+# ----------------------------------------------------------------------------
+# PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+# PREFIX gmn: <http://genoese-merchants.org/ontology/>
+# 
+# SELECT ?document ?declarant ?recipient ?subject
+# WHERE {
+#     ?document a gmn:E31_5_Declaration ;
+#               cidoc:P70_documents ?activity .
+#     
+#     ?activity a cidoc:E7_Activity ;
+#               cidoc:P14_carried_out_by ?declarant ;
+#               cidoc:P01_has_domain ?recipient .
+#     
+#     OPTIONAL {
+#         ?activity cidoc:P16_used_specific_object ?subject .
+#     }
+# }
+
+# ============================================================================
+# NOTES FOR INTEGRATION
+# ============================================================================
+
+# When adding this property to gmn_ontology.ttl:
+# 
+# 1. LOCATE the existing P70.22 definition (search for "P70_22_indicates_receiving_party")
+# 2. BACKUP the old definition by commenting it out or saving separately
+# 3. REPLACE with the new definition above
+# 4. VALIDATE the file syntax using: rapper -i turtle -o ntriples gmn_ontology.ttl
+# 5. CHECK that the domain union includes all four document types
+# 6. VERIFY that rdfs:seeAlso references all relevant CIDOC-CRM properties
+# 7. CONFIRM date stamps are accurate (created: 2025-10-18, modified: 2025-10-25)
+# 
+# Required namespace prefixes (ensure these are at the top of gmn_ontology.ttl):
+# @prefix gmn: <http://genoese-merchants.org/ontology/> .
+# @prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+# @prefix owl: <http://www.w3.org/2002/07/owl#> .
+# @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+# @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+# @prefix dcterms: <http://purl.org/dc/terms/> .
+# @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# ============================================================================
+# RELATED PROPERTIES TO CHECK
+# ============================================================================
+
+# When implementing P70.22, ensure these related properties are also defined:
+# 
+# - gmn:P70_21_indicates_conceding_party (complementary for cessions)
+# - gmn:P70_24_indicates_declarant (complementary for declarations)
+# - gmn:P70_32_indicates_donor (complementary for donations and dowries)
+# - gmn:P70_23_indicates_object_of_cession (object for cessions)
+# - gmn:P70_25_indicates_declaration_subject (object for declarations)
+# - gmn:P70_33_indicates_object_of_donation (object for donations)
+# - gmn:P70_34_indicates_object_of_dowry (object for dowries)
+
+# ============================================================================
+# END OF FILE
+# ============================================================================
