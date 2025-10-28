@@ -1,0 +1,17 @@
+# TTL Additions for P70.23 Indicates Object of Cession
+# Add this to gmn_ontology.ttl after the P70.22 property definition
+
+# ============================================================================
+# Property: P70.23 indicates object of cession
+# ============================================================================
+
+gmn:P70_23_indicates_object_of_cession
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.23 indicates object of cession"@en ;
+    rdfs:comment "Simplified property for associating a cession of rights contract with the legal rights, claims, or obligations being transferred. This can include rights to collect debts, rights to use property (usufruct), rights of ownership over some object, claims arising from other contracts, inheritance rights, or any other legal interests. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E7_Activity > P16_used_specific_object > E72_Legal_Object. The E7_Activity should be typed as a cession/transfer of rights (AAT 300417639). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The range is E72_Legal_Object, which encompasses rights, obligations, and legal claims."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_4_Cession_of_Rights_Contract ;
+    rdfs:range cidoc:E72_Legal_Object ;
+    dcterms:created "2025-10-18"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P16_used_specific_object .

@@ -1,0 +1,353 @@
+# Documentation Additions for P70.23 Indicates Object of Cession
+# Add this content to the main documentation file in the Cession of Rights section
+
+================================================================================
+SECTION: P70.23 Indicates Object of Cession
+================================================================================
+
+Property: gmn:P70_23_indicates_object_of_cession
+
+Label: "P70.23 indicates object of cession"
+
+Domain: gmn:E31_4_Cession_of_Rights_Contract
+
+Range: cidoc:E72_Legal_Object
+
+Subproperty of: cidoc:P70_documents
+
+Created: 2025-10-18
+
+--------------------------------------------------------------------------------
+DESCRIPTION
+--------------------------------------------------------------------------------
+
+The P70.23 property is a simplified convenience property for associating a 
+cession of rights contract with the legal rights, claims, or obligations being 
+transferred. This property allows direct specification of the legal object 
+being ceded without manually creating the intermediate E7_Activity structure.
+
+Legal objects that can be ceded include:
+• Rights to collect debts
+• Rights to use property (usufruct)
+• Rights of ownership over objects
+• Claims arising from other contracts
+• Inheritance rights
+• Lease rights
+• Water rights
+• Mining rights
+• Any other transferable legal interest
+
+--------------------------------------------------------------------------------
+CIDOC-CRM TRANSFORMATION
+--------------------------------------------------------------------------------
+
+The property transforms to the full CIDOC-CRM path:
+
+E31_Document 
+  → P70_documents 
+  → E7_Activity (typed as AAT 300417639: transfer of rights)
+  → P16_used_specific_object 
+  → E72_Legal_Object
+
+The E7_Activity is automatically typed using Getty AAT 300417639 
+(cession/transfer of rights) to distinguish it from other activities.
+
+--------------------------------------------------------------------------------
+EXAMPLES
+--------------------------------------------------------------------------------
+
+Example 1: Debt Collection Right Cession
+-----------------------------------------
+
+Input (GMN Shortcut):
+
+<cession001> a gmn:E31_4_Cession_of_Rights_Contract ;
+    rdfs:label "Cession of debt claim, 1445-03-15" ;
+    gmn:P70_21_indicates_conceding_party <giovanni_creditor> ;
+    gmn:P70_22_indicates_receiving_party <marco_banker> ;
+    gmn:P70_23_indicates_object_of_cession <debt_claim_pietro> .
+
+<debt_claim_pietro> a cidoc:E72_Legal_Object ;
+    rdfs:label "Right to collect 500 lire from Pietro" ;
+    cidoc:P2_has_type <concept_debt_collection_right> .
+
+Output (CIDOC-CRM Compliant):
+
+<cession001> a gmn:E31_4_Cession_of_Rights_Contract ;
+    rdfs:label "Cession of debt claim, 1445-03-15" ;
+    cidoc:P70_documents <cession001/cession> .
+
+<cession001/cession> a cidoc:E7_Activity ;
+    cidoc:P2_has_type <http://vocab.getty.edu/aat/300417639> ;
+    cidoc:P14_carried_out_by <giovanni_creditor> , <marco_banker> ;
+    cidoc:P16_used_specific_object <debt_claim_pietro> .
+
+<debt_claim_pietro> a cidoc:E72_Legal_Object ;
+    rdfs:label "Right to collect 500 lire from Pietro" ;
+    cidoc:P2_has_type <concept_debt_collection_right> .
+
+Interpretation: Giovanni, who is owed 500 lire by Pietro, transfers his right 
+to collect this debt to Marco, a banker.
+
+
+Example 2: Usufruct Right Cession
+----------------------------------
+
+Input (GMN Shortcut):
+
+<cession002> a gmn:E31_4_Cession_of_Rights_Contract ;
+    rdfs:label "Cession of usufruct, 1445-06-20" ;
+    gmn:P70_21_indicates_conceding_party <antonio_owner> ;
+    gmn:P70_22_indicates_receiving_party <maria_widow> ;
+    gmn:P70_23_indicates_object_of_cession <usufruct_warehouse> .
+
+<usufruct_warehouse> a cidoc:E72_Legal_Object ;
+    rdfs:label "Usufruct of warehouse in Porto" ;
+    cidoc:P2_has_type <concept_usufruct> ;
+    cidoc:P67_refers_to <warehouse_porto> .
+
+<warehouse_porto> a gmn:E22_1_Building ;
+    rdfs:label "Warehouse in Porto neighborhood, Genoa" .
+
+Output (CIDOC-CRM Compliant):
+
+<cession002> a gmn:E31_4_Cession_of_Rights_Contract ;
+    rdfs:label "Cession of usufruct, 1445-06-20" ;
+    cidoc:P70_documents <cession002/cession> .
+
+<cession002/cession> a cidoc:E7_Activity ;
+    cidoc:P2_has_type <http://vocab.getty.edu/aat/300417639> ;
+    cidoc:P14_carried_out_by <antonio_owner> , <maria_widow> ;
+    cidoc:P16_used_specific_object <usufruct_warehouse> .
+
+<usufruct_warehouse> a cidoc:E72_Legal_Object ;
+    rdfs:label "Usufruct of warehouse in Porto" ;
+    cidoc:P2_has_type <concept_usufruct> ;
+    cidoc:P67_refers_to <warehouse_porto> .
+
+<warehouse_porto> a gmn:E22_1_Building ;
+    rdfs:label "Warehouse in Porto neighborhood, Genoa" .
+
+Interpretation: Antonio transfers his usufruct rights (the right to use and 
+benefit from) over a warehouse to Maria. Note that the warehouse itself is a 
+physical building (E22_1_Building), while the usufruct right is a legal object 
+(E72_Legal_Object).
+
+
+Example 3: Multiple Legal Objects
+----------------------------------
+
+Input (GMN Shortcut):
+
+<cession003> a gmn:E31_4_Cession_of_Rights_Contract ;
+    rdfs:label "Cession of multiple rights, 1445-09-10" ;
+    gmn:P70_21_indicates_conceding_party <stefano_merchant> ;
+    gmn:P70_22_indicates_receiving_party <lorenzo_banker> ;
+    gmn:P70_23_indicates_object_of_cession 
+        <debt_claim_matteo> , 
+        <debt_claim_nicola> ,
+        <lease_income_right> .
+
+Output (CIDOC-CRM Compliant):
+
+<cession003> a gmn:E31_4_Cession_of_Rights_Contract ;
+    rdfs:label "Cession of multiple rights, 1445-09-10" ;
+    cidoc:P70_documents <cession003/cession> .
+
+<cession003/cession> a cidoc:E7_Activity ;
+    cidoc:P2_has_type <http://vocab.getty.edu/aat/300417639> ;
+    cidoc:P14_carried_out_by <stefano_merchant> , <lorenzo_banker> ;
+    cidoc:P16_used_specific_object 
+        <debt_claim_matteo> , 
+        <debt_claim_nicola> ,
+        <lease_income_right> .
+
+Interpretation: Stefano transfers three different legal rights to Lorenzo in a 
+single cession contract: two debt collection rights and one right to receive 
+lease income.
+
+
+Example 4: Inheritance Right Transfer
+--------------------------------------
+
+Input (GMN Shortcut):
+
+<cession004> a gmn:E31_4_Cession_of_Rights_Contract ;
+    rdfs:label "Renunciation of inheritance, 1445-11-05" ;
+    gmn:P70_21_indicates_conceding_party <pietro_son> ;
+    gmn:P70_22_indicates_receiving_party <caterina_daughter> ;
+    gmn:P70_23_indicates_object_of_cession <inheritance_right_father> .
+
+<inheritance_right_father> a cidoc:E72_Legal_Object ;
+    rdfs:label "Pietro's right to inherit from father Antonio" ;
+    cidoc:P2_has_type <concept_inheritance_right> .
+
+Output (CIDOC-CRM Compliant):
+
+<cession004> a gmn:E31_4_Cession_of_Rights_Contract ;
+    rdfs:label "Renunciation of inheritance, 1445-11-05" ;
+    cidoc:P70_documents <cession004/cession> .
+
+<cession004/cession> a cidoc:E7_Activity ;
+    cidoc:P2_has_type <http://vocab.getty.edu/aat/300417639> ;
+    cidoc:P14_carried_out_by <pietro_son> , <caterina_daughter> ;
+    cidoc:P16_used_specific_object <inheritance_right_father> .
+
+<inheritance_right_father> a cidoc:E72_Legal_Object ;
+    rdfs:label "Pietro's right to inherit from father Antonio" ;
+    cidoc:P2_has_type <concept_inheritance_right> .
+
+Interpretation: Pietro renounces his inheritance rights in favor of his sister 
+Caterina by transferring his legal right to inherit from their father.
+
+--------------------------------------------------------------------------------
+COMPARISON TABLE: Cession Properties
+--------------------------------------------------------------------------------
+
+Property    | Path         | Target Class | Role in Cession
+------------|--------------|--------------|----------------------------------
+P70.21      | P70 > P14    | E39_Actor    | Party transferring rights (conceding)
+P70.22      | P70 > P14    | E39_Actor    | Party receiving rights
+P70.23      | P70 > P16    | E72_Legal    | Legal object (rights) being transferred
+            |              | _Object      |
+
+All three properties share the same E7_Activity node in the transformation.
+
+--------------------------------------------------------------------------------
+COMPARISON TABLE: Legal Objects vs Physical Objects
+--------------------------------------------------------------------------------
+
+Aspect          | Legal Object (E72)           | Physical Object (E18)
+----------------|------------------------------|---------------------------
+Nature          | Intangible right or claim    | Tangible physical thing
+Examples        | Debt right, usufruct,        | House, vineyard, coins,
+                | inheritance right            | land parcel
+Transfer Type   | Cession of rights            | Transfer of ownership
+GMN Property    | P70.23 (object of cession)   | P70.3 (transfer of)
+Activity Type   | E7_Activity                  | E8_Acquisition
+AAT Type        | 300417639 (transfer rights)  | Various (sale, donation)
+Contract Types  | Cession contracts            | Sales, donations, dowries
+
+--------------------------------------------------------------------------------
+COMPARISON TABLE: Contract Types and Their Objects
+--------------------------------------------------------------------------------
+
+Contract Type   | Object Property | Object Type  | Activity Type | Typical Object
+----------------|----------------|--------------|---------------|------------------
+Sales           | P70.3          | E18_Physical | E8_Acquis.    | Houses, land
+                |                | _Thing       |               | 
+Cession         | P70.23         | E72_Legal    | E7_Activity   | Rights, claims
+                |                | _Object      |               |
+Donation        | P70.33         | E18_Physical | E8_Acquis.    | Gifts of property
+                |                | _Thing       |               |
+Dowry           | P70.34         | E18_Physical | E8_Acquis.    | Marriage property
+                |                | _Thing       |               |
+
+--------------------------------------------------------------------------------
+LEGAL OBJECT TYPES
+--------------------------------------------------------------------------------
+
+Common types of legal objects that can be ceded:
+
+1. Debt Collection Rights
+   - Rights to collect money owed by a debtor
+   - Example: Right to collect 1000 lire from Pietro
+
+2. Usufruct Rights
+   - Rights to use and benefit from property owned by another
+   - Example: Right to use and collect income from a farmland
+
+3. Ownership Rights
+   - Full or partial ownership rights over property
+   - Example: One-third ownership share in a vineyard
+
+4. Contract Claims
+   - Rights arising from other contracts
+   - Example: Right to receive rent payments from a lease contract
+
+5. Inheritance Rights
+   - Rights to inherit property or assets
+   - Example: Son's right to inherit from father's estate
+
+6. Lease Rights
+   - Rights granted by lease agreements
+   - Example: Right to occupy a building for specified term
+
+7. Water Rights
+   - Rights to use water from a source
+   - Example: Right to draw water from a communal well
+
+8. Mining Rights
+   - Rights to extract minerals or resources
+   - Example: Right to quarry stone from a hillside
+
+--------------------------------------------------------------------------------
+INTEGRATION WITH OTHER PROPERTIES
+--------------------------------------------------------------------------------
+
+The P70.23 property works together with other cession properties to model 
+complete rights transfers:
+
+Complete Cession Model:
+  • P70.21: Who is transferring the rights? (conceding party)
+  • P70.22: Who is receiving the rights? (receiving party)
+  • P70.23: What rights are being transferred? (legal object)
+
+All three properties share the same E7_Activity node, creating a unified 
+representation of the cession transaction:
+
+<cession_doc> cidoc:P70_documents <cession_activity> .
+
+<cession_activity> a cidoc:E7_Activity ;
+    cidoc:P2_has_type <AAT_300417639> ;
+    cidoc:P14_carried_out_by <conceding_party> ;   # From P70.21
+    cidoc:P14_carried_out_by <receiving_party> ;   # From P70.22
+    cidoc:P16_used_specific_object <legal_object> . # From P70.23
+
+--------------------------------------------------------------------------------
+USAGE GUIDELINES
+--------------------------------------------------------------------------------
+
+DO:
+✓ Use P70.23 for transferring rights, claims, and legal interests
+✓ Ensure the object is typed as E72_Legal_Object
+✓ Use P67_refers_to to link legal objects to physical things when relevant
+✓ Combine with P70.21 and P70.22 for complete cession modeling
+✓ Use multiple P70.23 statements for multiple legal objects in one contract
+
+DON'T:
+✗ Use P70.23 for physical property transfers (use P70.3 for sales instead)
+✗ Use P70.23 for physical donations (use P70.33 instead)
+✗ Use P70.23 for physical dowries (use P70.34 instead)
+✗ Forget to specify the type of legal object
+✗ Confuse the legal object with the physical thing it refers to
+
+--------------------------------------------------------------------------------
+IMPLEMENTATION NOTES
+--------------------------------------------------------------------------------
+
+URI Patterns:
+• Cession activity: {contract_uri}/cession
+• Example: http://example.org/cession_1445_03_15/cession
+
+Activity Typing:
+• All cession activities are typed with AAT 300417639
+• This distinguishes cessions from other document-activity relationships
+
+Shared Activity:
+• P70.21, P70.22, and P70.23 all reference the same E7_Activity
+• The transformation functions check for existing activities before creating new ones
+• This ensures a unified cession model regardless of property processing order
+
+Multiple Objects:
+• A single cession can transfer multiple legal objects
+• Use P70.23 multiple times or with a list value
+• Each object is added to the same activity's P16_used_specific_object
+
+Type Inference:
+• If a legal object lacks an explicit type, E72_Legal_Object is added automatically
+• This ensures CIDOC-CRM compliance
+
+================================================================================
+END OF DOCUMENTATION ADDITIONS
+================================================================================
