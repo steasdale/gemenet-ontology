@@ -1,0 +1,124 @@
+# GMN P70.19 Documents Arbitrator - TTL Addition
+# Ready-to-copy Turtle snippets for addition to gmn_ontology.ttl
+
+# ==============================================================================
+# PROPERTY: P70.19 documents arbitrator
+# ==============================================================================
+
+# Property: P70.19 documents arbitrator
+gmn:P70_19_documents_arbitrator
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.19 documents arbitrator"@en ;
+    rdfs:comment "Simplified property for associating an arbitration agreement with the person or persons appointed to resolve the dispute. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E7_Activity > P14_carried_out_by > E39_Actor. The E7_Activity should be typed as an arbitration agreement (AAT 300417271). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. Arbitrators are the neutral third parties who will hear the dispute and render a binding decision."@en ;
+    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:domain gmn:E31_3_Arbitration_Agreement ;
+    rdfs:range cidoc:E39_Actor ;
+    dcterms:created "2025-10-17"^^xsd:date ;
+    dcterms:modified "2025-10-18"^^xsd:date ;
+    rdfs:seeAlso cidoc:P70_documents, cidoc:P14_carried_out_by .
+
+# ==============================================================================
+# USAGE NOTES
+# ==============================================================================
+
+# Location in File:
+# - Add this definition to the arbitration properties section
+# - It should appear between P70.18 and P70.20
+# - Around line with other P70.* property definitions
+
+# Prerequisites:
+# - gmn:E31_3_Arbitration_Agreement class must be defined
+# - cidoc:P70_documents must be imported from CIDOC-CRM namespace
+# - cidoc:P14_carried_out_by must be imported from CIDOC-CRM namespace
+# - cidoc:E39_Actor must be imported from CIDOC-CRM namespace
+
+# Related Definitions:
+# - gmn:E31_3_Arbitration_Agreement (document class)
+# - gmn:P70_18_documents_disputing_party (related property)
+# - gmn:P70_20_documents_dispute_subject (related property)
+
+# ==============================================================================
+# CONTEXT AND PLACEMENT
+# ==============================================================================
+
+# This property should be added in the context of other arbitration properties.
+# Example placement:
+
+# # Property: P70.18 documents disputing party
+# gmn:P70_18_documents_disputing_party
+#     a owl:ObjectProperty ;
+#     ...
+# 
+# # Property: P70.19 documents arbitrator    <-- INSERT HERE
+# gmn:P70_19_documents_arbitrator
+#     a owl:ObjectProperty ;
+#     ...
+# 
+# # Property: P70.20 documents dispute subject
+# gmn:P70_20_documents_dispute_subject
+#     a owl:ObjectProperty ;
+#     ...
+
+# ==============================================================================
+# VALIDATION
+# ==============================================================================
+
+# After adding this property definition, validate the TTL file:
+#
+# Using rapper:
+#   rapper -i turtle -c gmn_ontology.ttl
+#
+# Using Apache Jena:
+#   riot --validate gmn_ontology.ttl
+#
+# Using Python rdflib:
+#   from rdflib import Graph
+#   g = Graph()
+#   g.parse("gmn_ontology.ttl", format="turtle")
+
+# ==============================================================================
+# EXAMPLE USAGE IN DATA
+# ==============================================================================
+
+# Once this property is added to the ontology, use it in data like this:
+
+# @prefix gmn: <http://www.genoesemerchantnetworks.com/ontology#> .
+# @prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+# 
+# <http://example.org/contracts/arb001>
+#     a gmn:E31_3_Arbitration_Agreement ;
+#     gmn:P1_1_has_name "Arbitration Agreement - Spinola Dispute"@en ;
+#     gmn:P70_18_documents_disputing_party
+#         <http://example.org/persons/luca_spinola> ,
+#         <http://example.org/persons/andrea_doria> ;
+#     gmn:P70_19_documents_arbitrator
+#         <http://example.org/persons/giovanni_rossi> ;
+#     gmn:P70_20_documents_dispute_subject
+#         <http://example.org/debts/debt_001> .
+
+# This will transform to:
+
+# <http://example.org/contracts/arb001>
+#     a gmn:E31_3_Arbitration_Agreement ;
+#     cidoc:P70_documents [
+#         a cidoc:E7_Activity ;
+#         cidoc:P2_has_type <http://vocab.getty.edu/page/aat/300417271> ;
+#         cidoc:P14_carried_out_by
+#             <http://example.org/persons/luca_spinola> ,
+#             <http://example.org/persons/andrea_doria> ,
+#             <http://example.org/persons/giovanni_rossi> ;
+#         cidoc:P16_used_specific_object
+#             <http://example.org/debts/debt_001>
+#     ] .
+
+# ==============================================================================
+# VERSION INFORMATION
+# ==============================================================================
+
+# Version: 1.0
+# Date: 2025-10-17
+# Last Modified: 2025-10-18
+# Compatibility: GMN Ontology v1.0+
+
+# ==============================================================================
