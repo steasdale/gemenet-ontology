@@ -1,0 +1,258 @@
+DOCUMENTATION ADDITIONS FOR P70.14 DOCUMENTS REFERENCED OBJECT
+================================================================
+
+Add this content to your main documentation file in the P70 Properties section,
+after P70.13 (documents_referenced_place) and before P70.15 (documents_witness).
+
+
+-------------------------------------------------------------------
+SECTION: P70.14 DOCUMENTS REFERENCED OBJECT
+-------------------------------------------------------------------
+
+### P70.14 documents referenced object
+
+**Property URI**: `gmn:P70_14_documents_referenced_object`
+
+**Label**: "P70.14 documents referenced object" (English)
+
+**Domain**: `gmn:E31_2_Sales_Contract`
+
+**Range**: `cidoc:E1_CRM_Entity`
+
+**Superproperty**: `cidoc:P67_refers_to`
+
+**Definition**: Simplified property for associating a sales contract with any object (legal or physical) referenced or mentioned in the document. This includes legal objects (rights, obligations, debts, claims, privileges, servitudes, easements) and physical objects mentioned in the contract.
+
+**CIDOC-CRM Path**:
+```
+E31_Document > P67_refers_to > E1_CRM_Entity
+```
+
+**Inverse**: `cidoc:P67i_is_referred_to_by`
+
+**Quantification**: Many to many (0,n:0,n)
+
+**Scope Note**: This property captures objects of various types that are mentioned within a sales contract, even if they are not the primary object of the transaction. For example, a contract selling a house might reference existing water rights attached to the property, mention outstanding debts that are being settled as part of the sale, or describe easements that affect the property. The use of E1_CRM_Entity as the range provides maximum flexibility to accommodate both legal objects (E72_Legal_Object) and physical things (E18_Physical_Thing).
+
+**Distinction from P70.3**: While P70.3 (documents_transfer_of) represents the primary object being transferred in the sale, P70.14 captures additional objects mentioned in the contract that provide context, conditions, or related obligations.
+
+**Examples of Legal Objects**:
+- Water rights attached to property
+- Easements or servitudes
+- Existing debts being settled
+- Claims or privileges being transferred
+- Rights of way or usage rights
+
+**Examples of Physical Objects**:
+- Existing structures mentioned (wells, buildings)
+- Fixtures or attachments
+- Objects used to define boundaries
+- Moveable property included in the transaction
+
+
+-------------------------------------------------------------------
+SUBSECTION: Usage Examples
+-------------------------------------------------------------------
+
+#### Example 1: Water Rights Reference
+
+A house sale contract mentions water rights attached to the property:
+
+```json
+{
+  "@id": "contract:venice_1450_01_15",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "gmn:P70_14_documents_referenced_object": [
+    {
+      "@id": "object:water_right_spring_north",
+      "@type": "cidoc:E72_Legal_Object",
+      "rdfs:label": "Water rights to spring on north boundary"
+    }
+  ]
+}
+```
+
+This transforms to:
+
+```json
+{
+  "@id": "contract:venice_1450_01_15",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "cidoc:P67_refers_to": [
+    {
+      "@id": "object:water_right_spring_north",
+      "@type": "cidoc:E72_Legal_Object",
+      "rdfs:label": "Water rights to spring on north boundary"
+    }
+  ]
+}
+```
+
+#### Example 2: Debt Settlement
+
+A land sale contract mentions settling an existing debt as part of the transaction:
+
+```json
+{
+  "@id": "contract:genoa_1455_03_20",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "gmn:P70_14_documents_referenced_object": [
+    {
+      "@id": "object:debt_to_creditor_paolo",
+      "@type": "cidoc:E72_Legal_Object",
+      "rdfs:label": "Outstanding debt of 50 ducats to Paolo"
+    }
+  ]
+}
+```
+
+#### Example 3: Multiple Referenced Objects
+
+A complex property transaction referencing multiple objects:
+
+```json
+{
+  "@id": "contract:florence_1460_07_10",
+  "@type": "gmn:E31_2_Sales_Contract",
+  "gmn:P70_14_documents_referenced_object": [
+    {
+      "@id": "object:well_in_courtyard",
+      "@type": "cidoc:E22_Human-Made_Object",
+      "rdfs:label": "Stone well in central courtyard"
+    },
+    {
+      "@id": "object:easement_neighbor_access",
+      "@type": "cidoc:E72_Legal_Object",
+      "rdfs:label": "Easement for neighbor access to road"
+    },
+    {
+      "@id": "object:servitude_water_passage",
+      "@type": "cidoc:E72_Legal_Object",
+      "rdfs:label": "Servitude allowing water passage to adjacent property"
+    }
+  ]
+}
+```
+
+
+-------------------------------------------------------------------
+SUBSECTION: Semantic Structure
+-------------------------------------------------------------------
+
+The property uses a direct P67_refers_to relationship (not P70_documents) because referenced objects are mentioned in the document text but are not necessarily participants in the acquisition event itself:
+
+```
+E31_2_Sales_Contract (the contract document)
+  └─ P67_refers_to (refers to)
+      └─ E1_CRM_Entity (referenced object)
+          ├─ E72_Legal_Object (legal rights, obligations, etc.)
+          │   ├─ Water rights
+          │   ├─ Easements
+          │   ├─ Debts
+          │   ├─ Claims
+          │   └─ Privileges
+          └─ E18_Physical_Thing (physical objects)
+              ├─ E22_Human-Made_Object (structures, fixtures)
+              └─ Other physical items
+```
+
+
+-------------------------------------------------------------------
+SUBSECTION: Comparison Table
+-------------------------------------------------------------------
+
+| Property | Purpose | CIDOC Pattern | Relationship Type |
+|----------|---------|---------------|-------------------|
+| P70.3 documents_transfer_of | Primary object of sale | P70_documents → E8_Acquisition → P24_transferred_title_of | Event participation |
+| P70.11 documents_referenced_person | Persons mentioned | P67_refers_to → E21_Person | Textual mention |
+| P70.13 documents_referenced_place | Places mentioned | P67_refers_to → E53_Place | Textual mention |
+| **P70.14 documents_referenced_object** | **Objects mentioned** | **P67_refers_to → E1_CRM_Entity** | **Textual mention** |
+
+
+-------------------------------------------------------------------
+SUBSECTION: Object Type Guidelines
+-------------------------------------------------------------------
+
+When encoding objects, use the most specific type appropriate:
+
+| Object Type | Use When | Example |
+|-------------|----------|---------|
+| E1_CRM_Entity | Type unknown or very general | Generic reference |
+| E72_Legal_Object | Rights, obligations, legal constructs | Water rights, easements, debts |
+| E18_Physical_Thing | Physical objects, general | Any tangible item |
+| E22_Human-Made_Object | Constructed or manufactured items | Wells, buildings, tools |
+| E24_Physical_Human-Made_Thing | Moveable human-made objects | Furniture, equipment |
+| E73_Information_Object | Documents or information | Referenced deeds, contracts |
+
+
+-------------------------------------------------------------------
+SUBSECTION: Implementation Notes
+-------------------------------------------------------------------
+
+**Transformation Behavior**:
+1. Reads `gmn:P70_14_documents_referenced_object` array
+2. For each object:
+   - If dictionary with @type: preserves specific type
+   - If URI string: adds default E1_CRM_Entity type
+3. Appends to `cidoc:P67_refers_to` array
+4. Removes the simplified GMN property
+
+**Type Preservation**: The transformation preserves specific entity types when present in the input data, allowing for more precise semantic modeling while defaulting to E1_CRM_Entity when type information is not provided.
+
+**Array Handling**: Multiple objects can be referenced in a single contract, and the transformation handles arrays of any length, including empty arrays.
+
+**Integration with P67_refers_to**: Since P70.11 (persons), P70.13 (places), and P70.14 (objects) all use P67_refers_to, a single contract may have multiple entity types in its P67_refers_to array after transformation.
+
+
+-------------------------------------------------------------------
+SUBSECTION: Common Use Cases
+-------------------------------------------------------------------
+
+**Legal Objects**:
+- Water rights, mineral rights, grazing rights
+- Easements for access or passage
+- Servitudes restricting or permitting certain uses
+- Outstanding debts being settled or acknowledged
+- Claims or privileges being transferred
+- Obligations that continue with the property
+- Tax exemptions or special status
+
+**Physical Objects**:
+- Wells, cisterns, or water infrastructure mentioned
+- Boundary markers (trees, stones, walls)
+- Structures on the property (sheds, walls, fountains)
+- Fixtures included in the sale
+- Equipment or moveable property
+- Items used to define property limits
+
+**Contextual References**:
+- Objects mentioned for clarification
+- Items referenced in property descriptions
+- Related objects that affect the transaction value
+- Pre-existing conditions or features
+
+
+-------------------------------------------------------------------
+SUBSECTION: Related Documentation
+-------------------------------------------------------------------
+
+See also:
+- P70.3 documents_transfer_of - Primary transaction object
+- P70.11 documents_referenced_person - Referenced persons
+- P70.13 documents_referenced_place - Referenced places
+- CIDOC-CRM P67 refers to: http://www.cidoc-crm.org/Property/P67-refers-to/
+- CIDOC-CRM E1 CRM Entity: http://www.cidoc-crm.org/Entity/E1-CRM-Entity/
+- CIDOC-CRM E72 Legal Object: http://www.cidoc-crm.org/Entity/E72-Legal-Object/
+
+
+-------------------------------------------------------------------
+END OF DOCUMENTATION ADDITIONS
+-------------------------------------------------------------------
+
+INTEGRATION CHECKLIST:
+☐ Copy content to main documentation file
+☐ Position after P70.13 and before P70.15
+☐ Update table of contents if present
+☐ Verify all internal cross-references work
+☐ Check that examples render correctly
+☐ Validate markdown/formatting syntax
