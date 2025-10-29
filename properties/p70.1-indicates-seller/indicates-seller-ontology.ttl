@@ -12,12 +12,12 @@ gmn:P70_1_indicates_seller
     a owl:ObjectProperty ;
     a rdf:Property ;
     rdfs:label "P70.1 indicates seller"@en ;
-    rdfs:comment "Simplified property for associating a sales contract document with the person who acts as the seller in the sale event. Represents the full CIDOC-CRM path: E70_Document > P70_documents > E7_Activity (typed as 'sale') > P140i_was_attributed_by > E13_Attribute_Assignment > P141_assigned > E21_Person, with P177_assigned_property_of_type indicating 'P14 carried out by' and P14.1_in_the_role_of indicating 'seller'. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The seller is the party transferring ownership of the property being sold."@en ;
-    rdfs:subPropertyOf cidoc:P70_documents ;
+    rdfs:comment "Simplified property for associating a sales contract document with the person who acts as the seller in the sale event. Represents the full CIDOC-CRM path: E70_Document > P67_refers_to > E7_Activity (typed as 'sale') > P140i_was_attributed_by > E13_Attribute_Assignment > P141_assigned > E21_Person, with P177_assigned_property_of_type indicating 'P14 carried out by' and P2_type indicating 'seller'. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The seller is the party transferring ownership of the property being sold."@en ;
+    rdfs:subPropertyOf cidoc:P67_refers_to ;
     rdfs:domain cidoc:E70_Document ;
     rdfs:range cidoc:E21_Person ;
     dcterms:created "2025-10-17"^^xsd:date ;
-    rdfs:seeAlso cidoc:P70_documents, cidoc:P140i_was_attributed_by, cidoc:E13_Attribute_Assignment, cidoc:P141_assigned .
+    rdfs:seeAlso cidoc:P67_refers_to, cidoc:P140i_was_attributed_by, cidoc:E13_Attribute_Assignment, cidoc:P141_assigned .
 
 # ==============================================================================
 # USAGE NOTES
@@ -26,7 +26,7 @@ gmn:P70_1_indicates_seller
 # 1. ARCHITECTURAL APPROACH
 #    This property uses the E13_Attribute_Assignment pattern instead of direct
 #    property links. This provides:
-#    - Explicit role specification (via P14.1_in_the_role_of)
+#    - Explicit role specification (via P2_has_type)
 #    - Property type documentation (via P177_assigned_property_of_type)
 #    - Attribution provenance capabilities
 #    - Support for complex participant scenarios
@@ -82,7 +82,7 @@ gmn:P70_1_indicates_seller
 #    - cidoc:P140i_was_attributed_by (E7 to E13 link)
 #    - cidoc:P141_assigned (E13 to person link)
 #    - cidoc:P177_assigned_property_of_type (property type specification)
-#    - cidoc:P14.1_in_the_role_of (role specification)
+#    - cidoc:P2_type (role specification)
 
 # 8. AAT TERMS REQUIRED
 #    The transformation uses these Getty AAT terms:
