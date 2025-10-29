@@ -1,0 +1,286 @@
+# GMN Ontology Additions for P70.3 Indicates Transferred Object
+# To be added to gmn_ontology.ttl
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix gmn: <http://www.genoesemerchantnetworks.com/ontology#> .
+@prefix aat: <http://vocab.getty.edu/aat/> .
+
+##################################
+# Core Property: P70.3
+##################################
+
+# Property: P70.3 indicates transferred object
+gmn:P70_3_indicates_transferred_object
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P70.3 indicates transferred object"@en ;
+    rdfs:comment "Simplified property for associating a contract document with a physical thing (object) that is being transferred through the transaction documented by the contract. This property uses the E13 Attribute Assignment pattern to model objects with rich semantic properties including type, quantity, monetary value, measurements, color, and provenance. Represents the full CIDOC-CRM path: E31_Document > P67_refers_to > E7/E8/E10_Activity > P140i_was_assigned_by > E13_Attribute_Assignment > P141_assigned > E18_Physical_Thing. The E13 also uses P177_assigned_property_of_type to specify whether this is a transfer of title (P24) or custody (P30), and P2_has_type to categorize the object. This property is provided as a convenience for data entry in Omeka-S and should be transformed to the full CIDOC-CRM structure for formal compliance. The range includes all physical things that can be transferred: buildings (gmn:E22_1_Building), moveable property (gmn:E22_2_Moveable_Property), and general physical things (E18_Physical_Thing). This property can be used multiple times on a single contract to indicate multiple objects being transferred."@en ;
+    rdfs:subPropertyOf cidoc:P67_refers_to ;
+    rdfs:domain [
+        a owl:Class ;
+        owl:unionOf (
+            gmn:E31_2_Sales_Contract
+            gmn:E31_6_Lease_Contract
+            gmn:E31_7_Donation_Contract
+            gmn:E31_8_Dowry_Contract
+        )
+    ] ;
+    rdfs:range [
+        a owl:Class ;
+        owl:unionOf (
+            cidoc:E18_Physical_Thing
+            cidoc:E21_Person
+            gmn:E22_1_Building
+            gmn:E22_2_Moveable_Property
+            cidoc:E24_Physical_Human-Made_Thing
+            cidoc:E53_Place
+        )
+    ] ;
+    dcterms:created "2025-10-28"^^xsd:date ;
+    rdfs:seeAlso cidoc:P67_refers_to, cidoc:E13_Attribute_Assignment, cidoc:P24_transferred_title_of, cidoc:P30_transferred_custody_of .
+
+##################################
+# Supporting Object Properties
+##################################
+
+# Property: P2.1 has type (for objects)
+gmn:P2_1_has_type
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P2.1 has type"@en ;
+    rdfs:comment "Simplified property for associating an object with its type or category. Used primarily for transferred objects to indicate commodity type (salt, wool, cloth, etc.). Represents the CIDOC-CRM path: E18_Physical_Thing > P2_has_type > E55_Type. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure. The range should use controlled vocabularies such as Getty AAT or project-specific commodity classifications."@en ;
+    rdfs:subPropertyOf cidoc:P2_has_type ;
+    rdfs:domain cidoc:E18_Physical_Thing ;
+    rdfs:range cidoc:E55_Type ;
+    dcterms:created "2025-10-28"^^xsd:date ;
+    rdfs:seeAlso cidoc:P2_has_type .
+
+# Property: P54.1 has count
+gmn:P54_1_has_count
+    a owl:DatatypeProperty ;
+    a rdf:Property ;
+    rdfs:label "P54.1 has count"@en ;
+    rdfs:comment "Simplified property for indicating the number or count of objects. Used to express quantity (e.g., '100 rubbi', '50 pieces'). Represents the CIDOC-CRM path: E18_Physical_Thing > P57_has_number_of_parts > xsd:integer. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure."@en ;
+    rdfs:subPropertyOf cidoc:P57_has_number_of_parts ;
+    rdfs:domain cidoc:E18_Physical_Thing ;
+    rdfs:range xsd:integer ;
+    dcterms:created "2025-10-28"^^xsd:date ;
+    rdfs:seeAlso cidoc:P57_has_number_of_parts .
+
+# Property: P43.1 has dimension
+gmn:P43_1_has_dimension
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P43.1 has dimension"@en ;
+    rdfs:comment "Simplified property for associating an object with its measurements or dimensions (weight, volume, length). Represents the CIDOC-CRM path: E18_Physical_Thing > P43_has_dimension > E54_Dimension. The dimension resource should include type (weight, volume, length), value (numeric), and unit (rubbi, minae, canne, etc.). This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure."@en ;
+    rdfs:subPropertyOf cidoc:P43_has_dimension ;
+    rdfs:domain cidoc:E18_Physical_Thing ;
+    rdfs:range cidoc:E54_Dimension ;
+    dcterms:created "2025-10-28"^^xsd:date ;
+    rdfs:seeAlso cidoc:P43_has_dimension .
+
+# Property: P56.1 has color
+gmn:P56_1_has_color
+    a owl:DatatypeProperty ;
+    a rdf:Property ;
+    rdfs:label "P56.1 has color"@en ;
+    rdfs:comment "Simplified property for indicating the color of an object. Represents the CIDOC-CRM path: E18_Physical_Thing > P56_bears_feature > E26_Physical_Feature > P2_has_type (color). Values should use controlled vocabulary (white, black, red, blue, etc.) with Latin equivalents where appropriate. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure."@en ;
+    rdfs:subPropertyOf cidoc:P56_bears_feature ;
+    rdfs:domain cidoc:E18_Physical_Thing ;
+    rdfs:range xsd:string ;
+    dcterms:created "2025-10-28"^^xsd:date ;
+    rdfs:seeAlso cidoc:P56_bears_feature .
+
+# Property: P27.1 has origin
+gmn:P27_1_has_origin
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "P27.1 has origin"@en ;
+    rdfs:comment "Simplified property for indicating the place of origin or provenance of an object. Used to document where an object came from, was produced, or was sourced (e.g., 'salt from Ibiza', 'wool from England'). Represents the CIDOC-CRM path: E18_Physical_Thing > P27_moved_from > E53_Place. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure."@en ;
+    rdfs:subPropertyOf cidoc:P27_moved_from ;
+    rdfs:domain cidoc:E18_Physical_Thing ;
+    rdfs:range cidoc:E53_Place ;
+    dcterms:created "2025-10-28"^^xsd:date ;
+    rdfs:seeAlso cidoc:P27_moved_from .
+
+##################################
+# Monetary Value Properties (L.S.D Format)
+##################################
+
+# Property: has monetary value - lire
+gmn:has_monetary_value_lire
+    a owl:DatatypeProperty ;
+    a rdf:Property ;
+    rdfs:label "has monetary value (lire)"@en ;
+    rdfs:comment "Property for recording the lire (pounds) component of an object's monetary value in the Lire.Soldi.Denari (L.S.D) format. This is the primary currency unit. The value represents the worth of the object as stated or implied in the historical source. Always use in combination with currency and provenance properties to document the source of this valuation."@en ;
+    rdfs:domain cidoc:E18_Physical_Thing ;
+    rdfs:range xsd:decimal ;
+    dcterms:created "2025-10-28"^^xsd:date .
+
+# Property: has monetary value - soldi
+gmn:has_monetary_value_soldi
+    a owl:DatatypeProperty ;
+    a rdf:Property ;
+    rdfs:label "has monetary value (soldi)"@en ;
+    rdfs:comment "Property for recording the soldi (shillings) component of an object's monetary value in the Lire.Soldi.Denari (L.S.D) format. This is the intermediate currency unit (20 soldi = 1 lira). Optional component used when the source documents fractional lire values."@en ;
+    rdfs:domain cidoc:E18_Physical_Thing ;
+    rdfs:range xsd:integer ;
+    dcterms:created "2025-10-28"^^xsd:date .
+
+# Property: has monetary value - denari
+gmn:has_monetary_value_denari
+    a owl:DatatypeProperty ;
+    a rdf:Property ;
+    rdfs:label "has monetary value (denari)"@en ;
+    rdfs:comment "Property for recording the denari (pence) component of an object's monetary value in the Lire.Soldi.Denari (L.S.D) format. This is the smallest currency unit (12 denari = 1 soldo). Optional component used when the source documents precise fractional values."@en ;
+    rdfs:domain cidoc:E18_Physical_Thing ;
+    rdfs:range xsd:integer ;
+    dcterms:created "2025-10-28"^^xsd:date .
+
+# Property: has monetary value currency
+gmn:has_monetary_value_currency
+    a owl:ObjectProperty ;
+    a rdf:Property ;
+    rdfs:label "has monetary value currency"@en ;
+    rdfs:comment "Property for indicating the currency type used for an object's monetary valuation. Links to a currency resource (E98_Currency) such as Lira Genovese, Florin, Ducat, etc. Essential for disambiguating between different monetary systems in use during the period."@en ;
+    rdfs:domain cidoc:E18_Physical_Thing ;
+    rdfs:range cidoc:E98_Currency ;
+    dcterms:created "2025-10-28"^^xsd:date .
+
+# Property: has monetary value provenance
+gmn:has_monetary_value_provenance
+    a owl:DatatypeProperty ;
+    a rdf:Property ;
+    rdfs:label "has monetary value provenance"@en ;
+    rdfs:comment "Property for documenting the source of an object's monetary valuation. Should cite the specific location in the source document (folio, line, etc.) where the value is stated, or explain how the value was derived (e.g., 'calculated from contract total', 'market price estimate'). Critical for scholarly transparency and verification."@en ;
+    rdfs:domain cidoc:E18_Physical_Thing ;
+    rdfs:range xsd:string ;
+    dcterms:created "2025-10-28"^^xsd:date .
+
+##################################
+# Usage Notes and Documentation
+##################################
+
+# The properties defined above should be used in conjunction with gmn:P70_3_indicates_transferred_object
+# to create rich semantic descriptions of transferred objects in historical contracts.
+#
+# Typical usage pattern:
+#
+# <contract001> a gmn:E31_2_Sales_Contract ;
+#     gmn:P70_3_indicates_transferred_object <object001> .
+#
+# <object001> a cidoc:E24_Physical_Human-Made_Thing ;
+#     gmn:P1_1_has_name "White salt from Ibiza" ;
+#     gmn:P2_1_has_type <aat:300010967> ; # salt
+#     gmn:P54_1_has_count "100"^^xsd:integer ;
+#     gmn:P43_1_has_dimension <dimension001> ;
+#     gmn:P56_1_has_color "white" ;
+#     gmn:P27_1_has_origin <place_ibiza> ;
+#     gmn:has_monetary_value_lire "450.00"^^xsd:decimal ;
+#     gmn:has_monetary_value_currency <lira_genovese> ;
+#     gmn:has_monetary_value_provenance "Contract text, folio 23r line 15" .
+#
+# <dimension001> a cidoc:E54_Dimension ;
+#     cidoc:P2_has_type <aat:300056240> ; # weight
+#     cidoc:P90_has_value "100"^^xsd:decimal ;
+#     cidoc:P91_has_unit <unit_rubbi> .
+#
+# This structure will be transformed to full CIDOC-CRM including E13 Attribute Assignment
+# pattern by the transformation script (see P70_3_Transformation.py).
+
+##################################
+# Integration with Existing GMN Properties
+##################################
+
+# P70.3 complements these existing GMN properties:
+# - gmn:P70_1_indicates_seller (who transfers)
+# - gmn:P70_2_indicates_buyer (who receives)
+# - gmn:P70_3_indicates_transferred_object (what is transferred) [THIS PROPERTY]
+# - gmn:P70_16_documents_sale_price_amount (overall transaction price)
+# - gmn:P70_17_documents_sale_price_currency (transaction currency)
+#
+# P70.3 can be used as a more detailed alternative to:
+# - gmn:P70_33_indicates_object_of_donation (for donations)
+# - gmn:P70_34_indicates_object_of_dowry (for dowries)
+#
+# When to use P70.3 vs simpler properties:
+# - Use P70.3 when objects need detailed properties (type, quantity, measurements, etc.)
+# - Use P70.33/P70.34 for simple references without detailed object properties
+# - Both can coexist in the same ontology for different use cases
+
+##################################
+# Transformation Notes
+##################################
+
+# The P70.3 property requires special transformation handling:
+#
+# 1. Create or reference the appropriate activity (E8_Acquisition or E10_Transfer_of_Custody)
+# 2. Create E13_Attribute_Assignment node for each object
+# 3. Link E13 to activity via P140i_was_assigned_by
+# 4. Set P177_assigned_property_of_type to P24 (title) or P30 (custody)
+# 5. Set P141_assigned to point to the object resource
+# 6. Set P2_has_type on E13 to the object's type
+# 7. Transform all object properties (P2.1, P54.1, P43.1, etc.) to full CIDOC-CRM
+#
+# See P70_3_Transformation.py for complete implementation.
+
+##################################
+# Controlled Vocabularies
+##################################
+
+# Recommended vocabularies for property values:
+#
+# Object Types (P2.1):
+# - Getty AAT: http://vocab.getty.edu/aat/
+# - Project-specific commodity classification
+#
+# Colors (P56.1):
+# - white (albus)
+# - black (niger)
+# - red (ruber)
+# - blue (caeruleus)
+# - green (viridis)
+# - yellow (flavus)
+# - brown (brunneus)
+# - gray (griseus)
+#
+# Medieval Units (P43.1 dimensions):
+# - Weight: rubbi, minae, cantari, libre
+# - Volume: congii, modii, barili
+# - Length: palmi, canne, braccia
+#
+# Currency (monetary values):
+# - Lira Genovese
+# - Florin
+# - Ducat
+# - etc.
+
+##################################
+# Version Information
+##################################
+
+# Package Version: 1.0
+# Created: 2025-10-28
+# Compatible with: GMN Ontology 1.5+, CIDOC-CRM 7.x
+# Author: Genoese Merchant Networks Project
+
+##################################
+# Update Instructions
+##################################
+
+# To integrate these definitions into the main GMN ontology:
+#
+# 1. Open gmn_ontology.ttl
+# 2. Locate the Properties section (around line 858+)
+# 3. Insert these definitions in alphabetical order
+# 4. Update the ontology version info:
+#    - dcterms:modified "2025-10-28"^^xsd:date
+#    - owl:versionInfo "1.6"
+# 5. Save and validate the ontology file
+# 6. Update any documentation that lists available properties
+# 7. Test with sample data before deploying to production
