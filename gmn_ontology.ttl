@@ -253,12 +253,12 @@ gmn:P53_1_has_occupant
     dcterms:created "2025-10-16"^^xsd:date ;
     rdfs:seeAlso cidoc:P53i_is_former_or_current_location_of, cidoc:P25_moved .
 
-# Property: P70.1 documents seller
-gmn:P70_1_documents_seller
+# Property: P70.1 indicates seller
+gmn:P70_1_indicates_seller
     a owl:ObjectProperty ;
     a rdf:Property ;
-    rdfs:label "P70.1 documents seller"@en ;
-    rdfs:comment "Simplified property for associating a sales contract with the person named as the seller. Represents the full CIDOC-CRM path: E31_Document > P70_documents > E8_Acquisition > P23_transferred_title_from > E21_Person. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The seller is the party transferring ownership of the property being sold."@en ;
+    rdfs:label "P70.1 indicates seller"@en ;
+    rdfs:comment "Simplified property for associating a sales contract with the person named as the seller. Represents the full CIDOC-CRM path: E31_Document > P67_refers_to > E8_Acquisition > P23_transferred_title_from > E21_Person. This property is provided as a convenience for data entry and should be transformed to the full CIDOC-CRM structure for formal compliance. The seller is the party transferring ownership of the property being sold."@en ;
     rdfs:subPropertyOf cidoc:P70_documents ;
     rdfs:domain gmn:E31_2_Sales_Contract ;
     rdfs:range cidoc:E21_Person ;
