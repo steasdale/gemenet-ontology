@@ -1,0 +1,572 @@
+# Documentation Additions for Marriage Enumeration
+# Add these sections to your main GMN documentation
+
+================================================================================
+SECTION 1: PROPERTY TABLE ADDITIONS
+================================================================================
+
+Add these rows to your properties table:
+
+| Property | Label | Domain | Range | Description |
+|----------|-------|--------|-------|-------------|
+| gmn:marriage_number_for_subject | marriage number for subject | cidoc:E21_Person | xsd:integer | Ordinal indicating which marriage this is for the subject person (1=first, 2=second, etc.). Used within gmn:P11i_3_has_spouse objects. Transforms to E13_Attribute_Assignment. |
+| gmn:marriage_number_for_spouse | marriage number for spouse | cidoc:E21_Person | xsd:integer | Ordinal indicating which marriage this is for the spouse (1=first, 2=second, etc.). Used within gmn:P11i_3_has_spouse objects. Transforms to E13_Attribute_Assignment. |
+
+================================================================================
+SECTION 2: MARRIAGE ENUMERATION OVERVIEW
+================================================================================
+
+### Marriage Enumeration Support
+
+The GMN ontology supports optional marriage enumeration to indicate which marriage (1st, 2nd, 3rd, etc.) a particular marriage is for each person involved. This is particularly useful for:
+
+- Historical demographic studies
+- Understanding remarriage patterns after widowing or divorce
+- Legal contexts where marriage order matters (inheritance, property rights)
+- Social network analysis of marriage alliances
+
+**Implementation Approach**: Marriage enumeration uses the E13_Attribute_Assignment pattern from CIDOC-CRM, which provides explicit, queryable assertions about marriage order for each participant.
+
+**Key Features**:
+- Optional: Can be used when known, omitted when unknown
+- Person-specific: Each person in a marriage has their own enumeration
+- Independent: One spouse's enumeration need not match the other's
+- Backward compatible: Existing non-enumerated marriages continue to work
+
+================================================================================
+SECTION 3: DETAILED PROPERTY DESCRIPTIONS
+================================================================================
+
+### gmn:marriage_number_for_subject
+
+**Purpose**: Indicates the ordinal number of this marriage for the person who has the `gmn:P11i_3_has_spouse` property (the "subject" of the relationship assertion).
+
+**Usage Context**: This property appears WITHIN the spouse object, not directly on the person entity:
+
+```json
+{
+  "@id": "person:giovanni",
+  "gmn:P11i_3_has_spouse": [
+    {
+      "@id": "person:maria",
+      "gmn:marriage_number_for_subject": 2  // Giovanni's 2nd marriage
+    }
+  ]
+}
+```
+
+**Values**: Positive integers (1, 2, 3, ...) where:
+- 1 = first marriage
+- 2 = second marriage (remarriage)
+- 3 = third marriage, etc.
+
+**Transformation**: Creates an E13_Attribute_Assignment that:
+- Links to the subject person via P140_assigned_attribute_to
+- Contains the ordinal value via P141_assigned
+- References P11_had_participant via P177_assigned_property_of_type
+
+### gmn:marriage_number_for_spouse
+
+**Purpose**: Indicates the ordinal number of this marriage for the person being referenced as the spouse (the "object" of the relationship assertion).
+
+**Usage Context**: Also appears within the spouse object:
+
+```json
+{
+  "@id": "person:giovanni",
+  "gmn:P11i_3_has_spouse": [
+    {
+      "@id": "person:maria",
+      "gmn:marriage_number_for_subject": 2,      // Giovanni's 2nd
+      "gmn:marriage_number_for_spouse": 1        // Maria's 1st
+    }
+  ]
+}
+```
+
+**Values**: Positive integers (1, 2, 3, ...)
+
+**Transformation**: Creates an E13_Attribute_Assignment that:
+- Links to the spouse person via P140_assigned_attribute_to
+- Contains the ordinal value via P141_assigned
+- References P11_had_participant via P177_assigned_property_of_type
+
+================================================================================
+SECTION 4: TRANSFORMATION DETAILS
+================================================================================
+
+### Marriage Enumeration Transformation
+
+**Base Structure** (without enumeration):
+```
+E21_Person → P11i_participated_in → E5_Event → P11_had_participant → E21_Person
+```
+
+**Enhanced Structure** (with enumeration):
+```
+E21_Person (subject)
+  └─ P11i_participated_in
+      └─ E5_Event (marriage)
+          ├─ P11_had_participant → E21_Person (spouse)
+          ├─ P140i_was_attributed_by → E13_Attribute_Assignment (subject's enumeration)
+          │   ├─ P140_assigned_attribute_to → subject person
+          │   ├─ P141_assigned → integer value
+          │   └─ P177_assigned_property_of_type → P11_had_participant
+          └─ P140i_was_attributed_by → E13_Attribute_Assignment (spouse's enumeration)
+              ├─ P140_assigned_attribute_to → spouse person
+              ├─ P141_assigned → integer value
+              └─ P177_assigned_property_of_type → P11_had_participant
+```
+
+**Transformation Rules**:
+1. Extract enumeration values from spouse object
+2. Create E5_Event for marriage (as usual)
+3. If subject enumeration provided: Create E13_Attribute_Assignment for subject
+4. If spouse enumeration provided: Create E13_Attribute_Assignment for spouse
+5. Remove enumeration properties from final output (they're transformed, not preserved)
+
+================================================================================
+SECTION 5: USAGE EXAMPLES
+================================================================================
+
+### Example 1: Widower Remarries
+
+**Scenario**: Giovanni's first wife died. He later married Maria, who had never been married before.
+
+**Input (GMN Simplified)**:
+```json
+{
+  "@context": {
+    "cidoc": "http://www.cidoc-crm.org/cidoc-crm/",
+    "gmn": "http://example.org/gmn/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  },
+  "@id": "person:giovanni_medici",
+  "@type": "cidoc:E21_Person",
+  "rdfs:label": "Giovanni de' Medici",
+  "gmn:P11i_3_has_spouse": [
+    {
+      "@id": "person:maria_sforza",
+      "@type": "cidoc:E21_Person",
+      "rdfs:label": "Maria Sforza",
+      "gmn:marriage_number_for_subject": 2,
+      "gmn:marriage_number_for_spouse": 1
+    }
+  ]
+}
+```
+
+**Output (CIDOC-CRM Compliant)** (excerpt showing key elements):
+```json
+{
+  "@id": "person:giovanni_medici",
+  "cidoc:P11i_participated_in": [
+    {
+      "@id": "person:giovanni_medici/event/marriage_abc123",
+      "@type": "cidoc:E5_Event",
+      "cidoc:P2_has_type": {
+        "@id": "http://vocab.getty.edu/aat/300055475"
+      },
+      "cidoc:P140i_was_attributed_by": [
+        {
+          "@type": "cidoc:E13_Attribute_Assignment",
+          "cidoc:P140_assigned_attribute_to": {
+            "@id": "person:giovanni_medici"
+          },
+          "cidoc:P141_assigned": {
+            "@value": "2",
+            "@type": "xsd:integer"
+          }
+        },
+        {
+          "@type": "cidoc:E13_Attribute_Assignment",
+          "cidoc:P140_assigned_attribute_to": {
+            "@id": "person:maria_sforza"
+          },
+          "cidoc:P141_assigned": {
+            "@value": "1",
+            "@type": "xsd:integer"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Example 2: Both Previously Married
+
+**Scenario**: Two widowed persons marry each other.
+
+**Input**:
+```json
+{
+  "@id": "person:francesco",
+  "gmn:P11i_3_has_spouse": [
+    {
+      "@id": "person:bianca",
+      "gmn:marriage_number_for_subject": 2,
+      "gmn:marriage_number_for_spouse": 2
+    }
+  ]
+}
+```
+
+**Interpretation**: This is the second marriage for both Francesco and Bianca.
+
+### Example 3: Partial Enumeration
+
+**Scenario**: We know this is Paolo's first marriage, but we don't have information about Francesca's previous marriages.
+
+**Input**:
+```json
+{
+  "@id": "person:paolo",
+  "gmn:P11i_3_has_spouse": [
+    {
+      "@id": "person:francesca",
+      "gmn:marriage_number_for_subject": 1
+    }
+  ]
+}
+```
+
+**Result**: Only one E13_Attribute_Assignment is created (for Paolo). The transformation gracefully handles missing enumeration for Francesca.
+
+### Example 4: No Enumeration (Backward Compatible)
+
+**Scenario**: Simple marriage record without enumeration information.
+
+**Input**:
+```json
+{
+  "@id": "person:lorenzo",
+  "gmn:P11i_3_has_spouse": [
+    {
+      "@id": "person:clarice"
+    }
+  ]
+}
+```
+
+**Result**: Standard marriage event created without any E13_Attribute_Assignment nodes. Fully backward compatible.
+
+### Example 5: Multiple Marriages with Full History
+
+**Scenario**: Complete marriage history for a person who married three times.
+
+**Input**:
+```json
+{
+  "@id": "person:cosimo",
+  "@type": "cidoc:E21_Person",
+  "rdfs:label": "Cosimo de' Medici",
+  "gmn:P11i_3_has_spouse": [
+    {
+      "@id": "person:first_wife",
+      "rdfs:label": "Contessina de' Bardi",
+      "gmn:marriage_number_for_subject": 1,
+      "gmn:marriage_number_for_spouse": 1
+    },
+    {
+      "@id": "person:second_wife",
+      "rdfs:label": "Second Wife Name",
+      "gmn:marriage_number_for_subject": 2,
+      "gmn:marriage_number_for_spouse": 1
+    },
+    {
+      "@id": "person:third_wife",
+      "rdfs:label": "Third Wife Name",
+      "gmn:marriage_number_for_subject": 3,
+      "gmn:marriage_number_for_spouse": 2
+    }
+  ]
+}
+```
+
+**Result**: Three separate marriage events, each with appropriate E13_Attribute_Assignment nodes indicating the sequence.
+
+================================================================================
+SECTION 6: SPARQL QUERY EXAMPLES
+================================================================================
+
+### Query 1: Find All People Who Remarried
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+# Find all people with marriage number > 1
+SELECT DISTINCT ?person ?personLabel ?marriageNumber
+WHERE {
+  ?marriage a cidoc:E5_Event .
+  ?marriage cidoc:P2_has_type <http://vocab.getty.edu/aat/300055475> .
+  ?marriage cidoc:P11_had_participant ?person .
+  
+  ?marriage cidoc:P140i_was_attributed_by ?attr .
+  ?attr cidoc:P140_assigned_attribute_to ?person .
+  ?attr cidoc:P141_assigned ?marriageNumber .
+  
+  FILTER(?marriageNumber > 1)
+  
+  OPTIONAL { ?person rdfs:label ?personLabel }
+}
+ORDER BY ?person ?marriageNumber
+```
+
+### Query 2: Find Marriages Between Previously Married Persons
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+# Find marriages where both persons had been married before
+SELECT ?marriage ?person1 ?person2
+WHERE {
+  ?marriage cidoc:P11_had_participant ?person1, ?person2 .
+  
+  # Person 1 has marriage number > 1
+  ?marriage cidoc:P140i_was_attributed_by ?attr1 .
+  ?attr1 cidoc:P140_assigned_attribute_to ?person1 .
+  ?attr1 cidoc:P141_assigned ?num1 .
+  FILTER(?num1 > 1)
+  
+  # Person 2 has marriage number > 1
+  ?marriage cidoc:P140i_was_attributed_by ?attr2 .
+  ?attr2 cidoc:P140_assigned_attribute_to ?person2 .
+  ?attr2 cidoc:P141_assigned ?num2 .
+  FILTER(?num2 > 1)
+  
+  FILTER(?person1 != ?person2)
+}
+```
+
+### Query 3: Marriage Order Statistics
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+# Count how many 1st, 2nd, 3rd marriages are in the dataset
+SELECT ?marriageNumber (COUNT(?person) AS ?count)
+WHERE {
+  ?marriage cidoc:P11_had_participant ?person .
+  ?marriage cidoc:P140i_was_attributed_by ?attr .
+  ?attr cidoc:P140_assigned_attribute_to ?person .
+  ?attr cidoc:P141_assigned ?marriageNumber .
+}
+GROUP BY ?marriageNumber
+ORDER BY ?marriageNumber
+```
+
+### Query 4: Find All Marriages for a Specific Person
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+# Get all marriages for person:giovanni in order
+SELECT ?marriage ?spouse ?marriageNumber
+WHERE {
+  ?marriage cidoc:P11_had_participant <person:giovanni> .
+  ?marriage cidoc:P11_had_participant ?spouse .
+  
+  ?marriage cidoc:P140i_was_attributed_by ?attr .
+  ?attr cidoc:P140_assigned_attribute_to <person:giovanni> .
+  ?attr cidoc:P141_assigned ?marriageNumber .
+  
+  FILTER(?spouse != <person:giovanni>)
+}
+ORDER BY ?marriageNumber
+```
+
+### Query 5: Find Enumeration Mismatches
+
+```sparql
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+
+# Find marriages where one person's number is much higher than the other's
+SELECT ?marriage ?person1 ?num1 ?person2 ?num2 (?num1 - ?num2 AS ?difference)
+WHERE {
+  ?marriage cidoc:P11_had_participant ?person1, ?person2 .
+  
+  ?marriage cidoc:P140i_was_attributed_by ?attr1 .
+  ?attr1 cidoc:P140_assigned_attribute_to ?person1 .
+  ?attr1 cidoc:P141_assigned ?num1 .
+  
+  ?marriage cidoc:P140i_was_attributed_by ?attr2 .
+  ?attr2 cidoc:P140_assigned_attribute_to ?person2 .
+  ?attr2 cidoc:P141_assigned ?num2 .
+  
+  FILTER(?person1 != ?person2)
+  FILTER(ABS(?num1 - ?num2) >= 2)
+}
+ORDER BY DESC(ABS(?num1 - ?num2))
+```
+
+================================================================================
+SECTION 7: DATA ENTRY GUIDELINES
+================================================================================
+
+### When to Use Marriage Enumeration
+
+**USE enumeration when**:
+- Historical sources explicitly mention this is a remarriage
+- Notarial documents reference "first marriage" or "second wife"
+- Research question requires understanding marriage patterns
+- Previous spouse's death or divorce is documented
+- Property transfers depend on marriage order
+
+**SKIP enumeration when**:
+- Marriage order is unknown or uncertain
+- Sources don't provide this information
+- Research focus doesn't require it
+- Data entry time is limited
+- First marriages where no previous marriage is known
+
+### Best Practices
+
+1. **Verify from Sources**: Only add enumeration when documented
+2. **Document Uncertainty**: Use editorial notes if uncertain
+3. **Both Directions**: Consider recording the relationship from both persons' perspectives
+4. **Consistency**: Use consistent numbering across the dataset
+5. **Complete Sequences**: If recording multiple marriages, try to capture all of them
+
+### Common Scenarios
+
+**Scenario A: Widower Remarries**
+```json
+{
+  "gmn:marriage_number_for_subject": 2,
+  "gmn:marriage_number_for_spouse": 1
+}
+```
+Subject was married before; spouse was not.
+
+**Scenario B: Both Previously Married**
+```json
+{
+  "gmn:marriage_number_for_subject": 2,
+  "gmn:marriage_number_for_spouse": 2
+}
+```
+Both persons had previous marriages.
+
+**Scenario C: Known for One Person Only**
+```json
+{
+  "gmn:marriage_number_for_subject": 1
+  // Omit spouse number if unknown
+}
+```
+
+**Scenario D: First Marriage**
+```json
+{
+  "gmn:marriage_number_for_subject": 1,
+  "gmn:marriage_number_for_spouse": 1
+}
+```
+Both persons' first marriage (if known).
+
+================================================================================
+SECTION 8: VALIDATION RULES
+================================================================================
+
+### Data Validation Checklist
+
+**Valid Enumeration Values**:
+- ✓ Positive integers: 1, 2, 3, 4, ...
+- ✓ Omitted entirely (optional)
+
+**Invalid Enumeration Values**:
+- ✗ Zero: 0
+- ✗ Negative: -1, -2
+- ✗ Decimals: 1.5, 2.3
+- ✗ Strings: "first", "second"
+- ✗ Null with quotes: "null"
+
+**Logical Validation**:
+- If person has multiple spouses, their enumeration numbers should form a sequence
+- Enumeration should be consistent with person's earliest/latest attestation dates
+- First marriage (1) should occur during or before later marriages
+
+**Transformation Validation**:
+After transformation, verify:
+- E13_Attribute_Assignment nodes exist when enumeration provided
+- P141_assigned contains integer values
+- P140_assigned_attribute_to references correct person
+- P177_assigned_property_of_type references P11_had_participant
+
+================================================================================
+SECTION 9: HISTORICAL CONTEXT
+================================================================================
+
+### Remarriage in Renaissance Italy
+
+Marriage enumeration is particularly relevant for Renaissance Italian studies because:
+
+1. **High Mortality**: Childbirth mortality and disease led to frequent widowing
+2. **Remarriage Norms**: Remarriage was common and socially accepted
+3. **Dowry Implications**: Dowry arrangements differed for remarriages
+4. **Inheritance Law**: Marriage order affected inheritance rights
+5. **Social Alliances**: Second marriages often served different political purposes
+
+### Research Applications
+
+**Demographic Studies**: Understanding remarriage rates and patterns
+**Property Analysis**: Tracking how property passed through multiple marriages
+**Network Analysis**: Seeing how families connected through sequential marriages
+**Social History**: Studying widowhood, divorce, and marital stability
+
+================================================================================
+SECTION 10: TECHNICAL SPECIFICATIONS
+================================================================================
+
+### Property Specifications
+
+| Attribute | marriage_number_for_subject | marriage_number_for_spouse |
+|-----------|---------------------------|--------------------------|
+| Type | owl:DatatypeProperty | owl:DatatypeProperty |
+| Domain | cidoc:E21_Person | cidoc:E21_Person |
+| Range | xsd:integer | xsd:integer |
+| Cardinality | 0..1 | 0..1 |
+| Usage Context | Within spouse object | Within spouse object |
+
+### Transformation Specifications
+
+| Element | Specification |
+|---------|--------------|
+| E13 Class | cidoc:E13_Attribute_Assignment |
+| Attribution URI | {event_uri}/attribution_{person_hash} |
+| Value Type | xsd:integer |
+| Property Reference | cidoc:P11_had_participant |
+
+### Storage Impact
+
+| Scenario | Additional Nodes | Storage Overhead |
+|----------|-----------------|------------------|
+| No enumeration | 0 | 0 bytes |
+| Subject only | 1 E13 node | ~150-200 bytes |
+| Spouse only | 1 E13 node | ~150-200 bytes |
+| Full enumeration | 2 E13 nodes | ~300-400 bytes |
+
+================================================================================
+SECTION 11: REFERENCES
+================================================================================
+
+### CIDOC-CRM Documentation
+- **E13 Attribute Assignment**: http://www.cidoc-crm.org/Entity/e13-attribute-assignment/version-7.1.3
+- **P140 assigned attribute to**: http://www.cidoc-crm.org/Property/p140-assigned-attribute-to/version-7.1.3
+- **P141 assigned**: http://www.cidoc-crm.org/Property/p141-assigned/version-7.1.3
+- **P177 assigned property of type**: http://www.cidoc-crm.org/Property/p177-assigned-property-of-type/version-7.1.3
+
+### Related Documentation
+- Base has-spouse property documentation
+- GMN transformation pipeline documentation
+- CIDOC-CRM primer on attribute assignments
+
+================================================================================
+END OF DOCUMENTATION ADDITIONS
+================================================================================
+
+These sections should be integrated into your main documentation file. Adjust
+formatting and placement to match your documentation structure.

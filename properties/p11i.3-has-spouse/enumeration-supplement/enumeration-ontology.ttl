@@ -1,0 +1,193 @@
+# TTL Additions for Marriage Enumeration
+# Add these properties to gmn_ontology.ttl after gmn:P11i_3_has_spouse
+
+# ============================================================================
+# NEW PROPERTY DEFINITIONS
+# ============================================================================
+
+# Property: marriage number for subject
+gmn:marriage_number_for_subject
+    a owl:DatatypeProperty ;
+    a rdf:Property ;
+    rdfs:label "marriage number for subject"@en ;
+    rdfs:comment "Ordinal number indicating which marriage this is for the subject person (the person who has the has_spouse property). Values are positive integers: 1 for first marriage, 2 for second marriage, etc. This property is used within the object of gmn:P11i_3_has_spouse to indicate the marriage enumeration. When transformed to CIDOC-CRM, this creates an E13_Attribute_Assignment that assigns the ordinal number to the subject person's participation in the marriage event."@en ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range xsd:integer ;
+    dcterms:created "2025-10-27"^^xsd:date ;
+    rdfs:seeAlso cidoc:P140i_was_attributed_by, cidoc:P141_assigned .
+
+# Property: marriage number for spouse
+gmn:marriage_number_for_spouse
+    a owl:DatatypeProperty ;
+    a rdf:Property ;
+    rdfs:label "marriage number for spouse"@en ;
+    rdfs:comment "Ordinal number indicating which marriage this is for the spouse (the person being referenced as the spouse). Values are positive integers: 1 for first marriage, 2 for second marriage, etc. This property is used within the object of gmn:P11i_3_has_spouse to indicate the marriage enumeration. When transformed to CIDOC-CRM, this creates an E13_Attribute_Assignment that assigns the ordinal number to the spouse's participation in the marriage event."@en ;
+    rdfs:domain cidoc:E21_Person ;
+    rdfs:range xsd:integer ;
+    dcterms:created "2025-10-27"^^xsd:date ;
+    rdfs:seeAlso cidoc:P140i_was_attributed_by, cidoc:P141_assigned .
+
+# ============================================================================
+# PLACEMENT INSTRUCTIONS
+# ============================================================================
+#
+# Insert these two property definitions immediately after the 
+# gmn:P11i_3_has_spouse property definition in gmn_ontology.ttl
+#
+# Approximate location: After line containing gmn:P11i_3_has_spouse
+#
+# These properties work together with gmn:P11i_3_has_spouse to provide
+# optional marriage enumeration support.
+#
+# ============================================================================
+# VALIDATION
+# ============================================================================
+#
+# After adding, validate the TTL syntax:
+#   rapper -i turtle gmn_ontology.ttl -o turtle > /dev/null
+#
+# Verify the properties were added:
+#   grep -c "marriage_number_for" gmn_ontology.ttl
+#   # Should output: 2
+#
+# ============================================================================
+# REQUIRED NAMESPACE DECLARATIONS
+# ============================================================================
+#
+# Ensure these namespace prefixes exist at the top of your ontology file:
+#
+# @prefix gmn: <http://example.org/gmn/> .
+# @prefix cidoc: <http://www.cidoc-crm.org/cidoc-crm/> .
+# @prefix owl: <http://www.w3.org/2002/07/owl#> .
+# @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+# @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+# @prefix dcterms: <http://purl.org/dc/terms/> .
+# @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+#
+# ============================================================================
+# USAGE CONTEXT
+# ============================================================================
+#
+# These properties are NOT used directly on person entities. Instead, they
+# appear within the spouse object in gmn:P11i_3_has_spouse:
+#
+# CORRECT Usage:
+#   person:giovanni
+#     gmn:P11i_3_has_spouse [
+#       @id person:maria ;
+#       gmn:marriage_number_for_subject 2 ;  # Giovanni's 2nd marriage
+#       gmn:marriage_number_for_spouse 1 ;   # Maria's 1st marriage
+#     ] .
+#
+# INCORRECT Usage:
+#   person:giovanni
+#     gmn:marriage_number_for_subject 2 .  # Wrong! Not a direct property
+#
+# ============================================================================
+# TRANSFORMATION BEHAVIOR
+# ============================================================================
+#
+# When transformed to CIDOC-CRM, these properties generate:
+#
+# 1. An E5_Event (marriage) with AAT type 300055475
+# 2. E13_Attribute_Assignment for subject (if number provided)
+#    - Links to subject person via P140_assigned_attribute_to
+#    - Contains ordinal via P141_assigned
+#    - References P11_had_participant via P177_assigned_property_of_type
+# 3. E13_Attribute_Assignment for spouse (if number provided)
+#    - Links to spouse person via P140_assigned_attribute_to
+#    - Contains ordinal via P141_assigned
+#    - References P11_had_participant via P177_assigned_property_of_type
+#
+# Both enumeration properties are OPTIONAL. Marriages can be recorded with:
+# - No enumeration (backward compatible)
+# - Subject enumeration only
+# - Spouse enumeration only
+# - Both enumerations
+#
+# ============================================================================
+# DATA VALIDATION RULES
+# ============================================================================
+#
+# Valid values:
+#   - Positive integers: 1, 2, 3, 4, ...
+#   - Type: xsd:integer
+#
+# Invalid values:
+#   - Zero: 0 (marriages start at 1)
+#   - Negative numbers: -1, -2
+#   - Decimals: 1.5, 2.3
+#   - Strings: "first", "second"
+#   - Null or empty
+#
+# If enumeration is unknown or uncertain, OMIT the property rather than
+# using placeholder values.
+#
+# ============================================================================
+# SEMANTIC NOTES
+# ============================================================================
+#
+# Domain and Range:
+# - Domain: cidoc:E21_Person (but used within spouse object context)
+# - Range: xsd:integer (positive integers)
+#
+# Relationship to CIDOC-CRM:
+# - Not direct CIDOC properties
+# - Transformed to E13_Attribute_Assignment structures
+# - See cidoc:P140i_was_attributed_by for full pattern
+#
+# Historical Context:
+# - Sequential marriages (remarriage after death/divorce)
+# - Concurrent marriages (historical polygamy)
+# - Both patterns supported with same model
+#
+# ============================================================================
+# EXAMPLES
+# ============================================================================
+#
+# Example 1: Widower remarries (his 2nd, her 1st)
+# person:widower
+#   gmn:P11i_3_has_spouse [
+#     @id person:new_wife ;
+#     gmn:marriage_number_for_subject 2 ;
+#     gmn:marriage_number_for_spouse 1 ;
+#   ] .
+#
+# Example 2: Known for subject only
+# person:person_a
+#   gmn:P11i_3_has_spouse [
+#     @id person:person_b ;
+#     gmn:marriage_number_for_subject 1 ;
+#   ] .
+#
+# Example 3: No enumeration (backward compatible)
+# person:person_c
+#   gmn:P11i_3_has_spouse [
+#     @id person:person_d ;
+#   ] .
+#
+# ============================================================================
+# RELATED PROPERTIES
+# ============================================================================
+#
+# These properties extend:
+#   - gmn:P11i_3_has_spouse (base marriage property)
+#
+# See also:
+#   - gmn:P11i_1_earliest_attestation_date (person attestation)
+#   - gmn:P11i_2_latest_attestation_date (person attestation)
+#   - gmn:P96_1_has_mother (family relationships)
+#   - gmn:P97_1_has_father (family relationships)
+#
+# ============================================================================
+# IMPLEMENTATION CHECKLIST
+# ============================================================================
+#
+# After adding these properties:
+# [ ] Validate TTL syntax
+# [ ] Update transformation function (see enumeration-transform.py)
+# [ ] Test with enumerated marriage data
+# [ ] Update documentation
+# [ ] Train data entry staff on when to use enumeration
+#
+# ============================================================================
