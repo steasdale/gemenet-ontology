@@ -1,4 +1,4 @@
-# GMN P1.1 has_name Property - Deliverables Package
+# GMN P1.1 has_name Property
 
 **Property:** `gmn:P1_1_has_name`  
 **Version:** 1.1  
@@ -8,11 +8,11 @@
 
 ## Overview
 
-This deliverables package contains all necessary documentation and code for implementing the `gmn:P1_1_has_name` property in the Genoese Merchant Networks (GMN) ontology. This property provides a simplified way to express names for any entity in the database and automatically transforms to full CIDOC-CRM compliant structure.
+This directory contains all necessary documentation and code for implementing the `gmn:P1_1_has_name` property in the Genoese Merchant Networks (GMN) ontology. This property provides a simplified way to express names for any entity in the database and automatically transforms to full CIDOC-CRM compliant structure.
 
 ## What's Included
 
-This package contains six essential files:
+This directory contains six essential files:
 
 1. **README.md** (this file) - Overview and quick-start guide
 2. **has-name-implementation-guide.md** - Step-by-step implementation instructions
@@ -107,7 +107,7 @@ To full CIDOC-CRM structure:
 
 ### Changes Required
 
-**IMPORTANT:** The property and transformation code are ALREADY IMPLEMENTED in the current system. This deliverables package provides:
+**IMPORTANT:** The property and transformation code are ALREADY IMPLEMENTED in the current system. This directory provides:
 - Complete documentation for the existing property
 - Usage examples and guidelines
 - Testing procedures
@@ -158,8 +158,8 @@ To full CIDOC-CRM structure:
 ### Property Relationships
 
 **Specialized Name Properties:**
-- `gmn:P1_2_has_name_from_source` - Historical source names (AAT 300456607)
-- `gmn:P1_3_has_patrilineal_name` - Patronymic names (AAT 300404651)
+- `gmn:P1_2_has_name_from_source` - Names copied verbatim from historical sources (AAT 300456607)
+- `gmn:P1_3_has_patrilineal_name` - Names that indicate patrilineal descent
 
 **Related Properties:**
 - `gmn:P102_1_has_title` - For formal document titles
@@ -250,6 +250,7 @@ Where `{hash}` is the last 8 digits of the hash of the name value and property n
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1 | 2025-10-30 | Minor changes to wording |
 | 1.1 | 2025-10-26 | Minor changes to wording |
 | 1.0 | 2025-10-26 | Initial deliverables package created |
 | 0.2 | 2025-10-17 | Property modified in ontology |
