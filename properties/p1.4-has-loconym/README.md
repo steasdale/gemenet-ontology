@@ -2,20 +2,20 @@
 
 **Property Name:** `gmn:P1_4_has_loconym` (P1.4 has loconym)  
 **Property Type:** Object Property (owl:ObjectProperty)  
-**Status:** ✅ ALREADY IMPLEMENTED - No new code needed
+**Status:** ALREADY IMPLEMENTED - No new code needed
 
 ---
 
-## 📋 Quick-Start Checklist
+##  Quick-Start Checklist
 
-### ✅ Implementation Status
+###  Implementation Status
 
 - [x] **Ontology Definition** - Already exists in `gmn_ontology.ttl`
 - [x] **Python Transformation** - Already exists in `gmn_to_cidoc_transform.py`
 - [ ] **Documentation** - Add usage examples to project documentation (see `has-loconym-doc-note.txt`)
 - [ ] **Testing** - Test transformation with sample data (see Implementation Guide)
 
-### 📝 What This Package Provides
+###  What This Package Provides
 
 Since this property is **already fully implemented**, this package provides:
 
