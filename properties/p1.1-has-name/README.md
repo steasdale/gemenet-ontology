@@ -102,7 +102,7 @@ To full CIDOC-CRM structure:
 ### Files to Update
 
 1. **gmn_ontology.ttl** - Already contains the property definition (no changes needed)
-2. **gmn_to_cidoc_transform.py** - Already contains transformation function (no changes needed)
+2. **gmn_to_cidoc_transform.py** - Already contains the transformation function (no changes needed)
 3. **Documentation files** - May need examples and usage guidelines added
 
 ### Changes Required
