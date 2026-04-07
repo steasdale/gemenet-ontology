@@ -4,7 +4,7 @@ The **Genoese Merchant Networks (GMN) CIDOC-CRM Extension Ontology** is a specia
 
 ## Overview
 
-The GMN ontology addresses the challenge of modeling complex historical relationships in systems like Omeka-S, which don't handle deeply nested data structures well. It provides direct, simplified properties that represent more complex CIDOC-CRM paths while maintaining semantic compatibility with the underlying standard.
+The GMN ontology addresses the challenge of modeling complex historical relationships in systems like Omeka-S, which do not handle deeply nested data structures well. It provides direct, simplified properties that represent more complex CIDOC-CRM paths while maintaining semantic compatibility with the underlying standard.
 
 **Version:** 1.5  
 **Created by:** Steven Teasdale  
