@@ -1,6 +1,6 @@
-# GMN Ontology
+# Medieval Commerce Ontology Project
 
-The **Genoese Merchant Networks (GMN) CIDOC-CRM Extension Ontology** is a specialized vocabulary designed to model historical data from medieval and early modern Genoese merchant networks. This ontology extends the CIDOC Conceptual Reference Model (CIDOC-CRM) with simplified shortcut properties and classes tailored for use in the Omeka-S platform.
+The **Medieval Commerce Ontology Project** is a specialized vocabulary designed to model historical data from medieval and early modern Genoese merchant networks. This ontology extends the CIDOC Conceptual Reference Model (CIDOC-CRM) with simplified shortcut properties and classes tailored for use in the Omeka-S platform.
 
 ## Overview
 
